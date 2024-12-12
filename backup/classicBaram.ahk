@@ -254,19 +254,9 @@ sleep,20
 return
 
 
-;큐센 오피스 모드에서 중독+첨  s, 그냥 중독만 shift+s  저주만 d,  저주+첨  shift+d,  키 조합이었다
-;(오피스 모드에서 s는 NumpadDiv, d는 NumpadMult c는 NumpadDot)
-;일단 잠깐 바꿔서 중독 + 첨 s ,  그냥 중독만 d,  저주만 c  저주 + 첨 shift + c 이렇게 한다.
-;이 상황에서 shift + s 와  shift + d 는 일단 비어 있다.
 
-;shift 조합으로 하려니 새끼손가락 혹사시켜서 자주 쓰는 중독만 돌리는 걸 c로 했는데 저주 돌리기보다 빈도가 높아서
-;일단 중독만 돌리기를 d로, 저주를 c, 저주 + 첨을 shift + c로 일단 옮겼다.
-;한 번 몰아서 저주는 한 번씩만 돌려주면 되는데 중독은 중간에 마나 상황에 따라 첨 없이 그냥 중독만 돌려야하는 경우도 높아서
-
-
-
-; +NumpadDiv 원래 그냥 중독 돌리기가 쉬프트 조합인데(큐센 오피스 +s) 손가락 편의를 위해 NumpadDot (큐센 오피스 모드에서 c키)
-NumpadMult::  ;중독만 돌리기
+; +NumpadDiv 원래 쉬프트 조합인데 편의를 위해 NumpadDot (큐센 오피스 모드에서 c키)
+NumpadDot::  ;중독만 돌리기
 SendInput, {Esc}
 sleep,120
 loop, 20
@@ -285,7 +275,7 @@ return
 
 
 
-NumpadDot:: ;저주만 돌리기
+NumpadMult:: ;저주만 돌리기
 SendInput, {Esc}
 sleep,30
 loop, 20
@@ -303,7 +293,7 @@ return
 
 
 
-+NumpadDot:: ;저주 돌리기 + 첨
++NumpadMult:: ;저주 돌리기 + 첨
 SendInput, {Esc}
 sleep,120
 SendInput, {5 Down} 
