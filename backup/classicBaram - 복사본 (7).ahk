@@ -255,7 +255,7 @@ return
 
 
 ;큐센 오피스 모드에서 중독+첨  s, 그냥 중독만 shift+s  저주만 d,  저주+첨  shift+d,  키 조합이었다
-;(오피스 모드에서 s는 NumpadDiv, d는 NumpadMult c는 NumpadDot)
+;(오피스 모드에서 s는 NumpadDiv, d는 NumpadMult c는 NumpadDot, shift + c는 NumpadDel)
 ;일단 잠깐 바꿔서 중독 + 첨 s ,  그냥 중독만 d,  저주만 c  저주 + 첨 shift + c 이렇게 한다.
 ;이 상황에서 shift + s 와  shift + d 는 일단 비어 있다.
 
@@ -303,7 +303,7 @@ return
 
 
 
-+NumpadDot:: ;저주 돌리기 + 첨
+NumpadDel:: ;저주 돌리기 + 첨
 SendInput, {Esc}
 sleep,120
 SendInput, {5 Down} 
