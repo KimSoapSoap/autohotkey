@@ -167,7 +167,9 @@ return
 ;shift 조합은 처음에 esc 누르고 sleep, 100~120정도 해주자. 그냥 누르는 건 30.  shift 누르고 sleep 짧게 하니까 자꾸 채팅 쳐짐
 
 
-a::  ;마비만 돌리기
+
+;원래는 a였다. (큐센 계산기 모드 c랑 자리 바꿈)
+NumpadDot::  ;마비만 돌리기(6번을절망으로 바꾸면 절망 돌리기)
 SendInput, {Esc}
 sleep,30
 loop, 20
@@ -183,8 +185,8 @@ SendInput, {Esc}
 sleep,20
 return
 
-
-+a::  ;마비 돌리기 + 첨
+;원래는 +a(shift + a)였다. (큐센 계산기 모드 shift + c랑 자리 바꿈)
+NumpadDel::  ;마비 돌리기 + 첨 (6번을절망으로 바꾸면 절망 돌리기 + 첨)
 SendInput, {Esc}
 sleep,120
 SendInput, {5 Down} ; 5키 눌림
@@ -254,10 +256,18 @@ sleep,20
 return
 
 
+
+
 ;큐센 오피스 모드에서 중독+첨  s, 그냥 중독만 shift+s  저주만 d,  저주+첨  shift+d,  키 조합이었다
-;(오피스 모드에서 s는 NumpadDiv, d는 NumpadMult c는 NumpadDot, shift + c는 NumpadDel)
+;(오피스 모드에서 s는 NumpadDiv, d는 NumpadMult c는 NumpadDot, shift + c는 NumpadDel, a키는 그냥 a다)
 ;일단 잠깐 바꿔서 중독 + 첨 s ,  그냥 중독만 d,  저주만 c  저주 + 첨 shift + c 이렇게 한다.
 ;이 상황에서 shift + s 와  shift + d 는 일단 비어 있다.
+;왼손 검지가 공증, 활력, 혼돈, 중독만, 저주만, 4방향 마비 등 사용하는 게 많아서 c 저주만 돌리기와 shift조합으로 첨 조합을 a로
+;a는 원래 마비돌리기인데 생각보다 잘 안 써서 c로 내리고 a를 저주만 돌리기로 옮긴다.
+
+;나중에 a마비(절망)돌리기, s중독 돌리기, d 저주 돌리기로 정상화 시켜 주던가 하자.
+
+
 
 ;shift 조합으로 하려니 새끼손가락 혹사시켜서 자주 쓰는 중독만 돌리는 걸 c로 했는데 저주 돌리기보다 빈도가 높아서
 ;일단 중독만 돌리기를 d로, 저주를 c, 저주 + 첨을 shift + c로 일단 옮겼다.
@@ -284,8 +294,8 @@ return
 
 
 
-
-NumpadDot:: ;저주만 돌리기
+;NumpadDot (큐센 계산기모드) c 였었다.  a와(마비 돌리기) 잠시 교체
+a:: ;저주만 돌리기
 SendInput, {Esc}
 sleep,30
 loop, 20
@@ -302,8 +312,8 @@ sleep,20
 return
 
 
-
-NumpadDel:: ;저주 돌리기 + 첨
+;NumpadDel (큐센 계산기모드) shift + c 였다. shift + a(마비돌리기 + 첨)와 잠시 교체
++a:: ;저주 돌리기 + 첨
 SendInput, {Esc}
 sleep,120
 SendInput, {5 Down} 
