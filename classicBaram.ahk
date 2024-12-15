@@ -1,12 +1,25 @@
-﻿Pause::
+﻿global StopLoop := false
+;루프 중단을 위한 변수. 기본 false
+;동작 중(예를 들면 루프) 다른 핫키를 쓰면 다른 핫키 동작 후 다시 기존 핫키로 돌아가는 Stack구조이므로
+;핫키를 실행할 땐 변수를 false로, 끝날 땐 true로 해주고 루프구문(보통 루프 돌아가는 중에 다른 핫키 쓰기 때문) 내부의 시작에
+;이 변수가 true일 때 break를 걸어준다. 
+;그럼 이때 루프 시작에서 break되고 루프를 끝내고 나머지 코드를 실행한다. 나머지 코드는 esc 처리해주는 것이기 때문에 굳
+
+;즉 루프 시작부분에는 StopLoop가 true면 break
+; 핫키 시작할 땐 StopLoop := false(루프있다면 -> 루프 내부에 if (StopLoop) 조건이 있을 때 )
+; 핫키 끝날 땐 StopLoop := true (동작 후 이전 핫키 루프를 중단하려면)
+; 예를들면 동동주 마시는 건 4방향 마비걸 때 마력 없으면 동동주 먹어주면서 마력 보충할 수 있기 때문에 굳이 loopStop을 끝에 넣지 않는다.
+
+Pause::
 Suspend Off       ; Suspend 상태에서 동작하도록 강제로 해제
+StopLoop := true
 Reload
 return
 
 \:: ; 오토핫키 중단
 Suspend, Toggle
+StopLoop := true
 return
-
 
 ;최소 sleep은 30은 해주자
 ;스킬 시전 이후는 70~90은 해야 시전후딜 가능
@@ -21,7 +34,9 @@ SendInput, { space }
 return
 
 +NumpadEnter:: ;줍기
+sleep,30
 SendInput, ,
+sleep,30
 return
 
 del:: ; 사자후
@@ -35,6 +50,7 @@ SendInput, {shift up}
 sleep, 60
 SendInput, z ;  z -> 사자후 술사
 sleep, 40
+StopLoop := true
 return
 
 
@@ -56,14 +72,23 @@ return
      }
 return
 
-F3:: home ;자신 선택
+F3:: ;자신 선택 & StopLoop
+SendInput, {Home}
+sleep,20
+StopLoop := true
+return
 
 
  Numpad1:: ; 자힐 3틱
  SendInput, {Esc}
  sleep,30
+sleep,20
      Loop, 4
      {
+        if (StopLoop)
+            {            
+                Break
+            }
          SendInput, {Blind}1
          Sleep, 30
          SendInput, {Home}
@@ -73,6 +98,7 @@ F3:: home ;자신 선택
      }
      SendInput, {Esc}
 sleep,20
+StopLoop := true
  return
 
 ; 자힐 + 첨 할 때 sendInput Esc 뒤에 sleep, 20 하니까 탭탭이 씹히고 30으로 하니까 괜찮더라
@@ -89,8 +115,14 @@ sleep,20
  Sleep, 30
  SendInput, {Tab}
 sleep,30
+StopLoop := false
+sleep,20
      Loop, 20
      {
+        if (StopLoop)
+            {                
+                Break
+            }
         Send, {1}
          Sleep, 50
          Send, {5}
@@ -104,6 +136,7 @@ sleep,30
      sleep,40
      Send,{Numpad5}
      sleep,20
+     StopLoop := true
  return
  
  
@@ -127,6 +160,7 @@ sleep,30
  sleep, 30
  SendInput, {w} ;  w -> 극진화열참주
  sleep, 40
+ StopLoop := true
 return
 
 
@@ -142,6 +176,7 @@ return
  sleep, 100
  SendInput, q ;  q -> 절망
  sleep, 40
+ StopLoop := true
 return
 
 
@@ -172,8 +207,13 @@ return
 NumpadDot::  ;마비만 돌리기(6번을절망으로 바꾸면 절망 돌리기)
 SendInput, {Esc}
 sleep,30
+StopLoop := false
 loop, 20
 {
+    if (StopLoop)
+        {            
+            Break
+        }
     SendInput, 6
     sleep, 30
     SendInput, { left }
@@ -183,6 +223,7 @@ loop, 20
 }
 SendInput, {Esc}
 sleep,20
+StopLoop := true
 return
 
 ;원래는 +a(shift + a)였다. (큐센 계산기 모드 shift + c랑 자리 바꿈)
@@ -193,8 +234,13 @@ SendInput, {5 Down} ; 5키 눌림
 sleep,20
 SendInput, {0 Down} ; 0키 눌림
 sleep,20
+StopLoop := false
 loop, 20
 {
+    if (StopLoop)
+        {            
+            Break
+        }
     SendInput, 6
     sleep, 30
     SendInput, { left }
@@ -206,6 +252,7 @@ SendInput, {5 Up} ; 눌린 5 키 해제
 sleep,20
 SendInput, {0 Up} ; 눌린 5 키 해제
 sleep,20
+StopLoop := true
 return
 
 
@@ -213,7 +260,12 @@ return
 NumpadUp::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
 SendInput, {Esc}
 sleep,30
+StopLoop := false
 loop, 20
+    if (StopLoop)
+        {            
+            Break
+        }
 {
     SendInput, 8
     sleep, 30
@@ -224,6 +276,7 @@ loop, 20
 }
 SendInput, {Esc}
 sleep,20
+StopLoop := true
 return
 
 
@@ -238,8 +291,13 @@ SendInput, {5 Down} ; 5키 눌림
 sleep,20
 SendInput, {0 Down} ; 0키 눌림
 sleep,20
+StopLoop := false
 loop, 20
 {
+    if (StopLoop)
+        {            
+            Break
+        }
     SendInput, 7
     sleep, 30
     SendInput, { left }
@@ -253,6 +311,7 @@ SendInput, {0 Up} ; 눌린 5 키 해제
 sleep,20
 SendInput, {Esc}
 sleep,20
+StopLoop := true
 return
 
 
@@ -279,8 +338,13 @@ return
 NumpadMult::  ;중독만 돌리기
 SendInput, {Esc}
 sleep,120
+StopLoop := false
 loop, 20
 {
+    if (StopLoop)
+        {            
+            Break
+        }
     SendInput, 7
     sleep, 30
     SendInput, { left }
@@ -290,6 +354,7 @@ loop, 20
 }
 SendInput, {Esc}
 sleep,20
+StopLoop := true
 return
 
 
@@ -298,8 +363,13 @@ return
 a:: ;저주만 돌리기
 SendInput, {Esc}
 sleep,30
+StopLoop := false
 loop, 20
 {
+    if (StopLoop)
+        {            
+            Break
+        }
     SendInput, 4
     sleep, 30
     SendInput, { left }
@@ -309,6 +379,7 @@ loop, 20
 }
 SendInput, {Esc}
 sleep,20
+StopLoop := true
 return
 
 
@@ -320,8 +391,13 @@ SendInput, {5 Down}
 sleep,20
 SendInput, {0 Down} 
 sleep,20
+StopLoop := false
 loop, 20
 {
+    if (StopLoop)
+        {            
+            Break
+        }
     SendInput, 4
     sleep, 30
     SendInput, { left }
@@ -335,6 +411,7 @@ SendInput, {0 Up}
 sleep,20
 SendInput, {Esc}
 sleep,20
+StopLoop := true
 return
 
 
@@ -352,8 +429,13 @@ SendInput, {Left}
 sleep, 30
 SendInput, {Enter}
 Sleep, 90
+StopLoop := false
 loop, 3
     {
+        if (StopLoop)
+            {            
+                Break
+            }
         SendInput, 6
         Sleep, 30
         SendInput, {Enter}
@@ -372,6 +454,10 @@ Sleep, 90
 
 loop, 3
     {
+        if (StopLoop)
+            {            
+                Break
+            }
         SendInput, 6
         Sleep, 30
         SendInput, {Enter}
@@ -388,6 +474,10 @@ Sleep, 90
 
 loop, 3
     {
+        if (StopLoop)
+            {            
+                Break
+            }
         SendInput, 6
         Sleep, 30
         SendInput, {Enter}
@@ -404,6 +494,10 @@ Sleep, 90
 
 loop, 3
     {
+        if (StopLoop)
+            {            
+                Break
+            }
         SendInput, 6
         Sleep, 30
         SendInput, {Enter}
@@ -411,6 +505,7 @@ loop, 3
     }
     SendInput, {Esc}
 sleep,20
+StopLoop := true
     return
 
 
@@ -421,8 +516,13 @@ sleep,20
 +NumpadSub:: ;캐릭 4방위 마비만 돌리기.
 SendInput, {Esc}
 sleep,120
+StopLoop := false
     loop, 2
         {
+            if (StopLoop)
+                {            
+                    Break
+                }
             SendInput, 6
             Sleep, 30
             SendInput, {Home}
@@ -435,6 +535,10 @@ sleep,120
     
     loop, 2
         {
+            if (StopLoop)
+                {            
+                    Break
+                }
             SendInput, 6
             Sleep, 30
             SendInput, {Home}
@@ -447,6 +551,10 @@ sleep,120
     
     loop, 2
         {
+            if (StopLoop)
+                {            
+                    Break
+                }
             SendInput, 6
             Sleep, 30
             SendInput, {Home}
@@ -459,6 +567,10 @@ sleep,120
     
     loop, 2
         {
+            if (StopLoop)
+                {            
+                    Break
+                }
             SendInput, 6
             Sleep, 30
             SendInput, {Home}
@@ -470,6 +582,7 @@ sleep,120
         }
         SendInput, {Esc}
 sleep,20
+StopLoop := true
 return
     
 
@@ -505,6 +618,7 @@ SendInput, { enter }
 sleep, 70
 SendInput, {Esc}
 sleep,20
+StopLoop := true
 return
 
 
