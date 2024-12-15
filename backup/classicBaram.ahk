@@ -83,6 +83,7 @@ return
  SendInput, {Esc}
  sleep,30
 sleep,20
+StopLoop := false
      Loop, 4
      {
         if (StopLoop)

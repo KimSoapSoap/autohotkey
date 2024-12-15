@@ -89,6 +89,7 @@ StopLoop := false
         if (StopLoop)
             {            
                 Break
+                sleep,20
             }
          SendInput, {Blind}1
          Sleep, 30
@@ -123,6 +124,7 @@ sleep,20
         if (StopLoop)
             {                
                 Break
+                sleep,20
             }
         Send, {1}
          Sleep, 50
@@ -214,6 +216,7 @@ loop, 20
     if (StopLoop)
         {            
             Break
+            sleep,20
         }
     SendInput, 6
     sleep, 30
@@ -241,6 +244,7 @@ loop, 20
     if (StopLoop)
         {            
             Break
+            sleep,20
         }
     SendInput, 6
     sleep, 30
@@ -266,6 +270,7 @@ loop, 20
     if (StopLoop)
         {            
             Break
+            sleep,20
         }
 {
     SendInput, 8
@@ -298,6 +303,7 @@ loop, 20
     if (StopLoop)
         {            
             Break
+            sleep,20
         }
     SendInput, 7
     sleep, 30
@@ -345,6 +351,7 @@ loop, 20
     if (StopLoop)
         {            
             Break
+            sleep,20
         }
     SendInput, 7
     sleep, 30
@@ -370,6 +377,7 @@ loop, 20
     if (StopLoop)
         {            
             Break
+            sleep,20
         }
     SendInput, 4
     sleep, 30
@@ -398,6 +406,7 @@ loop, 20
     if (StopLoop)
         {            
             Break
+            sleep,20
         }
     SendInput, 4
     sleep, 30
@@ -436,6 +445,7 @@ loop, 3
         if (StopLoop)
             {            
                 Break
+                sleep,20
             }
         SendInput, 6
         Sleep, 30
@@ -458,6 +468,7 @@ loop, 3
         if (StopLoop)
             {            
                 Break
+                sleep,20
             }
         SendInput, 6
         Sleep, 30
@@ -478,6 +489,7 @@ loop, 3
         if (StopLoop)
             {            
                 Break
+                sleep,20
             }
         SendInput, 6
         Sleep, 30
@@ -498,6 +510,7 @@ loop, 3
         if (StopLoop)
             {            
                 Break
+                sleep,20
             }
         SendInput, 6
         Sleep, 30
@@ -523,6 +536,7 @@ StopLoop := false
             if (StopLoop)
                 {            
                     Break
+                    sleep,20
                 }
             SendInput, 6
             Sleep, 30
@@ -539,6 +553,7 @@ StopLoop := false
             if (StopLoop)
                 {            
                     Break
+                    sleep,20
                 }
             SendInput, 6
             Sleep, 30
@@ -555,6 +570,7 @@ StopLoop := false
             if (StopLoop)
                 {            
                     Break
+                    sleep,20
                 }
             SendInput, 6
             Sleep, 30
@@ -571,6 +587,7 @@ StopLoop := false
             if (StopLoop)
                 {            
                     Break
+                    sleep,20
                 }
             SendInput, 6
             Sleep, 30
