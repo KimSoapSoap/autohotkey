@@ -39,6 +39,8 @@ SendInput, ,
 sleep,30
 return
 
+
+
 del:: ; 사자후
 SendInput, {Esc}
 sleep,30

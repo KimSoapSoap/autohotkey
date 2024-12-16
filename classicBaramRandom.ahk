@@ -45,6 +45,8 @@ SendInput, ,
 CustomSleep(30)
 return
 
+
+
 del:: ; 사자후
 SendInput, {Esc}
 CustomSleep(30)
