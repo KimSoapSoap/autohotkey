@@ -99,10 +99,10 @@ Loop,1 ;일단 한 번
             SendInput, 3 ; 공증(실패해도 됨)
             CustomSleep(30)
 
-            Loop,2 
+            Loop,1 ; 셀프힐 + 첨 횟수 조정(일단 1) -> 딸피 마무리
                 {            
                 StopLoopCheck()
-                SelfHealAndChum() ; 셀프힐 + 첨 2번 -> 딸피 마무리
+                SelfHealAndChum() 
                 CustomSleep(30)
                 }
             }

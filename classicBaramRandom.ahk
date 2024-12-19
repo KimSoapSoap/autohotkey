@@ -56,6 +56,7 @@ return
 
 
 
+
 ; 중독사냥 종합
 ;보무, 자힐, 4방향 마비, 중독 돌리기
 NumpadAdd::
@@ -517,6 +518,7 @@ a:: ;저주만 돌리기
 SpreadCurse()
 StopLoop := true
 return
+
 
 SpreadCurse() { ;저주만 돌리기
     SendInput, {Esc}
