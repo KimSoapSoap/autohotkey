@@ -46,14 +46,12 @@ CapsLock::
 Pause
 return
 
+
 ;최소 sleep은 30은 해주자. 누락 방지.
 ;스킬 시전 이후는 70~90은 해야 시전후딜 가능
 ;shift 조합은 esc로 꼬임방지 이후 sleep 100~120은 해야 눌렀던 shift와 꼬이지 않음
 
-
-
 #IfWinActive MapleStory Worlds-옛날바람
-
 
 
 
