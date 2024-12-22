@@ -256,15 +256,44 @@ return
  CustomSleep(30)
  return
 
- r:: ;혼돈
- Chaos()()
- return
+q::6 ;마비
+w::7 ;중독
+e::8 ;활력
 
-Chaos() {  ;혼돈
-    SendInput, 9
- }
+
++e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
+SpreadVitality()
+StopLoop := true
+return
+
+SpreadVitality() { ;활력 돌리기
+SendInput, {Esc}
+CustomSleep(30)
+StopLoop := false
+loop, 20
+    if (StopLoop)
+        {            
+            Break
+            CustomSleep(20)
+        }
+{
+    SendInput, 8
+    CustomSleep(30)
+    SendInput, { left }
+    CustomSleep(30)
+    SendInput, { enter }
+    CustomSleep(90)
+}
+SendInput, {Esc}
+CustomSleep(20)
+return
+}
+
+
+r::9 ;혼돈
 
  +r::
+ sleep,150
  SendInput, {Blind}r
  return
 
@@ -400,34 +429,6 @@ SpreadParalysisAndChum() { ;마비 돌리기 + 첨
 }
 
 
-
-+e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
-SpreadVitality()
-StopLoop := true
-return
-
-SpreadVitality() { ;활력 돌리기
-SendInput, {Esc}
-CustomSleep(30)
-StopLoop := false
-loop, 20
-    if (StopLoop)
-        {            
-            Break
-            CustomSleep(20)
-        }
-{
-    SendInput, 8
-    CustomSleep(30)
-    SendInput, { left }
-    CustomSleep(30)
-    SendInput, { enter }
-    CustomSleep(90)
-}
-SendInput, {Esc}
-CustomSleep(20)
-return
-}
 
 
 
