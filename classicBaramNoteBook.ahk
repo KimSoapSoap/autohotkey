@@ -266,6 +266,7 @@ SpreadVitality()
 StopLoop := true
 return
 
+
 SpreadVitality() { ;활력 돌리기
 SendInput, {Esc}
 CustomSleep(30)
@@ -312,7 +313,7 @@ r::9 ;혼돈
     SendInput, { z }
     CustomSleep(30)
     SendInput, {shift up}
-    CustomSleep(30)
+    CustomSleep(50)
     SendInput, {w} ;  w -> 극진화열참주
     CustomSleep(40)
     StopLoop := true
