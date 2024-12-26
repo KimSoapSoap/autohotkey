@@ -117,7 +117,15 @@ return
 
 
 
-
+~x:: ;줍기
+CustomSleep(30)
+SendInput, {ShiftDown}
+CustomSleep(30)
+SendInput, {,}
+CustomSleep(30)
+SendInput, {ShiftUp}
+CustomSleep(30)
+return
 
 
 
@@ -147,6 +155,7 @@ return
 
 F1:: ; 숫자 1
 SendInput, {Blind}1
+CustomSleep(30)
 return
 
 
@@ -294,7 +303,7 @@ return
 r::9 ;혼돈
 
  +r::
- sleep,150
+ CustomSleep(120)
  SendInput, {Blind}r
  return
 
@@ -309,11 +318,11 @@ r::9 ;혼돈
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
-    CustomSleep(30)
+    CustomSleep(60)
     SendInput, { z }
-    CustomSleep(30)
+    CustomSleep(60)
     SendInput, {shift up}
-    CustomSleep(50)
+    CustomSleep(60)
     SendInput, {w} ;  w -> 극진화열참주
     CustomSleep(40)
     StopLoop := true
@@ -442,7 +451,7 @@ StopLoop := true
 return
 
 ^s:: ; 상태창
-sleep,200
+CustomSleep(190)
 SendInput, {Blind}s
 return
 
