@@ -229,11 +229,12 @@ Loop,1 ;일단 한 번
             CustomSleep(30)
             }
 
-        Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번)
+        Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
             ;공증 실패하면 마나 부족 이슈
+            ;   
             {
-            ;if (Mod(ManaRefresh, 2) == 0)
-                ;{            
+            if (Mod(ManaRefresh, 2) == 1)
+                {            
                     SendInput, {Esc}
                     CustomSleep(20)  
                     StopLoopCheck()
@@ -242,7 +243,7 @@ Loop,1 ;일단 한 번
                     CustomSleep(30)
                     SelfHeal() ; 자힐 3틱
                     CustomSleep(50)    
-                ;}
+                }
 
             ManaRefresh++     
             }
