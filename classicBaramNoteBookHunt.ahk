@@ -78,13 +78,13 @@ Loop,1 ;일단 한 번
             ;-> 4방향 마비저주 한 번만 해서 중독 애매하게 몇마리리 남은채로 다시 중독 돌리는 이슈
             { 
             StopLoopCheck()
-            Loop, 1
+            Loop, 2
             {
                 SelfHeal() ; 자힐 3틱
                 CustomSleep(50)
             }            
             FourWayCurseAndParalysis() ;4방향 마비
-            CustomSleep(1500) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도
+            CustomSleep(1800) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도
         }
         
 
@@ -97,17 +97,9 @@ Loop,1 ;일단 한 번
         CustomSleep(1200) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기
         }
 
-        Loop, 1 ; (공증 + 중독첨 x4  + 자힐첨x2) 1번 -> 중독첨2 저주첨2 중독첨1 자힐첨2로 변경경
+        Loop, 1 ; (공증 + 중독첨 x2  + 저주첨x2, 공증) 1번 -> 중독첨2 저주첨2 중독첨1 자힐첨2로 변경경
             {
-            StopLoopCheck()
-            DrinkDongDongJu()
-            CustomSleep(30)
-            SendInput, 3 ; 공증(실패해도 됨)
-            CustomSleep(30)
-            SelfHeal() ; 자힐 3틱
-            CustomSleep(50)
-            SelfHeal() ; 자힐 3틱
-            CustomSleep(50)
+                  
 
 
             Loop,2 ; 중독첨. 
@@ -119,7 +111,7 @@ Loop,1 ;일단 한 번
             Loop,2 ; 저주첨. 
                 {
                     StopLoopCheck()
-                    SpreadPoisonAndChum()() 
+                    SpreadCurseAndChum()
                     CustomSleep(30)
                 }
 
@@ -128,6 +120,16 @@ Loop,1 ;일단 한 번
                     StopLoopCheck()
                     SpreadPoisonAndChum()() 
                     CustomSleep(30)
+                }
+            Loop, 1 ;공증
+                {
+                    StopLoopCheck()
+                    DrinkDongDongJu()
+                    CustomSleep(30)
+                    SendInput, 3 ; 공증(실패해도 됨)
+                    CustomSleep(30)
+                    SelfHeal() ; 자힐 3틱
+                    CustomSleep(50)
                 }
 
             Loop,2 ; 자힐첨 -> 딸피 마무리
@@ -216,10 +218,11 @@ Loop,1 ;일단 한 번
             CustomSleep(30)
             }
 
-        Loop, 1 ; 공증 ; 중독첨2+자힐첨 4번반복시 매번 공증은 체력부담으로 짝수만만
+        Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번)
+            ;공증 실패하면 마나 부족 이슈
             {
-            if (Mod(ManaRefresh, 2) == 0)
-                {            
+            ;if (Mod(ManaRefresh, 2) == 0)
+                ;{            
                     SendInput, {Esc}
                     CustomSleep(20)  
                     StopLoopCheck()
@@ -228,7 +231,7 @@ Loop,1 ;일단 한 번
                     CustomSleep(30)
                     SelfHeal() ; 자힐 3틱
                     CustomSleep(50)    
-                }
+                ;}
 
             ManaRefresh++     
             }
