@@ -14,6 +14,7 @@
 ; 예를들면 동동주 마시는 건 4방향 마비걸 때 마력 없으면 동동주 먹어주면서 마력 보충할 수 있기 때문에 굳이 loopStop을 끝에 넣지 않는다.
 
 global ManaRefresh := 0
+global FourWayMabi := 0
 
 
 ; 전역적으로 랜덤 값을 추가하는 함수 정의
@@ -152,6 +153,8 @@ g:: ;중독첨첨 사냥 종합합
 ;
 StopLoop := false
 ManaRefresh := 0
+FourWayMabi := 0
+
 CustomSleep(30)
 Loop,1 ;일단 한 번
     
@@ -162,6 +165,9 @@ Loop,1 ;일단 한 번
 
     Loop, 1 ; 일단 처음에는 저주 돌려야 하니까 4방향 마비&저주 걸고 중독2, 저주2
             ; -> 중첨첨 사냥은 중독첨2, 저주첨2
+            ; 초반 첫 4방향 저주마비 이후 중독첨2, 저주첨2로 딸피되기 때문에 다음턴 마비 없이 진행
+            ; 0으로 시작하는 FourWayMabi 변수가 중독첨2+자힐첨1 반복마다 1씩 올라가는데
+            ; 홀수일 때 마비 건다. 0이 시작이고 이때는 첫 4방향 마비저주 걸린 상태므로 패스.
         {       
             StopLoopCheck()
             Loop, 1 ; 자힐 + 4방향 마비&저주
@@ -176,14 +182,15 @@ Loop,1 ;일단 한 번
                 CustomSleep(50)
                 }
             
-            Loop,2 ;중독첨 돌리는 회수
+            Loop,2 ;중독첨 돌리는 횟수
                 {
                 StopLoopCheck()
+            
                 SpreadPoisonAndChum() ; 중독첨2
                 CustomSleep(30)
                 }
 
-            Loop,2 ;저주첨 돌리는 회수
+            Loop,2 ;저주첨 돌리는 횟수
                 {
                 StopLoopCheck()
                 SpreadCurseAndChum() ; 저주첨2
@@ -201,12 +208,16 @@ Loop,1 ;일단 한 번
         Loop, 1 ; 자힐 + 4방향 마비&저주
             { 
             StopLoopCheck()
-            Loop, 2
+            
+            Loop, 2 ; 자힐 횟수수
             {
                 SelfHeal() ; 자힐 3틱
                 CustomSleep(50)
-            }            
-            FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
+            }
+             if (Mod(FourWayMabi, 2) == 1) ;홀수 일 때만 마비 진행.
+                {  
+                FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
+                }
             CustomSleep(1000)
         }
         
@@ -243,6 +254,7 @@ Loop,1 ;일단 한 번
             CustomSleep(30)
             }
 
+        FourWayMabi++
         CustomSleep(1100) ; 매크로 체크방지 1초
         }
 
@@ -275,6 +287,7 @@ Loop,1 ;일단 한 번
 CustomSleep(30)
 StopLoop := true
 ManaRefresh := 0
+FourWayMabi := 0
 return
 
 
