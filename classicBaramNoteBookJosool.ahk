@@ -85,7 +85,7 @@ Loop,1 ;일단 한 번
                 CustomSleep(50)
             }            
             FourWayCurseAndParalysis() ;4방향 마비
-            CustomSleep(1800) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도
+            CustomSleep(1500) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도
         }
         
 
@@ -95,7 +95,7 @@ Loop,1 ;일단 한 번
             SpreadPoison() ;중독만 돌리기
             CustomSleep(30)
             }
-        CustomSleep(1200) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기
+        CustomSleep(1000) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기
         }
 
         Loop, 1 ; (공증 + 중독첨 x2  + 저주첨x2, 공증) 1번 -> 중독첨2 저주첨2 중독첨1 자힐첨2로 변경경
