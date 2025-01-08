@@ -95,7 +95,7 @@ Loop,1 ;일단 한 번
             SpreadPoison() ;중독만 돌리기
             CustomSleep(30)
             }
-        CustomSleep(1200) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기
+        CustomSleep(300) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기 ;원래 1200이었음
         }
 
         Loop, 1 ; (공증 + 중독첨 x2  + 저주첨x2, 공증) 1번 -> 중독첨2 저주첨2 중독첨1 자힐첨2로 변경경
@@ -332,7 +332,7 @@ return
 
 
 
-':: ; 사자후
+Del:: ; 사자후
 SendInput, {Esc}
 CustomSleep(30)
 SendInput, {shift down}
