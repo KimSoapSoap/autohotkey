@@ -895,6 +895,10 @@ SpreadCurseAndChum() { ;저주 돌리기 + 첨
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a8cab476fe2a21dc65d8e56c3169d0dbe3512f54
 
 FourWayParalysis() { ; 4방향 마비
     SendInput, {Esc}
@@ -997,7 +1001,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, { x } ; 대문자 x -> 보호, 쉬프트 up을 해주기 전에 x 눌러서 대문자임
     CustomSleep(40)
     SendInput, {shift up}
-    CustomSleep(70)
+    CustomSleep(100)
 
     SendInput, {shift down}
     CustomSleep(40)
@@ -1006,7 +1010,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, {shift up}
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> 무장
-    CustomSleep(70)
+    CustomSleep(100)
     SendInput, {Esc}
     CustomSleep(20)
     return
