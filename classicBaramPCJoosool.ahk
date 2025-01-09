@@ -62,8 +62,14 @@ return
 ;보무, (4방향 마비저주주 + 중독 돌리기 4번) x4 이후 중독첨2 저주첨2 자힐첨2
 ;이것도 맨 처음 한 번은 중독2에 저주2 어떨까 싶음
 v::
-StopLoop := false
+PoisonChumHunt()
+StopLoop := true
+return
+
+PoisonChumHunt() {
+SendInput, {Esc}
 CustomSleep(30)
+StopLoop := false
 Loop,1 ;일단 한 번
     
     {
@@ -98,9 +104,10 @@ Loop,1 ;일단 한 번
         CustomSleep(1000) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기 ;원래 1200이었음
         }
 
+    
+
         Loop, 1 ; (공증 + 중독첨 x2  + 저주첨x2, 공증) 1번 -> 중독첨2 저주첨2 중독첨1 자힐첨2로 변경경
-            {
-                  
+            {                 
 
 
             Loop,2 ; 중독첨. 
@@ -142,15 +149,17 @@ Loop,1 ;일단 한 번
             }
     }
 CustomSleep(30)
-StopLoop := true
 return
+}
 
 
 
 
 g:: ;중독첨첨 사냥 종합합
 ; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (공증, 중독첨2+자힐첨1)x4
-;
+
+SendInput, {Esc}
+CustomSleep(30)
 StopLoop := false
 ManaRefresh := 0
 FourWayMabi := 0
@@ -303,6 +312,63 @@ ManaRefresh := 0
 FourWayMabi := 0
 return
 
+
+
+
+b:: ;쩔용 중독 저주 마비 돌리기
+SendInput, {Esc}
+CustomSleep(30)
+StopLoop := false
+Loop,1 ;일단 한 번
+    
+    {
+    StopLoopCheck()   
+    SelfBoMu() ; 자신 보무
+    CustomSleep(30),
+
+    Loop , 6  ; 다음 과정 6번 반복. 중독 마비 저주
+
+    {       
+        StopLoopCheck()
+        Loop, 1 ; 자힐 (쩔용 전체 마비 들어가므로 4방향 마비&저주 임시 제외)            
+            { 
+            StopLoopCheck()
+            Loop, 2
+            {
+                SelfHeal() ; 자힐 3틱
+                CustomSleep(50)
+            }            
+            ;FourWayCurseAndParalysis() ;4방향 마비
+            CustomSleep(50) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도. 중독 저주 마비 돌리느라 1500에서 50으로
+        }
+        
+
+        Loop,2 ;중독 돌리는 회수
+            {
+            StopLoopCheck()
+            SpreadPoison() ;중독만 돌리기
+            CustomSleep(30)
+            }
+        Loop,2 ;저주 돌리는 회수
+            {
+            StopLoopCheck()
+            SpreadParalysis() ;마비만 돌리기
+            CustomSleep(30)
+            }
+
+        Loop,2 ;저주 돌리는 회수
+            {
+            StopLoopCheck()
+            SpreadCurse() ;저주만 돌리기
+            CustomSleep(30)
+            }
+
+        CustomSleep(50) ; 4방향 마비를 위한 후딜 조정. 원래 1200이었음
+        }
+    }
+    CustomSleep(30)
+    StopLoop := true
+    return
 
 
 
@@ -507,16 +573,17 @@ r::9 ;혼돈
  UltimateBlazingSlash()
  StopLoop := true
  return
+ 
 
  UltimateBlazingSlash() {
     SendInput, {Esc}
-    CustomSleep(30)
+    CustomSleep(40)
     SendInput, {shift down}
-    CustomSleep(60)
+    CustomSleep(40)
     SendInput, { z }
-    CustomSleep(60)
+    CustomSleep(40)
     SendInput, {shift up}
-    CustomSleep(60)
+    CustomSleep(40)
     SendInput, {w} ;  w -> 극진화열참주
     CustomSleep(40)
     StopLoop := true
