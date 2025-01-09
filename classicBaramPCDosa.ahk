@@ -90,7 +90,7 @@ Loop,1 ;일단 한 번
                 SelfHeal() ; 자힐 3틱
                 CustomSleep(50)
             }            
-            FourWayCurseAndParalysis() ;4방향 마비
+            ;FourWayCurseAndParalysis() ;4방향 마비
             CustomSleep(1500) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도
         }
         
@@ -187,7 +187,7 @@ Loop,1 ;일단 한 번
                     SelfHeal() ; 자힐 3틱
                     CustomSleep(50)
                     }            
-                FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
+                ;FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
                 CustomSleep(50)
                 }
             
@@ -893,10 +893,7 @@ SpreadCurseAndChum() { ;저주 돌리기 + 첨
 
 
 
-+f:: ;캐릭 4방위 마비만 돌리기.
-FourWayParalysis()
-StopLoop := true
-return
+
 
 FourWayParalysis() { ; 4방향 마비
     SendInput, {Esc}
