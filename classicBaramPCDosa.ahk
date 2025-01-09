@@ -488,7 +488,47 @@ return
 
 ;도사용 탭탭힐
 
-2:: ; 빨탭 탭탭힐
+2:: ; 빨탭 탭탭힐 짧게
+TabTabHealShort()
+StopLoop := true
+return
+
+ TabTabHealShort() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    StopLoop := false
+    CustomSleep(20)
+
+    Loop, 4
+    {
+        if (StopLoop)
+            {                
+                Break
+                CustomSleep(20)
+            }
+        Send, {1}
+        CustomSleep(50)
+        ;Send, {5}
+        ;CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)
+        ;Send, {0}
+        ;CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)
+    }
+    SendInput, {Esc}
+    CustomSleep(40)
+    return
+}
+ 
+
+
+`:: ; 빨탭 탭탭힐
 TabTabHeal()
 StopLoop := true
 return
@@ -497,7 +537,7 @@ return
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
-    CustomSleep(30)
+    CustomSleep(40)
     SendInput, {Tab}
     CustomSleep(30)
     StopLoop := false
@@ -525,7 +565,7 @@ return
     CustomSleep(40)
     return
 }
- 
+
  
 
  
@@ -987,7 +1027,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
-    CustomSleep(30)
+    CustomSleep(40)
     SendInput, {Tab}
     CustomSleep(30)
 
