@@ -90,7 +90,7 @@ Loop,1 ;일단 한 번
                 SelfHeal() ; 자힐 3틱
                 CustomSleep(50)
             }            
-            FourWayCurseAndParalysis() ;4방향 마비
+            ;FourWayCurseAndParalysis() ;4방향 마비
             CustomSleep(1500) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도
         }
         
@@ -187,7 +187,7 @@ Loop,1 ;일단 한 번
                     SelfHeal() ; 자힐 3틱
                     CustomSleep(50)
                     }            
-                FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
+                ;FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
                 CustomSleep(50)
                 }
             
@@ -474,10 +474,12 @@ return
 
 
 +1::
+CustomSleep(120)
 SendInput, {Blind}1
 return
 
 +2::
+CustomSleep(120)
 SendInput, {Blind}2
 return
 
@@ -893,10 +895,6 @@ SpreadCurseAndChum() { ;저주 돌리기 + 첨
 
 
 
-+f:: ;캐릭 4방위 마비만 돌리기.
-FourWayParalysis()
-StopLoop := true
-return
 
 FourWayParalysis() { ; 4방향 마비
     SendInput, {Esc}
@@ -999,10 +997,6 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, { x } ; 대문자 x -> 보호, 쉬프트 up을 해주기 전에 x 눌러서 대문자임
     CustomSleep(40)
     SendInput, {shift up}
-    CustomSleep(40)
-    SendInput, { home }
-    CustomSleep(40)
-    SendInput, { enter }
     CustomSleep(70)
 
     SendInput, {shift down}
@@ -1012,10 +1006,6 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, {shift up}
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> 무장
-    CustomSleep(40)
-    SendInput, { home }
-    CustomSleep(40)
-    SendInput, { enter }
     CustomSleep(70)
     SendInput, {Esc}
     CustomSleep(20)
@@ -1023,7 +1013,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
 }
 
 
-End:: ;  셀프보무
+NumpadEnd:: ;  셀프보무 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
 SelfBoMu()
 StopLoop := true
 return
