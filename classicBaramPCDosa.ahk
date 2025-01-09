@@ -895,10 +895,7 @@ SpreadCurseAndChum() { ;저주 돌리기 + 첨
 
 
 
-<<<<<<< HEAD
-=======
 
->>>>>>> a8cab476fe2a21dc65d8e56c3169d0dbe3512f54
 
 FourWayParalysis() { ; 4방향 마비
     SendInput, {Esc}
