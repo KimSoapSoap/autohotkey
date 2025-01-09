@@ -16,6 +16,8 @@
 global ManaRefresh := 0
 global FourWayMabi := 0
 
+global JjulCount := 0
+
 
 ; 전역적으로 랜덤 값을 추가하는 함수 정의
 CustomSleep(SleepTime) {
@@ -319,6 +321,7 @@ b:: ;쩔용 중독 저주 마비 돌리기
 SendInput, {Esc}
 CustomSleep(30)
 StopLoop := false
+JjulCount := 0
 Loop,1 ;일단 한 번
     
     {
@@ -343,30 +346,36 @@ Loop,1 ;일단 한 번
         }
         
 
-        Loop,2 ;중독 돌리는 회수
+        Loop,3 ;중독 돌리는 회수
             {
             StopLoopCheck()
             SpreadPoison() ;중독만 돌리기
             CustomSleep(30)
             }
-        Loop,2 ;저주 돌리는 회수
-            {
-            StopLoopCheck()
-            SpreadParalysis() ;마비만 돌리기
-            CustomSleep(30)
-            }
 
-        Loop,2 ;저주 돌리는 회수
-            {
-            StopLoopCheck()
-            SpreadCurse() ;저주만 돌리기
-            CustomSleep(30)
-            }
+        if (Mod(JjulCount, 2) == 0) {
+            Loop,2 ;마비 돌리는 회수
+                {
+                StopLoopCheck()
+                SpreadParalysis() ;마비만 돌리기
+                CustomSleep(30)
+                }
+        }
 
+        if (Mod(JjulCount, 2) == 1) {
+            Loop,2 ;저주 돌리는 회수
+                {
+                StopLoopCheck()
+                SpreadCurse() ;저주만 돌리기
+                CustomSleep(30)
+                }
+        }
+        JjulCount++
         CustomSleep(50) ; 4방향 마비를 위한 후딜 조정. 원래 1200이었음
         }
     }
     CustomSleep(30)
+    JjulCount := 0
     StopLoop := true
     return
 
