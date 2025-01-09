@@ -474,10 +474,12 @@ return
 
 
 +1::
+CustomSleep(120)
 SendInput, {Blind}1
 return
 
 +2::
+CustomSleep(120)
 SendInput, {Blind}2
 return
 
@@ -996,11 +998,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, { x } ; 대문자 x -> 보호, 쉬프트 up을 해주기 전에 x 눌러서 대문자임
     CustomSleep(40)
     SendInput, {shift up}
-    CustomSleep(40)
-    SendInput, { home }
-    CustomSleep(40)
-    SendInput, { enter }
-    CustomSleep(70)
+    CustomSleep(100)
 
     SendInput, {shift down}
     CustomSleep(40)
@@ -1009,11 +1007,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, {shift up}
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> 무장
-    CustomSleep(40)
-    SendInput, { home }
-    CustomSleep(40)
-    SendInput, { enter }
-    CustomSleep(70)
+    CustomSleep(100)
     SendInput, {Esc}
     CustomSleep(20)
     return
