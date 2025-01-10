@@ -578,9 +578,9 @@ r::9 ;혼돈
 
 
 
- t:: ; 극진화열참주,  0은 진화열참주'첨을 5번키에 묶어서 쓸 거라서 numpad0누르면 일단 단일 원거리 마법사용으로
+ t:: ; 극진화열참주, 종합사냥중 어그로 끌 때 사용하기 위해 StopLoop 뺐다
  UltimateBlazingSlash()
- StopLoop := true
+ ;StopLoop := true
  return
  
 
@@ -595,7 +595,6 @@ r::9 ;혼돈
     CustomSleep(40)
     SendInput, {w} ;  w -> 극진화열참주
     CustomSleep(40)
-    StopLoop := true
     return
  }
 

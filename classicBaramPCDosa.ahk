@@ -642,8 +642,9 @@ VisionRecovery() {  ;시력회복
 
 
 
-s::
-SelfNeutralize() ;셀프 무력화 -> 차폐 풀 때 사용
+
+s:: ;셀프 무력화
+Neutralize()
 StopLoop := True
 return
 
