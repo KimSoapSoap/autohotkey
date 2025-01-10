@@ -642,12 +642,13 @@ VisionRecovery() {  ;시력회복
 
 
 
+
 s:: ;셀프 무력화
 Neutralize()
 StopLoop := True
 return
 
-Neutralize() {
+SelfNeutralize() {
         SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
