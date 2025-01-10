@@ -407,7 +407,7 @@ SendInput, { z }
 CustomSleep(60)
 SendInput, {shift up}
 CustomSleep(60)
-SendInput, z ;  z -> 사자후 도사사
+SendInput, z ;  z -> 사자후 도사
 CustomSleep(40)
 return
 
