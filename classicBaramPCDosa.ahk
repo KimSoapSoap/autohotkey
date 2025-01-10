@@ -503,7 +503,7 @@ return
     StopLoop := false
     CustomSleep(20)
 
-    Loop, 4
+    Loop, 9
     {
         if (StopLoop)
             {                
@@ -570,9 +570,9 @@ return
 
  
 
-q::6 ;마비
-w::7 ;중독
-e::8 ;활력
+q::6 ;금강불체
+w::7 ;무력화
+e::8 ;백호의희원원
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -605,7 +605,8 @@ return
 }
 
 
-r::9 ;혼돈
+r::9 ;공력주입
+t::0 ;부활
 
  +r::
  CustomSleep(120)
@@ -614,34 +615,15 @@ r::9 ;혼돈
 
 
 
- t:: ; 극진화열참주,  0은 진화열참주'첨을 5번키에 묶어서 쓸 거라서 numpad0누르면 일단 단일 원거리 마법사용으로
- UltimateBlazingSlash()
- StopLoop := true
- return
- 
-
- UltimateBlazingSlash() {
-    SendInput, {Esc}
-    CustomSleep(40)
-    SendInput, {shift down}
-    CustomSleep(40)
-    SendInput, { z }
-    CustomSleep(40)
-    SendInput, {shift up}
-    CustomSleep(40)
-    SendInput, {w} ;  w -> 극진화열참주
-    CustomSleep(40)
-    StopLoop := true
-    return
- }
 
 
 
- +q:: ;절망 (마법자리 Q -> 대초원 가면 마비 안 통해서 마비와 절망 마법자리 교체. 마비=f,)
- Despair()
+ +q:: ;시력회복
+ CustomSleep(120)
+ VisionRecovery()
  return
 
-Despair() {  ;절망
+VisionRecovery() {  ;시력회복
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
@@ -650,7 +632,7 @@ Despair() {  ;절망
     CustomSleep(100)
     SendInput, {shift up}
     CustomSleep(100)
-    SendInput, q ;  q -> 절망
+    SendInput, w ;  w -> 시력회복
     CustomSleep(40)
     return
  }
@@ -660,93 +642,33 @@ Despair() {  ;절망
 
 
 
-
-;NumpadDot::
-
-
-
-
-
-
-
-;저주는 한 번만 돌리면 되니까 그냥 누르면 일단 저주만 돌리게 -> 체마 높아지면 저주 + 첨 돌리는 걸로
-;shift 조합으로 저주 + 첨
-
-;중독은 계속 돌려야 되니까 그냥 누르면 중독 + 첨
-;shift 조합은 중독만
-
-;shift 조합은 처음에 esc 누르고 CustomSleep(100)~120정도 해주자. 그냥 누르는 건 30.  shift 누르고 sleep 짧게 하니까 자꾸 채팅 쳐짐
-
-
-
-;지금은 c(큐센 계산기 모드. 원래는 a였다.)
-c::  ;마비만 돌리기(6번을절망으로 바꾸면 절망 돌리기)
-SpreadParalysis()
-StopLoop := true
+s::
+Neutralize()
+StopLoop := True
 return
 
-SpreadParalysis() {
-    SendInput, {Esc}
+Neutralize() {
+        SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, 20
+    Loop, 4
     {
         if (StopLoop)
             {            
                 Break
                 CustomSleep(20)
             }
-        SendInput, 6
+        SendInput, {Blind}7
         CustomSleep(30)
-        SendInput, { left }
+        SendInput, {Home}
         CustomSleep(30)
-        SendInput, { enter }
+        SendInput, {Enter}
         CustomSleep(90)
     }
     SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
-; shift + c (큐센 계산기 모드. 원래는 shift + a였다)
-+c::  ;마비 돌리기 + 첨 (6번을절망으로 바꾸면 절망 돌리기 + 첨)
-SpreadParalysisAndChum()
-StopLoop := true
+    CustomSleep(20)    
+    }
 return
-
-SpreadParalysisAndChum() { ;마비 돌리기 + 첨
-    SendInput, {Esc}
-    CustomSleep(120)
-    SendInput, {5 Down} ; 5키 눌림
-    CustomSleep(20)
-    SendInput, {0 Down} ; 0키 눌림
-    CustomSleep(20)
-    StopLoop := false
-    loop, 20
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 6
-        CustomSleep(30)
-        SendInput, { left }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {5 Up} ; 눌린 5 키 해제
-    CustomSleep(20)
-    SendInput, {0 Up} ; 눌린 5 키 해제
-    CustomSleep(20)
-    return
-}
-
-
-
-
 
 
 ^s:: ; 상태창
@@ -755,86 +677,12 @@ SendInput, {Blind}s
 return
 
 
-SpreadPoisonAndChum() ;중독 돌리기 + 첨
-    {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {5 Down} ; 5키 눌림
-    CustomSleep(20)
-    SendInput, {0 Down} ; 0키 눌림
-    CustomSleep(20)
-    StopLoop := false
-    loop, 20
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 7
-        CustomSleep(30)
-        SendInput, { left }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {5 Up} ; 눌린 5 키 해제
-    CustomSleep(20)
-    SendInput, {0 Up} ; 눌린 5 키 해제
-    CustomSleep(20)
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
-
-;큐센 오피스 모드에서 중독+첨  s, 그냥 중독만 shift+s  저주만 d,  저주+첨  shift+d,  키 조합이었다
-;(오피스 모드에서 s는 NumpadDiv, d는 NumpadMult c는 NumpadDot, shift + c는 NumpadDel, a키는 그냥 a다)
-;일단 잠깐 바꿔서 중독 + 첨 s ,  그냥 중독만 d,  저주만 c  저주 + 첨 shift + c 이렇게 한다.
-;이 상황에서 shift + s 와  shift + d 는 일단 비어 있다.
-;왼손 검지가 공증, 활력, 혼돈, 중독만, 저주만, 4방향 마비 등 사용하는 게 많아서 c 저주만 돌리기와 shift조합으로 첨 조합을 a로
-;a는 원래 마비돌리기인데 생각보다 잘 안 써서 c로 내리고 a를 저주만 돌리기로 옮긴다.
-
-;나중에 a마비(절망)돌리기, s중독 돌리기, d 저주 돌리기로 정상화 시켜 주던가 하자.
-
-
-
-;shift 조합으로 하려니 새끼손가락 혹사시켜서 자주 쓰는 중독만 돌리는 걸 c로 했는데 저주 돌리기보다 빈도가 높아서
-;일단 중독만 돌리기를 d로, 저주를 c, 저주 + 첨을 shift + c로 일단 옮겼다.
-;한 번 몰아서 저주는 한 번씩만 돌려주면 되는데 중독은 중간에 마나 상황에 따라 첨 없이 그냥 중독만 돌려야하는 경우도 높아서
 
 
 
 
-SpreadPoison() ;중독만 돌리기
-{
-    SendInput, {Esc}
-    CustomSleep(120)
-    StopLoop := false
-    loop, 20
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 7
-        CustomSleep(30)
-        SendInput, { left }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
 
-
-
-
-a:: ;혼마만 돌리기(왼쪽)
+a:: ;혼마 돌리기(왼쪽)
 SpreadHonmaLeft()
 StopLoop := true
 return
@@ -890,131 +738,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     CustomSleep(20)
     return
 }
-
-;NumpadDel (큐센 계산기모드) shift + c 였다. shift + a(마비돌리기 + 첨)와 잠시 교체
-+a:: ;저주 돌리기 + 첨
-SpreadCurseAndChum()
-StopLoop := true
-return
-
-SpreadCurseAndChum() { ;저주 돌리기 + 첨
-    SendInput, {Esc}
-    CustomSleep(120)
-    SendInput, {5 Down} 
-    CustomSleep(20)
-    SendInput, {0 Down} 
-    CustomSleep(20)
-    StopLoop := false
-    loop, 20
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 4
-        CustomSleep(30)
-        SendInput, { left }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {5 Up} 
-    CustomSleep(20)
-    SendInput, {0 Up} 
-    CustomSleep(20)
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
-
-
-
-
-
-
-
-
-FourWayParalysis() { ; 4방향 마비
-    SendInput, {Esc}
-    CustomSleep(120)
-    StopLoop := false
-        loop, 3
-            {
-                if (StopLoop)
-                    {            
-                        Break
-                        CustomSleep(20)
-                    }
-                SendInput, 6
-                CustomSleep(30)
-                SendInput, {Home}
-                CustomSleep(30)
-                SendInput, {Left}
-                CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
-            }
-        
-        loop, 3
-            {
-                if (StopLoop)
-                    {            
-                        Break
-                        CustomSleep(20)
-                    }
-                SendInput, 6
-                CustomSleep(30)
-                SendInput, {Home}
-                CustomSleep(30)
-                SendInput, {Right}
-                CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
-            }
-        
-        loop, 3
-            {
-                if (StopLoop)
-                    {            
-                        Break
-                        CustomSleep(20)
-                    }
-                SendInput, 6
-                CustomSleep(30)
-                SendInput, {Home}
-                CustomSleep(30)
-                SendInput, {Up}
-                CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
-            }
-        
-        loop, 3
-            {
-                if (StopLoop)
-                    {            
-                        Break
-                        CustomSleep(20)
-                    }
-                SendInput, 6
-                CustomSleep(30)
-                SendInput, {Home}
-                CustomSleep(30)
-                SendInput, {Down}
-                CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
-            }
-            SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
-
 
 
 
