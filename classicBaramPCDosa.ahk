@@ -459,14 +459,14 @@ return
                 Break
                 CustomSleep(20)
             }
-        Send, {1}
-        CustomSleep(50)        
-        Send, {1}
-        CustomSleep(50)        
-        Send, {1}
-        CustomSleep(50)
-        Send, {3}
-        CustomSleep(50)
+        Loop, 3 {
+            Send, {1}
+            CustomSleep(50)        
+            Send, {1}
+            CustomSleep(50)        
+            Send, {1}
+            CustomSleep(50)     
+            }
         Send, {3}
         CustomSleep(50)
     }
