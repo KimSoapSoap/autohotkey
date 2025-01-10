@@ -135,169 +135,56 @@ StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경
 return
 
 
-1:: ; 자힐 3틱
-SelfHeal()
-StopLoop := true
-return
 
- SelfHeal() {
-    SendInput, {Esc}
+
+2:: ;필동동
+    SendInput, {Blind}2
     CustomSleep(30)
-    StopLoop := false
-    Loop, 4
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, {Blind}1
-        CustomSleep(30)
-        SendInput, {Home}
-        CustomSleep(30)
-        SendInput, {Enter}
-        CustomSleep(90)
-    }
-    SendInput, {Esc}
-    CustomSleep(20)    
+    Loop, 2
+        {
+           SendInput, {Ctrl Down}
+           CustomSleep(30)
+           SendInput,a
+           CustomSleep(20)
+           SendInput,{Ctrl Up}
+           CustomSleep(30)
+        }
     return
-}
-
-
-+1::
-CustomSleep(120)
-SendInput, {Blind}1
-return
 
 +2::
 CustomSleep(120)
 SendInput, {Blind}2
-return
-
-; sendInput Esc 뒤에 CustomSleep(20) 하니까 탭탭이 씹히고 30으로 하니까 괜찮더라
-;꼬임 방지 esc 뒤에 sleep은 최소 30으로 해준다.
-
-;도사용 탭탭힐
-
-2:: ; 빨탭 탭탭힐 짧게
-TabTabHealShort()
-StopLoop := true
-return
-
- TabTabHealShort() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    StopLoop := false
-    CustomSleep(20)
-
-    Loop, 7
-    {
-        if (StopLoop)
-            {                
-                Break
-                CustomSleep(20)
-            }
-        Send, {1}
-        CustomSleep(50)
-        ;Send, {5}
-        ;CustomSleep(50)
-        Send, {1}
-        CustomSleep(50)
-        ;Send, {0}
-        ;CustomSleep(50)
-        Send, {1}
-        CustomSleep(50)
-    }
-    SendInput, {Esc}
-    CustomSleep(40)
-    return
-}
- 
+return 
 
 
-`:: ; 빨탭 탭탭힐
-TabTabHeal()
-StopLoop := true
-return
 
- TabTabHeal() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    StopLoop := false
-    CustomSleep(20)
-
-    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
-    {
-        if (StopLoop)
-            {                
-                Break
-                CustomSleep(20)
-            }
-        Send, {1}
-        CustomSleep(50)
-        ;Send, {5}
-        ;CustomSleep(50)
-        Send, {1}
-        CustomSleep(50)
-        ;Send, {0}
-        ;CustomSleep(50)
-        Send, {1}
-        CustomSleep(50)
-    }
-    SendInput, {Esc}
-    CustomSleep(40)
-    return
-}
-
- 
-
- 
-
-q::6 ;금강불체
-w::7 ;무력화
-e::8 ;백호의희원원
-
-
-+e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
-SpreadVitality()
-StopLoop := true
-return
-
-
-SpreadVitality() { ;활력 돌리기
-SendInput, {Esc}
+4:: ; 비투평투비평
+SendInput, {1}
+CustomSleep(350)
+SendInput, {7}
+CustomSleep(200)
+SendInput, {Space}
+CustomSleep(250)
+SendInput, {7}
+CustomSleep(200)
+SendInput, {1}
+CustomSleep(350)
+SendInput, {Space}
 CustomSleep(30)
-StopLoop := false
-loop, 20
-    if (StopLoop)
-        {            
-            Break
-            CustomSleep(20)
-        }
-{
-    SendInput, 8
-    CustomSleep(30)
-    SendInput, { left }
-    CustomSleep(30)
-    SendInput, { enter }
-    CustomSleep(90)
-}
-SendInput, {Esc}
-CustomSleep(20)
 return
-}
 
+ +4::
+CustomSleep(120)
+SendInput, {Blind}4
+return 
 
-r::9 ;공력주입
-t::0 ;부활
+ 
+
+q::6 ;
+w::7 ;
+e::8 ;투명
+r::9 ;뢰진주
+t::0 ;삼중공격
 
  +r::
  CustomSleep(120)
@@ -333,7 +220,7 @@ VisionRecovery() {  ;시력회복
 
 
 
-s::
++^s::
 SelfNeutralize() ;셀프 무력화 -> 차폐 풀 때 사용
 StopLoop := True
 return
@@ -373,12 +260,12 @@ return
 
 
 
-a:: ;혼마 돌리기(왼쪽)
++^a:: ;혼마 돌리기(왼쪽)
 SpreadHonmaLeft()
 StopLoop := true
 return
 
-d:: ;혼마만 돌리기(오른쪽)
++^d:: ;혼마만 돌리기(오른쪽)
 SpreadHonmaRight()
 StopLoop := true
 return
@@ -433,7 +320,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-v:: ; 빨탭 힐+공증 반복 (밀대용)
++^v:: ; 빨탭 힐+공증 반복 (밀대용)
 TabTabHealRefresh()
 StopLoop := true
 return
@@ -476,62 +363,25 @@ return
 
 
 
-f:: ;  탭탭 대상 보무
-TabTabBoMu()
-StopLoop := true
-return
-
-TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무장)
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-
-    SendInput, {shift down}
-    CustomSleep(40)
-    SendInput, { z }
-    CustomSleep(40)
-    SendInput, { x } ; 대문자 x -> 보호, 쉬프트 up을 해주기 전에 x 눌러서 대문자임
-    CustomSleep(40)
-    SendInput, {shift up}
-    CustomSleep(100)
-
-    SendInput, {shift down}
-    CustomSleep(40)
-    SendInput, { z }
-    CustomSleep(40)
-    SendInput, {shift up}
-    CustomSleep(40)
-    SendInput, { x } ; 소문자 x -> 무장
-    CustomSleep(100)
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
 
 
-NumpadEnd:: ;  셀프보무 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
-SelfBoMu()
+
+NumpadEnd:: ;  셀프버프 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
+SelfBuff()
 StopLoop := true
 return
 
 
-SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
+SelfBuff() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공격격)
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
     CustomSleep(40)
     SendInput, { z }
     CustomSleep(40)
-    SendInput, { x } ; 대문자 x -> 보호, 쉬프트 up을 해주기 전에 x 눌러서 대문자임
+    SendInput, { x } ; 대문자 x -> 무영보법법, 쉬프트 up을 해주기 전에 x 눌러서 대문자임
     CustomSleep(40)
     SendInput, {shift up}
-    CustomSleep(40)
-    SendInput, { home }
-    CustomSleep(40)
-    SendInput, { enter }
     CustomSleep(70)
 
     SendInput, {shift down}
@@ -540,12 +390,8 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
     CustomSleep(40)
     SendInput, {shift up}
     CustomSleep(40)
-    SendInput, { x } ; 소문자 x -> 무장
+    SendInput, { x } ; 소문자 x -> n중공격격
     CustomSleep(40)
-    SendInput, { home }
-    CustomSleep(40)
-    SendInput, { enter }
-    CustomSleep(70)
     SendInput, {Esc}
     CustomSleep(20)
     return
