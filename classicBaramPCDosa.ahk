@@ -642,7 +642,7 @@ VisionRecovery() {  ;시력회복
 
 
 
-s::
+s:: ;셀프 무력화
 Neutralize()
 StopLoop := True
 return
