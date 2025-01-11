@@ -424,7 +424,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
             }
         SendInput, 4
         CustomSleep(30)
-        SendInput, { Right }
+        SendInput, { right }
         CustomSleep(30)
         SendInput, { enter }
         CustomSleep(90)
