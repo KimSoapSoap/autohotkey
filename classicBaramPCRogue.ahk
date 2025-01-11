@@ -158,17 +158,15 @@ return
 
 
 
-4:: ; 비투평투비평
+4:: ; 비투평투평
 SendInput, {1}
-CustomSleep(350)
-SendInput, {7}
-CustomSleep(200)
+CustomSleep(100)
+SendInput, {8}
+CustomSleep(100)
 SendInput, {Space}
-CustomSleep(250)
-SendInput, {7}
-CustomSleep(200)
-SendInput, {1}
-CustomSleep(350)
+CustomSleep(100)
+SendInput, {8}
+CustomSleep(400)
 SendInput, {Space}
 CustomSleep(30)
 return
