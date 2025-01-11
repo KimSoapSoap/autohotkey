@@ -388,6 +388,11 @@ StopLoop := true
 return
 
 
+;원래 left로만 해놓다가 키 누름상태 감지해서 왼쪽이동시 up키로 혼마 돌리는 걸로 했는데
+;이 구문 추가하니까 비정상앱 감지가 된다. 만약 한 번만 더 감지가 더 된다면
+;getKeyState구문 제외하고 그냥 a는 left d는 right  s는 up f는 down으로 해서
+;a는 윗무빙, s는 왼무빙, d는 아랫무빙 f는 오른무빙으로.  이때 셀프무력화는 c로? 격수 보무는 음.. 격수보무를 c로 하고 셀프무력화 g ?
+
 SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
     SendInput, {Esc}
     CustomSleep(30)
@@ -399,12 +404,16 @@ SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
                 Break
                 CustomSleep(20)
             }
+         ; 사용자의 입력을 감지, left 누르고 있을 때는 up키로 혼마 돌리게 해서 좌측 무빙혼 가능하게
+    
         SendInput, 4
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
         SendInput, { enter }
         CustomSleep(90)
+    
+
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -422,12 +431,16 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
                 Break
                 CustomSleep(20)
             }
+         ; 사용자의 입력을 감지, right 누르고 있을 때는 down키로 혼마 돌리게 해서 좌측 무빙혼 가능하게
+     
+        
         SendInput, 4
         CustomSleep(30)
         SendInput, { right }
         CustomSleep(30)
         SendInput, { enter }
         CustomSleep(90)
+        
     }
     SendInput, {Esc}
     CustomSleep(20)

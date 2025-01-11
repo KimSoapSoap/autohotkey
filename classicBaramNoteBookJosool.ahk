@@ -16,6 +16,8 @@
 global ManaRefresh := 0
 global FourWayMabi := 0
 
+global JjulCount := 0
+
 
 ; 전역적으로 랜덤 값을 추가하는 함수 정의
 CustomSleep(SleepTime) {
@@ -62,8 +64,14 @@ return
 ;보무, (4방향 마비저주주 + 중독 돌리기 4번) x4 이후 중독첨2 저주첨2 자힐첨2
 ;이것도 맨 처음 한 번은 중독2에 저주2 어떨까 싶음
 v::
-StopLoop := false
+PoisonChumHunt()
+StopLoop := true
+return
+
+PoisonChumHunt() {
+SendInput, {Esc}
 CustomSleep(30)
+StopLoop := false
 Loop,1 ;일단 한 번
     
     {
@@ -71,7 +79,7 @@ Loop,1 ;일단 한 번
     SelfBoMu() ; 자신 보무
     CustomSleep(30),
 
-    Loop , 4  ; 다음 과정 5번 반복 ((자힐x2+ 마비) x1 + 중독 돌리기 4번)
+    Loop , 4  ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독 돌리기 4번)
 
     {       
         StopLoopCheck()
@@ -95,12 +103,13 @@ Loop,1 ;일단 한 번
             SpreadPoison() ;중독만 돌리기
             CustomSleep(30)
             }
-        CustomSleep(1000) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기
+        CustomSleep(1000) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기 ;원래 1200이었음
         }
 
+    
+
         Loop, 1 ; (공증 + 중독첨 x2  + 저주첨x2, 공증) 1번 -> 중독첨2 저주첨2 중독첨1 자힐첨2로 변경경
-            {
-                  
+            {                 
 
 
             Loop,2 ; 중독첨. 
@@ -142,15 +151,17 @@ Loop,1 ;일단 한 번
             }
     }
 CustomSleep(30)
-StopLoop := true
 return
+}
 
 
 
 
 g:: ;중독첨첨 사냥 종합합
-; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (4방향 마비저주,공증, 중독첨2+자힐첨1)x4
-;
+; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (공증, 중독첨2+자힐첨1)x4
+
+SendInput, {Esc}
+CustomSleep(30)
 StopLoop := false
 ManaRefresh := 0
 FourWayMabi := 0
@@ -202,23 +213,26 @@ Loop,1 ;일단 한 번
     
 
 
-    Loop , 4  ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독첨2 자힐첨1) x4
+    Loop , 4  ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독첨2 저주첨1 자힐첨1) x4
+        ;그냥 중독사냥이 아니라 중독첨첨이라 빨리 잡는 것이 목적이므로 
+    ;   힐량증가 마력비례 1% 패치로 첫 4방향 마비저주 외에는 마비 없이 간다.
+        ;마비 딜레이 신경 안 써도 되니 첫 마비이후 중독첨2 자힐첨1로 딜레이 맞췄는데 이제는 중독첨2 저주첨1 자힐첨1 하면 될듯
     {       
         StopLoopCheck()
-        Loop, 1 ; 자힐 + 4방향 마비&저주
+        Loop, 1 ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
             { 
             StopLoopCheck()
             
-            Loop, 2 ; 자힐 횟수수
+            Loop, 2 ; 자힐 횟수
             {
                 SelfHeal() ; 자힐 3틱
                 CustomSleep(50)
             }
-             if (Mod(FourWayMabi, 2) == 1) ;홀수 일 때만 마비 진행.
-                {  
-                FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
-                }
-            CustomSleep(1000)
+             ;if (Mod(FourWayMabi, 2) == 1) ;홀수 일 때만 마비 진행.
+                ;{  
+                ;FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
+                ;}
+            CustomSleep(100)
         }
         
 
@@ -229,6 +243,15 @@ Loop,1 ;일단 한 번
             CustomSleep(30)
             }
 
+        Loop,1 ;저주첨 
+            {
+            StopLoopCheck()
+            SpreadCurseAndChum() ; 저주첨 돌리기
+            CustomSleep(30)
+            }
+
+
+            
         Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
             ;공증 실패하면 마나 부족 이슈
             ;   
@@ -291,6 +314,70 @@ ManaRefresh := 0
 FourWayMabi := 0
 return
 
+
+
+
+b:: ;쩔용 중독 저주 마비 돌리기
+SendInput, {Esc}
+CustomSleep(30)
+StopLoop := false
+JjulCount := 0
+Loop,1 ;일단 한 번
+    
+    {
+    StopLoopCheck()   
+    SelfBoMu() ; 자신 보무
+    CustomSleep(30),
+
+    Loop , 6  ; 다음 과정 6번 반복. 중독 마비 저주
+
+    {       
+        StopLoopCheck()
+        Loop, 1 ; 자힐 (쩔용 전체 마비 들어가므로 4방향 마비&저주 임시 제외)            
+            { 
+            StopLoopCheck()
+            Loop, 2
+            {
+                SelfHeal() ; 자힐 3틱
+                CustomSleep(50)
+            }            
+            ;FourWayCurseAndParalysis() ;4방향 마비
+            CustomSleep(50) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도. 중독 저주 마비 돌리느라 1500에서 50으로
+        }
+        
+
+        Loop,3 ;중독 돌리는 회수
+            {
+            StopLoopCheck()
+            SpreadPoison() ;중독만 돌리기
+            CustomSleep(30)
+            }
+
+        if (Mod(JjulCount, 2) == 0) {
+            Loop,2 ;마비 돌리는 회수
+                {
+                StopLoopCheck()
+                SpreadParalysis() ;마비만 돌리기
+                CustomSleep(30)
+                }
+        }
+
+        if (Mod(JjulCount, 2) == 1) {
+            Loop,2 ;저주 돌리는 회수
+                {
+                StopLoopCheck()
+                SpreadCurse() ;저주만 돌리기
+                CustomSleep(30)
+                }
+        }
+        JjulCount++
+        CustomSleep(50) ; 4방향 마비를 위한 후딜 조정. 원래 1200이었음
+        }
+    }
+    CustomSleep(30)
+    JjulCount := 0
+    StopLoop := true
+    return
 
 
 
@@ -491,23 +578,23 @@ r::9 ;혼돈
 
 
 
- t:: ; 극진화열참주,  0은 진화열참주'첨을 5번키에 묶어서 쓸 거라서 numpad0누르면 일단 단일 원거리 마법사용으로
+ t:: ; 극진화열참주, 종합사냥중 어그로 끌 때 사용하기 위해 StopLoop 뺐다
  UltimateBlazingSlash()
- StopLoop := true
+ ;StopLoop := true
  return
+ 
 
  UltimateBlazingSlash() {
     SendInput, {Esc}
-    CustomSleep(30)
+    CustomSleep(40)
     SendInput, {shift down}
-    CustomSleep(60)
+    CustomSleep(40)
     SendInput, { z }
-    CustomSleep(60)
+    CustomSleep(40)
     SendInput, {shift up}
-    CustomSleep(60)
+    CustomSleep(40)
     SendInput, {w} ;  w -> 극진화열참주
     CustomSleep(40)
-    StopLoop := true
     return
  }
 
