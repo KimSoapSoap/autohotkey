@@ -166,7 +166,7 @@ CustomSleep(100)
 SendInput, {Space}
 CustomSleep(100)
 SendInput, {8}
-CustomSleep(400)
+CustomSleep(410)
 SendInput, {Space}
 CustomSleep(30)
 return
