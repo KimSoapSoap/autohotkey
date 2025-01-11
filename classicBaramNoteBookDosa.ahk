@@ -68,6 +68,9 @@ return
 
 
 
+
+
+
 ~x:: ;줍기
 CustomSleep(30)
 SendInput, {ShiftDown}
@@ -98,7 +101,7 @@ SendInput, { z }
 CustomSleep(60)
 SendInput, {shift up}
 CustomSleep(60)
-SendInput, z ;  z -> 사자후 도사
+SendInput, z ;  z -> 사자후 술사
 CustomSleep(40)
 return
 
@@ -135,7 +138,7 @@ StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경
 return
 
 
-1:: ; 자힐 3틱
+`:: ; 자힐 3틱
 SelfHeal()
 StopLoop := true
 return
@@ -164,62 +167,10 @@ return
 }
 
 
-+1::
-CustomSleep(120)
-SendInput, {Blind}1
-return
 
-+2::
-CustomSleep(120)
-SendInput, {Blind}2
-return
+;도사는 자힐보다 격수 탭탭힐을 많이 써서 `를 자힐 3틱, 1은 격수 탭탭힐 반복으로
 
-; sendInput Esc 뒤에 CustomSleep(20) 하니까 탭탭이 씹히고 30으로 하니까 괜찮더라
-;꼬임 방지 esc 뒤에 sleep은 최소 30으로 해준다.
-
-;도사용 탭탭힐
-
-2:: ; 빨탭 탭탭힐 짧게
-TabTabHealShort()
-StopLoop := true
-return
-
- TabTabHealShort() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    StopLoop := false
-    CustomSleep(20)
-
-    Loop, 7
-    {
-        if (StopLoop)
-            {                
-                Break
-                CustomSleep(20)
-            }
-        Send, {1}
-        CustomSleep(50)
-        ;Send, {5}
-        ;CustomSleep(50)
-        Send, {1}
-        CustomSleep(50)
-        ;Send, {0}
-        ;CustomSleep(50)
-        Send, {1}
-        CustomSleep(50)
-    }
-    SendInput, {Esc}
-    CustomSleep(40)
-    return
-}
- 
-
-
-`:: ; 빨탭 탭탭힐
+1:: ; 빨탭 탭탭힐
 TabTabHeal()
 StopLoop := true
 return
@@ -257,13 +208,42 @@ return
     return
 }
 
+
+;도사는 StopLoop를 빠르게 사용할 일이 많아서 2번에도 넣어뒀다.
+2:: ; 루프 정지
+StopLoop := true
+CustomSleep(20)
+return
+
+
++1::
+CustomSleep(120)
+SendInput, {Blind}1
+return
+
++2::
+CustomSleep(120)
+SendInput, {Blind}2
+return
+
+; sendInput Esc 뒤에 CustomSleep(20) 하니까 탭탭이 씹히고 30으로 하니까 괜찮더라
+;꼬임 방지 esc 뒤에 sleep은 최소 30으로 해준다.
+
+;도사용 탭탭힐
+
+
+
+
+
+
+
  
 
  
 
 q::6 ;금강불체
 w::7 ;무력화
-e::8 ;백호의희원원
+e::8 ;백호의희원
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -333,8 +313,9 @@ VisionRecovery() {  ;시력회복
 
 
 
-s::
-SelfNeutralize() ;셀프 무력화 -> 차폐 풀 때 사용
+
+s:: ;셀프 무력화
+SelfNeutralize()
 StopLoop := True
 return
 
@@ -368,8 +349,13 @@ SendInput, {Blind}s
 return
 
 
-
-
+;이동방향 입력키 겹치지 않으면서 타겟박스 이동이 순방향이면 돌리면서 이동가능함(구멍은 좀 생김)
+;left와 up은 타겟박스 왼쪽으로 이동하고 막히면 타겟박스 위로 이동
+;right와 down은 타겟박스 오른쪽으로 이동하고 막히면 타겟박스 아래로 이동
+;그래서 위쪽 무빙할 때는 left키로 혼 돌리면 위로 이동하지만 up키와 같은 효과인 left로 혼 돌리기 때문에 무빙혼 가능
+;마찬가지로 왼쪽 무빙할 때는 up키로 혼 돌리면 타겟박스 이동방향은 같지만 키가 겹치지 않아서 무빙혼 가능한 것
+;근데 문제는 a,d만 있을 때는 감지가 안 됐는데 s,f에 혼마 돌리기 추가하니까 비정상 앱이 자꾸 감지됨
+;코드의 문제인걸까? 모르겠다 일단 빼고 진행
 
 
 
@@ -420,7 +406,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
             }
         SendInput, 4
         CustomSleep(30)
-        SendInput, { Right }
+        SendInput, { right }
         CustomSleep(30)
         SendInput, { enter }
         CustomSleep(90)
@@ -429,6 +415,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     CustomSleep(20)
     return
 }
+
 
 
 
@@ -469,6 +456,8 @@ return
     CustomSleep(40)
     return
 }
+
+
 
 
 
