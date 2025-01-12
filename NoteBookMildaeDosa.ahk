@@ -75,10 +75,25 @@ s:: ;아래쪽 이동
 SendInput, {down}
 return
 
+;f1:: ;금강불체 -> 원래 q가 금강인데 밀대힐을 q에. 아니면 그냥 1번키를 밀대힐로 할까?
+;일단 1번을 밀대힐, q는 금강 그대로 놔두는 걸로 해본다.
 
-f4:: ; 부활스킬 등 타겟팅 스킬 시전용
+
+f4:: ; 부활스킬 등 타겟팅 스킬 시전용 -> 그냥 부활사용 하나 짰음. 그래도 필요할테니 놔둠
 SendInput, {Enter}
 return
+
+1:: ;빨탭 힐+공증 반복 (밀대용)
+TabTabHealRefresh()
+return
+
+;******이거 쓰니까 앱감지 되는듯?********
+g:: ;격수부활 본인부활 -> 밀대힐 안 끊기게 
+ResurrectionBoth()
+return
+
+
+
 
 
 ;밀대용 혼마 도리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
@@ -117,6 +132,41 @@ SpreadHonmaLeftMildae() {
     CustomSleep(30)
     return
 }
+
+
+;격수 부활 후 나 부활
+ResurrectionBoth() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+
+    SendInput, {0} ; 탭탭 대상 부활
+    CustomSleep(200)
+
+    SendInput, {Esc}
+    CustomSleep(60)
+
+    SendInput, {0} 
+    CustomSleep(60)
+    SendInput, {Home}
+    CustomSleep(60)
+    SendInput, {Enter}
+    CustomSleep(30)
+
+
+    SendInput, {Esc}  ;밀대힐 중이었으면 힐 안끊기게 다시 탭탭
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+}
+
 
 ;----------------------------밀대용 키 세팅---------------------------------------------
 
@@ -166,11 +216,6 @@ CustomSleep(40)
 return
 
 
-
-F1:: ; 숫자 1
-SendInput, {Blind}1
-CustomSleep(30)
-return
 
 
  F2:: ; 동동주 마시기용, a에 동동주
@@ -230,7 +275,7 @@ return
 
 ;도사는 자힐보다 격수 탭탭힐을 많이 써서 `를 자힐 3틱, 1은 격수 탭탭힐 반복으로
 
-1:: ; 빨탭 탭탭힐
+^+1:: ; 빨탭 탭탭힐
 TabTabHeal()
 StopLoop := true
 return
