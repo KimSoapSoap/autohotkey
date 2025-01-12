@@ -88,15 +88,17 @@ TabTabHealRefresh()
 return
 
 
+f:: ; 밀대용 혼마 짧게 돌리기(오른쪽)
+SpreadHonmaRightMildaeShort()
+return
 
-;밀대용 혼마 도리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
-c:: ; 밀대용 혼마 돌리기
+
+;밀대용 혼마 돌리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
+c:: ; 밀대용 혼마 돌리기(일반, 왼쪽)
 SpreadHonmaLeftMildae()
 return
 
-q::
-SpreadHonmaLeftMildaeShort()
-return
+
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
 
@@ -131,7 +133,7 @@ SpreadHonmaLeftMildae() {
 
 
 ;밀대용 혼마 짧게 돌리기(오른쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
-SpreadHonmaLeftMildaeShort() { 
+SpreadHonmaRightMildaeShort() { 
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
@@ -144,7 +146,7 @@ SpreadHonmaLeftMildaeShort() {
             }
         SendInput, 4
         CustomSleep(30)
-        SendInput, { left }
+        SendInput, { right }
         CustomSleep(30)
         SendInput, { enter }
         CustomSleep(90)
