@@ -87,13 +87,6 @@ return
 TabTabHealRefresh()
 return
 
-;******이거 쓰니까 앱감지 되는듯?********
-+^g:: ;격수부활 본인부활 -> 밀대힐 안 끊기게 
-ResurrectionBoth()
-return
-
-
-
 
 
 ;밀대용 혼마 도리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
@@ -134,39 +127,6 @@ SpreadHonmaLeftMildae() {
 }
 
 
-;격수 부활 후 나 부활
-ResurrectionBoth() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    StopLoop := false
-
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-
-    SendInput, {0} ; 탭탭 대상 부활
-    CustomSleep(200)
-
-    SendInput, {Esc}
-    CustomSleep(60)
-
-    SendInput, {0} 
-    CustomSleep(60)
-    SendInput, {Home}
-    CustomSleep(60)
-    SendInput, {Enter}
-    CustomSleep(30)
-
-
-
-    SendInput, {Esc}  ;밀대힐 중이었으면 힐 안끊기게 다시 탭탭
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-}
 
 
 ;----------------------------밀대용 키 세팅---------------------------------------------
