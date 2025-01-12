@@ -406,6 +406,10 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽 절반만)
     }
     SendInput, {Esc}
     CustomSleep(20)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
     return
 }
 
@@ -444,10 +448,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽 절반만)
     }
     SendInput, {Esc}
     CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
     return
 }
 
