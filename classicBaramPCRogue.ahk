@@ -1,5 +1,5 @@
 ﻿;자객 전까진 2 필살, 3비필(비영승보 + 필)
-;자객부터는 2백호 3비백  4필살  e비필      5노획 6천공(솔플용) 7투명
+;자객부터는 2백호 3비백  4필살  e비필      5투명 6천공(솔플용) 7노획
 ;혹은 2백호 3필살 w비백,  e비필
 
 
@@ -143,46 +143,43 @@ return
 
 
 2:: ;필동동
-    SendInput, {Blind}2
-    CustomSleep(30)
-    Loop, 2
-        {
-           SendInput, {Ctrl Down}
-           CustomSleep(30)
-           SendInput,a
-           CustomSleep(20)
-           SendInput,{Ctrl Up}
-           CustomSleep(30)
-        }
-    return
+SendInput, {Blind}2
+CustomSleep(30)
+DrinkDongDongJu()
+return
+
+
+
+
+
+3:: ;비영 + 필
+SendInput, {Blind}1
+CustomSleep(30)
+SendInput, {Blind}2
+CustomSleep(30)
+DrinkDongDongJu()
+return
+
+
+    
 
 +2::
 CustomSleep(120)
 SendInput, {Blind}2
 return 
 
-
-
-4:: ; 비투평   ;원래 비투평투평이었는데 1234에 손 올려둘 땐 필살 사냥시 비투평으로 솔플시 asdf 조합으로. 나중에는 안 쓸 듯
-SendInput, {1}
-CustomSleep(50)
-SendInput, {8}
-CustomSleep(50)
-SendInput, {Space}
-return
-
- +4::
++3::
 CustomSleep(120)
-SendInput, {Blind}4
+SendInput, {Blind}3
 return 
 
  
 
-q::6 ;
-w::7 ;
-e::8 ;투명
-r::9 ;뢰진주
-t::0 ;삼중공격
+q::6 ; 천공
+w::7 ; 노획
+e::8 ;나중에 1차 이후 비영 필살 예정
+r::9 ;망각
+t::0 ;뢰진주
 
  +r::
  CustomSleep(120)
@@ -217,7 +214,7 @@ VisionRecovery() {  ;바다의빛
 
 
  a:: ;투평
-SendInput, {8}
+SendInput, {5}
 CustomSleep(50)
 SendInput, {Space}
 return
@@ -225,7 +222,7 @@ return
 s:: ;비투평
 SendInput, {1}
 CustomSleep(50)
-SendInput, {8}
+SendInput, {5}
 CustomSleep(50)
 SendInput, {Space}
 return
@@ -234,11 +231,11 @@ return
 d:: ; 비투평투평
 SendInput, {1}
 CustomSleep(50)
-SendInput, {8}
+SendInput, {5}
 CustomSleep(50)
 SendInput, {Space}
 CustomSleep(100)
-SendInput, {8}
+SendInput, {5}
 CustomSleep(410)
 SendInput, {Space}
 Return
@@ -247,14 +244,14 @@ f:: ; 비투평 비투평으로 고개 돌리는 타이밍을 이용해 한 턴�
 ;비투평 비투평 안 되면 비투평투비로 변경
 SendInput, {1}
 CustomSleep(50)
-SendInput, {8}
+SendInput, {5}
 CustomSleep(50)
 SendInput, {Space}
 CustomSleep(700) ; 평타 후 다음 투평이나 비영은 후딜 500정도 필요했음. 다시 비영으로 넘어갈 땐 500으로 하니 고개 돌리기 전에 써져서 600
 SendInput, {Blind}1
 CustomSleep(200) ;처음 비투평은 딜레이 50으로 해도 되는데 초당 시전회수 때문에 재비영 후 투명 딜레이를 계속 늘려나가봄.
 ;우선 공격 후 750, 비영후 200 쓰고 있었음
-SendInput, {8}
+SendInput, {5}
 CustomSleep(50)
 SendInput, {Space}
 Return
