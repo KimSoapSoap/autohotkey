@@ -1,4 +1,5 @@
-﻿global StopLoop := false
+﻿
+global StopLoop := false
 ;루프 중단을 위한 변수. 기본 false
 ;동작 중(예를 들면 루프) 다른 핫키를 쓰면 다른 핫키 동작 후 다시 기존 핫키로 돌아가는 Stack구조이므로
 ;핫키를 실행할 땐 변수를 false로, 끝날 땐 true로 해주고 루프구문(보통 루프 돌아가는 중에 다른 핫키 쓰기 때문) 내부의 시작에
@@ -75,28 +76,99 @@ s:: ;아래쪽 이동
 SendInput, {down}
 return
 
+;f1:: ;금강불체 -> 원래 q가 금강인데 밀대힐을 q에. 아니면 그냥 1번키를 밀대힐로 할까?
+;일단 1번을 밀대힐, q는 금강 그대로 놔두는 걸로 해본다.
 
-1:: ; 빨탭 힐+공증 반복 (밀대용)
+
+f4:: ; 부활스킬 등 타겟팅 스킬 시전용 -> 그냥 부활사용 하나 짰음. 그래도 필요할테니 놔둠
+SendInput, {Enter}
+return
+
+1:: ;빨탭 힐+공증 반복 (밀대용)
 TabTabHealRefresh()
 return
 
 
-f4:: ; 부활스킬 등 타겟팅 스킬 시전용
-SendInput, {Enter}
+
+;밀대용 혼마 돌리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
+c:: ; 밀대용 혼마 돌리기(일반, 왼쪽)
+SpreadHonmaLeftMildae()
 return
 
-f::
-SpreadSoulRS()
-return
-
-c:: ; 밀대용 혼마 돌리기
-SpreadSoulLL()
-return
 
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
 
+
+;밀대용 혼마 돌리기(왼쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
+SpreadHonmaLeftMildae() { 
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+    loop, 20
+    {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        SendInput, 4
+        CustomSleep(30)
+        SendInput, { left }
+        CustomSleep(30)
+        SendInput, { enter }
+        CustomSleep(90)
+    }
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    return
+}
+
+
+;밀대용 혼마 짧게 돌리기(오른쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
+f:: ; 밀대용 혼마 짧게 돌리기(오른쪽)
+SendInput, {Esc}
+CustomSleep(30)
+StopLoop := false
+loop, 10
+{
+    if (StopLoop)
+        {            
+            Break
+            CustomSleep(20)
+        }
+    SendInput, 4
+    CustomSleep(30)
+    SendInput, { right }
+    CustomSleep(30)
+    SendInput, { enter }
+    CustomSleep(90)
+}
+SendInput, {Esc}
+CustomSleep(30)
+SendInput, {Tab}
+CustomSleep(40)
+SendInput, {Tab}
+CustomSleep(30)
+return
+
+
+
+
+
+
 ;----------------------------밀대용 키 세팅---------------------------------------------
+
+
+
+
+
+
+
 
 
 
@@ -137,11 +209,6 @@ CustomSleep(40)
 return
 
 
-
-F1:: ; 숫자 1
-SendInput, {Blind}1
-CustomSleep(30)
-return
 
 
  F2:: ; 동동주 마시기용, a에 동동주
@@ -199,6 +266,45 @@ return
 
 
 
+;도사는 자힐보다 격수 탭탭힐을 많이 써서 `를 자힐 3틱, 1은 격수 탭탭힐 반복으로
+
+^+1:: ; 빨탭 탭탭힐
+TabTabHeal()
+StopLoop := true
+return
+
+ TabTabHeal() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    StopLoop := false
+    CustomSleep(20)
+
+    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
+    {
+        if (StopLoop)
+            {                
+                Break
+                CustomSleep(20)
+            }
+        Send, {1}
+        CustomSleep(50)
+        ;Send, {5}
+        ;CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)
+        ;Send, {0}
+        ;CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)
+    }
+    SendInput, {Esc}
+    CustomSleep(40)
+    return
+}
 
 
 ;도사는 StopLoop를 빠르게 사용할 일이 많아서 2번에도 넣어뒀다.
@@ -225,13 +331,6 @@ return
 
 
 
-
-
-
-
- 
-
- 
 
 q::6 ;금강불체
 ;w::7 ;무력화
@@ -305,7 +404,9 @@ VisionRecovery() {  ;시력회복
 
 
 
-
+g::
+SelfNeutralize()
+return
 
 
 SelfNeutralize() {
@@ -351,8 +452,8 @@ return
 
 
 
-;혼(Soul) Left Long
-SpreadSoulLL() { ;혼마 돌리기(왼쪽)
+
+SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
@@ -372,19 +473,14 @@ SpreadSoulLL() { ;혼마 돌리기(왼쪽)
     }
     SendInput, {Esc}
     CustomSleep(20)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
     return
 }
 
-;Right Short
-SpreadSoulRS() { ;혼마 돌리기(오른쪽 절반만)
+SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, 10
+    loop, 20
     {
         if (StopLoop)
             {            
@@ -400,10 +496,6 @@ SpreadSoulRS() { ;혼마 돌리기(오른쪽 절반만)
     }
     SendInput, {Esc}
     CustomSleep(20)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
     return
 }
 
@@ -477,7 +569,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, {shift up}
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> 무장
-    CustomSleep(40)
+    CustomSleep(100)
     return
 }
 
@@ -517,7 +609,6 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
     CustomSleep(70)
     SendInput, {Esc}
     CustomSleep(20)
-
     SendInput, {Tab}
     CustomSleep(40)
     SendInput, {Tab}
