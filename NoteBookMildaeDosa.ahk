@@ -86,24 +86,17 @@ SendInput, {Enter}
 return
 
 f::
-SpreadHonmaRight()
+SpreadSoulRS()
 return
 
 c:: ; 밀대용 혼마 돌리기
-SpreadHonmaLeft()
+SpreadSoulLL()
 return
 
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
 
 ;----------------------------밀대용 키 세팅---------------------------------------------
-
-
-
-
-
-
-
 
 
 
@@ -358,8 +351,8 @@ return
 
 
 
-
-SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
+;혼(Soul) Left Long
+SpreadSoulLL() { ;혼마 돌리기(왼쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
@@ -386,7 +379,8 @@ SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
     return
 }
 
-SpreadHonmaRight() { ;혼마 돌리기(오른쪽 절반만)
+;Right Short
+SpreadSoulRS() { ;혼마 돌리기(오른쪽 절반만)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
@@ -483,7 +477,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, {shift up}
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> 무장
-    CustomSleep(100)
+    CustomSleep(40)
     return
 }
 
