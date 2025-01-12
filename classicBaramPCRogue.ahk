@@ -157,7 +157,7 @@ return
 
 2:: ;필동동
 SendInput, {Blind}2
-CustomSleep(30)
+CustomSleep(20)
 DrinkDongDongJuTwoShot()
 return
 
@@ -169,7 +169,7 @@ return
 SendInput, {Blind}1
 CustomSleep(30)
 SendInput, {Blind}2
-CustomSleep(30)
+CustomSleep(20)
 DrinkDongDongJuTwoShot()
 return
 
