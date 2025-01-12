@@ -91,7 +91,7 @@ return
 
 
 ;밀대용 혼마 돌리기(왼쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
-SpreadHonmaRight() { 
+SpreadHonmaLeftMildae() { 
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
