@@ -484,8 +484,6 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> 무장
     CustomSleep(100)
-    SendInput, {Esc}
-    CustomSleep(20)
     return
 }
 
