@@ -83,7 +83,7 @@ return
 
 ;밀대용 혼마 도리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
 c:: ; 밀대용 혼마 돌리기
-SpreadHonmaLeft()
+SpreadHonmaLeftMildae()
 return
 
 
