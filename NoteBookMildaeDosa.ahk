@@ -87,8 +87,8 @@ return
 TabTabHealRefresh()
 return
 
-
-g:: ;격수부활 본인부활 -> 밀대힐 안 끊기게
+;******이거 쓰니까 앱감지 되는듯?********
++^g:: ;격수부활 본인부활 -> 밀대힐 안 끊기게 
 ResurrectionBoth()
 return
 
@@ -149,9 +149,9 @@ ResurrectionBoth() {
     CustomSleep(200)
 
     SendInput, {Esc}
-    CustomSleep(30)
+    CustomSleep(60)
 
-    SendInput, {0} ; 탭탭 대상 부활
+    SendInput, {0} 
     CustomSleep(60)
     SendInput, {Home}
     CustomSleep(60)
@@ -159,7 +159,8 @@ ResurrectionBoth() {
     CustomSleep(30)
 
 
-    SendInput, {Esc}  ;밀대힐 중이었으면 힐 않끊기게 다시 탭탭
+
+    SendInput, {Esc}  ;밀대힐 중이었으면 힐 안끊기게 다시 탭탭
     CustomSleep(30)
     SendInput, {Tab}
     CustomSleep(40)
