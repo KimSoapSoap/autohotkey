@@ -1,4 +1,9 @@
-﻿global StopLoop := false
+﻿;자객 전까진 2 필살, 3비필(비영승보 + 필)
+;자객부터는 2백호 3비백  4필살  e비필      5노획 6천공(솔플용) 7투명
+;혹은 2백호 3필살 w비백,  e비필
+
+
+global StopLoop := false
 ;루프 중단을 위한 변수. 기본 false
 ;동작 중(예를 들면 루프) 다른 핫키를 쓰면 다른 핫키 동작 후 다시 기존 핫키로 돌아가는 Stack구조이므로
 ;핫키를 실행할 땐 변수를 false로, 끝날 땐 true로 해주고 루프구문(보통 루프 돌아가는 중에 다른 핫키 쓰기 때문) 내부의 시작에
@@ -158,17 +163,12 @@ return
 
 
 
-4:: ; 비투평투평
+4:: ; 비투평   ;원래 비투평투평이었는데 1234에 손 올려둘 땐 필살 사냥시 비투평으로 솔플시 asdf 조합으로. 나중에는 안 쓸 듯
 SendInput, {1}
-CustomSleep(100)
+CustomSleep(50)
 SendInput, {8}
-CustomSleep(100)
+CustomSleep(50)
 SendInput, {Space}
-CustomSleep(100)
-SendInput, {8}
-CustomSleep(410)
-SendInput, {Space}
-CustomSleep(30)
 return
 
  +4::
@@ -194,12 +194,12 @@ t::0 ;삼중공격
 
 
 
- +q:: ;시력회복
+ +q:: ;바다의빛
  CustomSleep(120)
  VisionRecovery()
  return
 
-VisionRecovery() {  ;시력회복
+VisionRecovery() {  ;바다의빛
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
@@ -208,7 +208,7 @@ VisionRecovery() {  ;시력회복
     CustomSleep(100)
     SendInput, {shift up}
     CustomSleep(100)
-    SendInput, w ;  w -> 시력회복
+    SendInput, w ;  w -> 바다의빛
     CustomSleep(40)
     return
  }
@@ -216,12 +216,58 @@ VisionRecovery() {  ;시력회복
 
 
 
-
-
-+^s::
-SelfNeutralize() ;셀프 무력화 -> 차폐 풀 때 사용
-StopLoop := True
+ a:: ;투평
+SendInput, {8}
+CustomSleep(50)
+SendInput, {Space}
 return
+
+s:: ;비투평
+SendInput, {1}
+CustomSleep(50)
+SendInput, {8}
+CustomSleep(50)
+SendInput, {Space}
+return
+
+
+d:: ; 비투평투평
+SendInput, {1}
+CustomSleep(50)
+SendInput, {8}
+CustomSleep(50)
+SendInput, {Space}
+CustomSleep(100)
+SendInput, {8}
+CustomSleep(410)
+SendInput, {Space}
+Return
+
+f:: ; 비투평 비투평으로 고개 돌리는 타이밍을 이용해 한 턴에 뒤에서 투평을 두 번 넣으려고 했는데 초당 시전회수때문에 빠르게는 불가.
+;비투평 비투평 안 되면 비투평투비로 변경
+SendInput, {1}
+CustomSleep(50)
+SendInput, {8}
+CustomSleep(50)
+SendInput, {Space}
+CustomSleep(700) ; 평타 후 다음 투평이나 비영은 후딜 500정도 필요했음. 다시 비영으로 넘어갈 땐 500으로 하니 고개 돌리기 전에 써져서 600
+SendInput, {Blind}1
+CustomSleep(200) ;처음 비투평은 딜레이 50으로 해도 되는데 초당 시전회수 때문에 재비영 후 투명 딜레이를 계속 늘려나가봄.
+;우선 공격 후 750, 비영후 200 쓰고 있었음
+SendInput, {8}
+CustomSleep(50)
+SendInput, {Space}
+Return
+
+
+
+
+^s:: ; 상태창
+CustomSleep(190)
+SendInput, {Blind}s
+return
+
+
 
 SelfNeutralize() {
         SendInput, {Esc}
@@ -247,26 +293,10 @@ SelfNeutralize() {
 return
 
 
-^s:: ; 상태창
-CustomSleep(190)
-SendInput, {Blind}s
-return
 
 
 
 
-
-
-
-+^a:: ;혼마 돌리기(왼쪽)
-SpreadHonmaLeft()
-StopLoop := true
-return
-
-+^d:: ;혼마만 돌리기(오른쪽)
-SpreadHonmaRight()
-StopLoop := true
-return
 
 
 SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
