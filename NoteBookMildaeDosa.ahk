@@ -89,6 +89,35 @@ return
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
 
+
+;밀대용 혼마 돌리기(왼쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
+SpreadHonmaRight() { 
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+    loop, 20
+    {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        SendInput, 4
+        CustomSleep(30)
+        SendInput, { left }
+        CustomSleep(30)
+        SendInput, { enter }
+        CustomSleep(90)
+    }
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    return
+}
+
 ;----------------------------밀대용 키 세팅---------------------------------------------
 
 
