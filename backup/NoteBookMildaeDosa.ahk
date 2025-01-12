@@ -94,9 +94,6 @@ c:: ; 밀대용 혼마 돌리기
 SpreadHonmaLeftMildae()
 return
 
-q::
-SpreadHonmaLeftMildaeShort()
-return
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
 
@@ -128,36 +125,6 @@ SpreadHonmaLeftMildae() {
     CustomSleep(30)
     return
 }
-
-
-;밀대용 혼마 짧게 돌리기(오른쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
-SpreadHonmaLeftMildaeShort() { 
-    SendInput, {Esc}
-    CustomSleep(30)
-    StopLoop := false
-    loop, 10
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 4
-        CustomSleep(30)
-        SendInput, { left }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    return
-}
-
 
 
 
@@ -412,9 +379,7 @@ VisionRecovery() {  ;시력회복
 
 
 
-g::
-SelfNeutralize()
-return
+
 
 
 SelfNeutralize() {
@@ -553,7 +518,7 @@ return
 
 
 
-v:: ;  탭탭 대상 보무
+f:: ;  탭탭 대상 보무
 TabTabBoMu()
 StopLoop := true
 return

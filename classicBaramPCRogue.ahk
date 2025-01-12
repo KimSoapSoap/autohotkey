@@ -1,7 +1,11 @@
 ﻿;자객 전까진 2 필살, 3비필(비영승보 + 필)
-;자객부터는 2백호 3비백  4필살  e비필      5투명 6천공(솔플용) 7노획
+;자객부터는 2백호 3비백  4필살  e비필      5투명 6뢰진주(어그로용) 7노획   0 천공(솔플용)
 ;혹은 2백호 3필살 w비백,  e비필
 
+
+;도적은 PC에서 notebook으로 할 때 Insert 버프를 NumpadEnd로, 사자후를 Del에서 '(홑따옴표)로
+;원래 도적도 PC에서 End 버프였는데 도사랑 한 손 컨트롤 시 End는 필살검무(나중엔 백호검무)로 바꿨기 때문
+;뭐 안 하겠지만 체력 높아져서 백필 쓰면 Del에는 필살, 사자후를 다른 걸로
 
 global StopLoop := false
 ;루프 중단을 위한 변수. 기본 false
@@ -136,9 +140,9 @@ return
 
  DrinkDongDongJuTwoShot() { 
            SendInput, {Ctrl Down}
-           CustomSleep(30)
+           CustomSleep(20)
            SendInput,a
-           CustomSleep(60)
+           CustomSleep(80)
            SendInput,a
            CustomSleep(20)
            SendInput,{Ctrl Up}
@@ -399,12 +403,16 @@ return
 
 
 
+;한 손 컨 위함. 대신 버프는 Insert로
+End:: ;필동동
+SendInput, {Blind}2
+CustomSleep(20)
+DrinkDongDongJuTwoShot()
+return
 
 
 
-
-
-End:: ;  셀프버프 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
+Insert:: ;  셀프버프 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
 SelfBuff()
 StopLoop := true
 return
