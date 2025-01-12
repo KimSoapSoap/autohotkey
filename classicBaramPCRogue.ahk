@@ -418,6 +418,17 @@ SelfBuff() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공
     SendInput, { x } ; 소문자 x -> n중공격격
     CustomSleep(40)
     SendInput, {Esc}
+    CustomSleep(70)
+
+    SendInput, {shift down}
+    CustomSleep(40)
+    SendInput, { z }
+    CustomSleep(40)
+    SendInput, {shift up}
+    CustomSleep(40)
+    SendInput, {Blind}v  ;소문자 v -> 분신
+    CustomSleep(40)
+    SendInput, {Esc}
     CustomSleep(20)
     return
 }
