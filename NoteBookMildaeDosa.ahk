@@ -510,6 +510,40 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
+ TabTabHealRefresh() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    StopLoop := false
+    CustomSleep(20)
+
+    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
+    {
+        if (StopLoop)
+            {                
+                Break
+                CustomSleep(20)
+            }
+        Loop, 3 {
+            Send, {1}
+            CustomSleep(50)        
+            Send, {1}
+            CustomSleep(50)        
+            Send, {1}
+            CustomSleep(50)     
+            }
+        Send, {3}
+        CustomSleep(50)
+    }
+    SendInput, {Esc}
+    CustomSleep(40)
+    return
+}
+
+
 
 
 
