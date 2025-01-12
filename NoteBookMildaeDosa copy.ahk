@@ -76,10 +76,16 @@ SendInput, {down}
 return
 
 
+f4:: ; 부활스킬 등 타겟팅 스킬 시전용
+SendInput, {Enter}
+return
+
+
 c:: ; 밀대용 혼마 돌리기
 SpreadHonmaLeft()
 StopLoop := true
 return
+
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
 
