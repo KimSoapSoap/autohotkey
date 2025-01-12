@@ -89,13 +89,14 @@ return
 
 
 
-
-;밀대용 혼마 돌리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
-c:: ; 밀대용 혼마 돌리기(일반, 왼쪽)
+;밀대용 혼마 도리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
+c:: ; 밀대용 혼마 돌리기
 SpreadHonmaLeftMildae()
 return
 
-
+f::
+SpreadHonmaLeftMildaeShort()
+return
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
 
@@ -129,33 +130,33 @@ SpreadHonmaLeftMildae() {
 }
 
 
-;밀대용 혼마 짧게 돌리기(오른쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
-f:: ; 밀대용 혼마 짧게 돌리기(오른쪽)
-SendInput, {Esc}
-CustomSleep(30)
-StopLoop := false
-loop, 10
-{
-    if (StopLoop)
-        {            
-            Break
-            CustomSleep(20)
-        }
-    SendInput, 4
+;밀대용 혼마 짧게 돌리기(왼쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
+SpreadHonmaLeftMildaeShort() { 
+    SendInput, {Esc}
     CustomSleep(30)
-    SendInput, { right }
+    StopLoop := false
+    loop, 10
+    {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        SendInput, 4
+        CustomSleep(30)
+        SendInput, { left }
+        CustomSleep(30)
+        SendInput, { enter }
+        CustomSleep(90)
+    }
+    SendInput, {Esc}
     CustomSleep(30)
-    SendInput, { enter }
-    CustomSleep(90)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    return
 }
-SendInput, {Esc}
-CustomSleep(30)
-SendInput, {Tab}
-CustomSleep(40)
-SendInput, {Tab}
-CustomSleep(30)
-return
-
 
 
 
@@ -332,6 +333,13 @@ return
 
 
 
+
+
+
+ 
+
+ 
+
 q::6 ;금강불체
 ;w::7 ;무력화
 e::8 ;백호의희원
@@ -404,9 +412,7 @@ VisionRecovery() {  ;시력회복
 
 
 
-g::
-SelfNeutralize()
-return
+
 
 
 SelfNeutralize() {
@@ -502,40 +508,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-
-
- TabTabHealRefresh() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    StopLoop := false
-    CustomSleep(20)
-
-    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
-    {
-        if (StopLoop)
-            {                
-                Break
-                CustomSleep(20)
-            }
-        Loop, 3 {
-            Send, {1}
-            CustomSleep(50)        
-            Send, {1}
-            CustomSleep(50)        
-            Send, {1}
-            CustomSleep(50)     
-            }
-        Send, {3}
-        CustomSleep(50)
-    }
-    SendInput, {Esc}
-    CustomSleep(40)
-    return
-}
 
 
 
