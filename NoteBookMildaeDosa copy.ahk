@@ -63,15 +63,15 @@ a:: ;왼쪽 이동
 SendInput, {left}
 return
 
-a:: ;오른쪽 이동
+d:: ;오른쪽 이동
 SendInput, {right}
 return
 
-a:: ;위쪽 이동
+w:: ;위쪽 이동
 SendInput, {up}
 return
 
-a:: ;아래쪽 이동
+s:: ;아래쪽 이동
 SendInput, {down}
 return
 
@@ -267,7 +267,7 @@ return
  
 
 q::6 ;금강불체
-w::7 ;무력화
+;w::7 ;무력화
 e::8 ;백호의희원
 
 
@@ -339,10 +339,7 @@ VisionRecovery() {  ;시력회복
 
 
 
-s:: ;셀프 무력화
-SelfNeutralize()
-StopLoop := True
-return
+
 
 SelfNeutralize() {
         SendInput, {Esc}
