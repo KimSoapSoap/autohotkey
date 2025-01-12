@@ -88,9 +88,6 @@ TabTabHealRefresh()
 return
 
 
-f:: ; 밀대용 혼마 짧게 돌리기(오른쪽)
-SpreadHonmaRightMildaeShort()
-return
 
 
 ;밀대용 혼마 돌리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
@@ -133,32 +130,32 @@ SpreadHonmaLeftMildae() {
 
 
 ;밀대용 혼마 짧게 돌리기(오른쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
-SpreadHonmaRightMildaeShort() { 
-    SendInput, {Esc}
+f:: ; 밀대용 혼마 짧게 돌리기(오른쪽)
+SendInput, {Esc}
+CustomSleep(30)
+StopLoop := false
+loop, 10
+{
+    if (StopLoop)
+        {            
+            Break
+            CustomSleep(20)
+        }
+    SendInput, 4
     CustomSleep(30)
-    StopLoop := false
-    loop, 10
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 4
-        CustomSleep(30)
-        SendInput, { right }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {Esc}
+    SendInput, { right }
     CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    return
+    SendInput, { enter }
+    CustomSleep(90)
 }
+SendInput, {Esc}
+CustomSleep(30)
+SendInput, {Tab}
+CustomSleep(40)
+SendInput, {Tab}
+CustomSleep(30)
+return
+
 
 
 
@@ -407,6 +404,9 @@ VisionRecovery() {  ;시력회복
 
 
 
+g::
+SelfNeutralize()
+return
 
 
 SelfNeutralize() {
