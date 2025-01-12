@@ -407,9 +407,6 @@ VisionRecovery() {  ;시력회복
 
 
 
-g::
-SelfNeutralize()
-return
 
 
 SelfNeutralize() {

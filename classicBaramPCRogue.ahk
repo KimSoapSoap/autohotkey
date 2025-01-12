@@ -3,7 +3,7 @@
 ;혹은 2백호 3필살 w비백,  e비필
 
 
-;도적은 PC에서 notebook으로 할 때 Insert 버프를 NumpadEnd로, 사자후를 Del에서 '(홑따옴표)로
+;도적은 PC에서 notebook으로 할 때 Insert 버프를 NumpadEnd로(파티용 무영보버), 솔로잉버프는 둘 다 v키. 사자후를 Del에서 '(홑따옴표)로
 ;원래 도적도 PC에서 End 버프였는데 도사랑 한 손 컨트롤 시 End는 필살검무(나중엔 백호검무)로 바꿨기 때문
 ;뭐 안 하겠지만 체력 높아져서 백필 쓰면 Del에는 필살, 사자후를 다른 걸로
 
@@ -362,45 +362,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-+^v:: ; 빨탭 힐+공증 반복 (밀대용)
-TabTabHealRefresh()
-StopLoop := true
-return
-
- TabTabHealRefresh() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    StopLoop := false
-    CustomSleep(20)
-
-    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
-    {
-        if (StopLoop)
-            {                
-                Break
-                CustomSleep(20)
-            }
-        Send, {1}
-        CustomSleep(50)        
-        Send, {1}
-        CustomSleep(50)        
-        Send, {1}
-        CustomSleep(50)
-        Send, {3}
-        CustomSleep(50)
-        Send, {3}
-        CustomSleep(50)
-    }
-    SendInput, {Esc}
-    CustomSleep(40)
-    return
-}
-
-
 
 
 ;한 손 컨 위함. 대신 버프는 Insert로
@@ -411,14 +372,36 @@ DrinkDongDongJuTwoShot()
 return
 
 
-
-Insert:: ;  셀프버프 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
-SelfBuff()
+Insert:: ;무영보법 버프만 ;pc는 insert 노트북은 NumpadEnd
+SelfBuffParty()
 StopLoop := true
 return
 
 
-SelfBuff() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공격격)
+v:: ;  솔로잉 풀버프 
+SelfBuffSolo()
+StopLoop := true
+return
+
+
+
+SelfBuffParty() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공격격)
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {shift down}
+    CustomSleep(40)
+    SendInput, { z }
+    CustomSleep(40)
+    SendInput, { x } ; 대문자 x -> 무영보법, 쉬프트 up을 해주기 전에 x 눌러서 대문자임
+    CustomSleep(40)
+    SendInput, {shift up}
+    CustomSleep(70)
+    return
+}
+
+
+
+SelfBuffSolo() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공격격)
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
