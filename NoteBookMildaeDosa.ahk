@@ -75,23 +75,24 @@ s:: ;아래쪽 이동
 SendInput, {down}
 return
 
-
-1:: ; 빨탭 힐+공증 반복 (밀대용)
-TabTabHealRefresh()
-return
-
-
 f4:: ; 부활스킬 등 타겟팅 스킬 시전용
 SendInput, {Enter}
 return
 
-f::
-SpreadHonmaRight()
-return
+;원래 여기에 변경된 핫키 다 모아뒀는데 기존에 쓰던 거 가져와도 에러가 떠서 한 번 원래 쓰던 거에서 변경해본다.
 
-c:: ; 밀대용 혼마 돌리기
-SpreadHonmaLeft()
-return
+
+; 1 -> 밀대 힐 공증 반복
+; f -> 짧은 혼마(오른쪽) -> 기존 오른쪽 횟수 20에서 10으로 조정해서 사용
+; c-> 긴 혼마 (왼쪽)
+; v -> 탭탭대상 보무
+
+; 혼마 돌리기는 밀대힐 안 끊기게 StopLoop없애고 끝나면 tab tab하도록 변경
+; 격수 보무는 탭탭대상 보무주고 esc였는데 esc 빼서 탭탭 유지되도록(힐중에 연결가능하게 하기 위해)
+; 본인 보무는 끝나고 탭탭하도록
+
+
+
 
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
@@ -206,6 +207,45 @@ return
 
 
 
+;도사는 자힐보다 격수 탭탭힐을 많이 써서 `를 자힐 3틱, 1은 격수 탭탭힐 반복으로
+
++^1:: ; 빨탭 탭탭힐
+TabTabHeal()
+StopLoop := true
+return
+
+ TabTabHeal() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    StopLoop := false
+    CustomSleep(20)
+
+    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
+    {
+        if (StopLoop)
+            {                
+                Break
+                CustomSleep(20)
+            }
+        Send, {1}
+        CustomSleep(50)
+        ;Send, {5}
+        ;CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)
+        ;Send, {0}
+        ;CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)
+    }
+    SendInput, {Esc}
+    CustomSleep(40)
+    return
+}
 
 
 ;도사는 StopLoop를 빠르게 사용할 일이 많아서 2번에도 넣어뒀다.
@@ -244,35 +284,6 @@ q::6 ;금강불체
 ;w::7 ;무력화
 e::8 ;백호의희원
 
-
-+e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
-SpreadVitality()
-StopLoop := true
-return
-
-
-SpreadVitality() { ;활력 돌리기
-SendInput, {Esc}
-CustomSleep(30)
-StopLoop := false
-loop, 20
-    if (StopLoop)
-        {            
-            Break
-            CustomSleep(20)
-        }
-{
-    SendInput, 8
-    CustomSleep(30)
-    SendInput, { left }
-    CustomSleep(30)
-    SendInput, { enter }
-    CustomSleep(90)
-}
-SendInput, {Esc}
-CustomSleep(20)
-return
-}
 
 
 r::9 ;공력주입
@@ -359,6 +370,12 @@ return
 
 
 
+
+c:: ;혼마 돌리기(왼 Long)
+SpreadHonmaLeft()
+return
+
+
 SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
     SendInput, {Esc}
     CustomSleep(30)
@@ -386,7 +403,12 @@ SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
     return
 }
 
-SpreadHonmaRight() { ;혼마 돌리기(오른쪽 절반만)
+
+f:: ;혼마 돌리기(오른 Short)
+SpreadHonmaRight()
+return
+
+SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
@@ -417,6 +439,9 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽 절반만)
 
 
 
+1:: ; 빨탭 힐+공증 반복 (밀대용)
+TabTabHealRefresh()
+return
 
  TabTabHealRefresh() {
     SendInput, {Esc}
@@ -523,7 +548,6 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
     CustomSleep(70)
     SendInput, {Esc}
     CustomSleep(20)
-
     SendInput, {Tab}
     CustomSleep(40)
     SendInput, {Tab}
