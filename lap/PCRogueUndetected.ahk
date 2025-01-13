@@ -142,7 +142,7 @@ return
            SendInput, {Ctrl Down}
            CustomSleep(20)
            SendInput,a
-           CustomSleep(90)
+           CustomSleep(80)
            SendInput,a
            CustomSleep(20)
            SendInput,{Ctrl Up}

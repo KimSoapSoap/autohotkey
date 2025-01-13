@@ -142,7 +142,7 @@ return
            SendInput, {Ctrl Down}
            CustomSleep(20)
            SendInput,a
-           CustomSleep(90)
+           CustomSleep(80)
            SendInput,a
            CustomSleep(20)
            SendInput,{Ctrl Up}
@@ -360,6 +360,33 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 }
 
 
+v:: ; 자동 필검
+MustDieSwordDance()
+return
+
+
+MustDieSwordDance() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+    loop
+    {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        SendInput, {Blind}2
+        CustomSleep(20)
+        DrinkDongDongJuTwoShot()
+        CustomSleep(800)
+    }
+    SendInput, {Esc}
+    CustomSleep(20)
+    return
+}
+
+
 
 
 
@@ -374,13 +401,11 @@ return
 
 Insert:: ;무영보법 버프만 ;pc는 insert 노트북은 NumpadEnd
 SelfBuffParty()
-StopLoop := true
 return
 
 
-v:: ;  솔로잉 풀버프 
+b:: ;  솔로잉 풀버프 
 SelfBuffSolo()
-StopLoop := true
 return
 
 
