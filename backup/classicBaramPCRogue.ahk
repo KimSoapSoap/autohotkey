@@ -1,4 +1,13 @@
-﻿global StopLoop := false
+﻿;자객 전까진 2 필살, 3비필(비영승보 + 필)
+;자객부터는 2백호 3비백  4필살  e비필      5투명 6뢰진주(어그로용) 7노획   0 천공(솔플용)
+;혹은 2백호 3필살 w비백,  e비필
+
+
+;도적은 PC에서 notebook으로 할 때 Insert 버프를 NumpadEnd로(파티용 무영보버), 솔로잉버프는 둘 다 v키. 사자후를 Del에서 '(홑따옴표)로
+;원래 도적도 PC에서 End 버프였는데 도사랑 한 손 컨트롤 시 End는 필살검무(나중엔 백호검무)로 바꿨기 때문
+;뭐 안 하겠지만 체력 높아져서 백필 쓰면 Del에는 필살, 사자후를 다른 걸로
+
+global StopLoop := false
 ;루프 중단을 위한 변수. 기본 false
 ;동작 중(예를 들면 루프) 다른 핫키를 쓰면 다른 핫키 동작 후 다시 기존 핫키로 돌아가는 Stack구조이므로
 ;핫키를 실행할 땐 변수를 false로, 끝날 땐 true로 해주고 루프구문(보통 루프 돌아가는 중에 다른 핫키 쓰기 때문) 내부의 시작에
@@ -59,8 +68,10 @@ return
 
 
 
-
-
+;우측 컨트롤 키(키 히스토리로)
+SC11D:: ;도적 한 손 드리블할 때. 우측 ctrl로 비영승보 사용
+SendInput, {Blind}1
+return
 
 
 
@@ -127,6 +138,17 @@ return
     return
  }
 
+ DrinkDongDongJuTwoShot() { 
+           SendInput, {Ctrl Down}
+           CustomSleep(20)
+           SendInput,a
+           CustomSleep(80)
+           SendInput,a
+           CustomSleep(20)
+           SendInput,{Ctrl Up}
+    return
+ }
+
 
 F3:: ;자신 선택 & StopLoop
 SendInput, {Home}
@@ -138,51 +160,43 @@ return
 
 
 2:: ;필동동
-    SendInput, {Blind}2
-    CustomSleep(30)
-    Loop, 2
-        {
-           SendInput, {Ctrl Down}
-           CustomSleep(30)
-           SendInput,a
-           CustomSleep(20)
-           SendInput,{Ctrl Up}
-           CustomSleep(30)
-        }
-    return
+SendInput, {Blind}2
+CustomSleep(20)
+DrinkDongDongJuTwoShot()
+return
+
+
+
+
+
+3:: ;비영 + 필
+SendInput, {Blind}1
+CustomSleep(30)
+SendInput, {Blind}2
+CustomSleep(20)
+DrinkDongDongJuTwoShot()
+return
+
+
+    
 
 +2::
 CustomSleep(120)
 SendInput, {Blind}2
 return 
 
-
-
-4:: ; 비투평투평
-SendInput, {1}
-CustomSleep(100)
-SendInput, {8}
-CustomSleep(100)
-SendInput, {Space}
-CustomSleep(100)
-SendInput, {8}
-CustomSleep(400)
-SendInput, {Space}
-CustomSleep(30)
-return
-
- +4::
++3::
 CustomSleep(120)
-SendInput, {Blind}4
+SendInput, {Blind}3
 return 
 
  
 
-q::6 ;
-w::7 ;
-e::8 ;투명
-r::9 ;뢰진주
-t::0 ;삼중공격
+q::6 ; 천공
+w::7 ; 노획
+e::8 ;나중에 1차 이후 비영 필살 예정
+r::9 ;망각
+t::0 ;뢰진주
 
  +r::
  CustomSleep(120)
@@ -194,12 +208,12 @@ t::0 ;삼중공격
 
 
 
- +q:: ;시력회복
+ +q:: ;바다의빛
  CustomSleep(120)
  VisionRecovery()
  return
 
-VisionRecovery() {  ;시력회복
+VisionRecovery() {  ;바다의빛
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
@@ -208,7 +222,7 @@ VisionRecovery() {  ;시력회복
     CustomSleep(100)
     SendInput, {shift up}
     CustomSleep(100)
-    SendInput, w ;  w -> 시력회복
+    SendInput, w ;  w -> 바다의빛
     CustomSleep(40)
     return
  }
@@ -216,12 +230,58 @@ VisionRecovery() {  ;시력회복
 
 
 
-
-
-+^s::
-SelfNeutralize() ;셀프 무력화 -> 차폐 풀 때 사용
-StopLoop := True
+ a:: ;투평
+SendInput, {5}
+CustomSleep(50)
+SendInput, {Space}
 return
+
+s:: ;비투평
+SendInput, {1}
+CustomSleep(50)
+SendInput, {5}
+CustomSleep(50)
+SendInput, {Space}
+return
+
+
+d:: ; 비투평투평
+SendInput, {1}
+CustomSleep(50)
+SendInput, {5}
+CustomSleep(50)
+SendInput, {Space}
+CustomSleep(100)
+SendInput, {5}
+CustomSleep(410)
+SendInput, {Space}
+Return
+
+f:: ; 비투평 비투평으로 고개 돌리는 타이밍을 이용해 한 턴에 뒤에서 투평을 두 번 넣으려고 했는데 초당 시전회수때문에 빠르게는 불가.
+;비투평 비투평 안 되면 비투평투비로 변경
+SendInput, {1}
+CustomSleep(50)
+SendInput, {5}
+CustomSleep(50)
+SendInput, {Space}
+CustomSleep(700) ; 평타 후 다음 투평이나 비영은 후딜 500정도 필요했음. 다시 비영으로 넘어갈 땐 500으로 하니 고개 돌리기 전에 써져서 600
+SendInput, {Blind}1
+CustomSleep(200) ;처음 비투평은 딜레이 50으로 해도 되는데 초당 시전회수 때문에 재비영 후 투명 딜레이를 계속 늘려나가봄.
+;우선 공격 후 750, 비영후 200 쓰고 있었음
+SendInput, {5}
+CustomSleep(50)
+SendInput, {Space}
+Return
+
+
+
+
+^s:: ; 상태창
+CustomSleep(190)
+SendInput, {Blind}s
+return
+
+
 
 SelfNeutralize() {
         SendInput, {Esc}
@@ -247,26 +307,10 @@ SelfNeutralize() {
 return
 
 
-^s:: ; 상태창
-CustomSleep(190)
-SendInput, {Blind}s
-return
 
 
 
 
-
-
-
-+^a:: ;혼마 돌리기(왼쪽)
-SpreadHonmaLeft()
-StopLoop := true
-return
-
-+^d:: ;혼마만 돌리기(오른쪽)
-SpreadHonmaRight()
-StopLoop := true
-return
 
 
 SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
@@ -318,59 +362,46 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-+^v:: ; 빨탭 힐+공증 반복 (밀대용)
-TabTabHealRefresh()
+
+
+;한 손 컨 위함. 대신 버프는 Insert로
+End:: ;필동동
+SendInput, {Blind}2
+CustomSleep(20)
+DrinkDongDongJuTwoShot()
+return
+
+
+Insert:: ;무영보법 버프만 ;pc는 insert 노트북은 NumpadEnd
+SelfBuffParty()
 StopLoop := true
 return
 
- TabTabHealRefresh() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    StopLoop := false
-    CustomSleep(20)
 
-    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
-    {
-        if (StopLoop)
-            {                
-                Break
-                CustomSleep(20)
-            }
-        Send, {1}
-        CustomSleep(50)        
-        Send, {1}
-        CustomSleep(50)        
-        Send, {1}
-        CustomSleep(50)
-        Send, {3}
-        CustomSleep(50)
-        Send, {3}
-        CustomSleep(50)
-    }
+v:: ;  솔로잉 풀버프 
+SelfBuffSolo()
+StopLoop := true
+return
+
+
+
+SelfBuffParty() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공격격)
     SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {shift down}
     CustomSleep(40)
+    SendInput, { z }
+    CustomSleep(40)
+    SendInput, { x } ; 대문자 x -> 무영보법, 쉬프트 up을 해주기 전에 x 눌러서 대문자임
+    CustomSleep(40)
+    SendInput, {shift up}
+    CustomSleep(70)
     return
 }
 
 
 
-
-
-
-
-
-
-End:: ;  셀프버프 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
-SelfBuff()
-StopLoop := true
-return
-
-
-SelfBuff() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공격격)
+SelfBuffSolo() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공격격)
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
@@ -389,6 +420,17 @@ SelfBuff() { ; 셀프 버프 (대문자 X = 무영보법,  소문자 x = n중공
     SendInput, {shift up}
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> n중공격격
+    CustomSleep(40)
+    SendInput, {Esc}
+    CustomSleep(70)
+
+    SendInput, {shift down}
+    CustomSleep(40)
+    SendInput, { z }
+    CustomSleep(40)
+    SendInput, {shift up}
+    CustomSleep(40)
+    SendInput, {Blind}v  ;소문자 v -> 분신
     CustomSleep(40)
     SendInput, {Esc}
     CustomSleep(20)

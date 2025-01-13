@@ -57,48 +57,8 @@ return
 #IfWinActive MapleStory Worlds-옛날바람
 
 
-;----------------------------밀대용 키 세팅---------------------------------------------
-
-a:: ;왼쪽 이동
-SendInput, {left}
-return
-
-d:: ;오른쪽 이동
-SendInput, {right}
-return
-
-w:: ;위쪽 이동
-SendInput, {up}
-return
-
-s:: ;아래쪽 이동
-SendInput, {down}
-return
 
 
-f4:: ; 부활스킬 등 타겟팅 스킬 시전용
-SendInput, {Enter}
-return
-
-1::
-TabTabHealRefresh()
-return
-
-
-c:: ; 긴혼left
-SpreadHonmaLeft()
-return
-
-
-f:: ; 짧혼 right
-SpreadHonmaRight()
-return
-
-
-
-; v::는 일단 기본적으로 밀대 힐+공증 반복이다
-
-;----------------------------밀대용 키 세팅---------------------------------------------
 
 
 
@@ -210,7 +170,10 @@ return
 
 ;도사는 자힐보다 격수 탭탭힐을 많이 써서 `를 자힐 3틱, 1은 격수 탭탭힐 반복으로
 
-
+1:: ; 빨탭 탭탭힐
+TabTabHeal()
+StopLoop := true
+return
 
  TabTabHeal() {
     SendInput, {Esc}
@@ -279,7 +242,7 @@ return
  
 
 q::6 ;금강불체
-;w::7 ;무력화
+w::7 ;무력화
 e::8 ;백호의희원
 
 
@@ -351,7 +314,10 @@ VisionRecovery() {  ;시력회복
 
 
 
-
+s:: ;셀프 무력화
+SelfNeutralize()
+StopLoop := True
+return
 
 SelfNeutralize() {
         SendInput, {Esc}
@@ -393,8 +359,15 @@ return
 
 
 
+a:: ;혼마 돌리기(왼쪽)
+SpreadHonmaLeft()
+StopLoop := true
+return
 
-
+d:: ;혼마만 돌리기(오른쪽)
+SpreadHonmaRight()
+StopLoop := true
+return
 
 
 SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
@@ -416,11 +389,7 @@ SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
         CustomSleep(90)
     }
     SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
+    CustomSleep(20)
     return
 }
 
@@ -428,7 +397,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, 10
+    loop, 20
     {
         if (StopLoop)
             {            
@@ -443,18 +412,17 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
         CustomSleep(90)
     }
     SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
+    CustomSleep(20)
     return
 }
 
 
 
 
-
+v:: ; 빨탭 힐+공증 반복 (밀대용)
+TabTabHealRefresh()
+StopLoop := true
+return
 
  TabTabHealRefresh() {
     SendInput, {Esc}
@@ -493,7 +461,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-v:: ;  탭탭 대상 보무
+f:: ;  탭탭 대상 보무
 TabTabBoMu()
 StopLoop := true
 return

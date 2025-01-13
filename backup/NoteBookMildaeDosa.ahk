@@ -75,59 +75,28 @@ s:: ;아래쪽 이동
 SendInput, {down}
 return
 
-;f1:: ;금강불체 -> 원래 q가 금강인데 밀대힐을 q에. 아니면 그냥 1번키를 밀대힐로 할까?
-;일단 1번을 밀대힐, q는 금강 그대로 놔두는 걸로 해본다.
 
-
-f4:: ; 부활스킬 등 타겟팅 스킬 시전용 -> 그냥 부활사용 하나 짰음. 그래도 필요할테니 놔둠
+f4:: ; 부활스킬 등 타겟팅 스킬 시전용
 SendInput, {Enter}
 return
 
-1:: ;빨탭 힐+공증 반복 (밀대용)
+1::
 TabTabHealRefresh()
 return
 
 
-
-;밀대용 혼마 도리기에는 StopLoop를 적용하지 않고 움직이면서 혼 돌리고 밀대힐 유지
-c:: ; 밀대용 혼마 돌리기
-SpreadHonmaLeftMildae()
+c:: ; 긴혼left
+SpreadHonmaLeft()
 return
 
 
+f:: ; 짧혼 right
+SpreadHonmaRight()
+return
+
+
+
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
-
-
-;밀대용 혼마 돌리기(왼쪽)  -> 끝나고 다시 탭탭(밀대 힐 유지를 위해)
-SpreadHonmaLeftMildae() { 
-    SendInput, {Esc}
-    CustomSleep(30)
-    StopLoop := false
-    loop, 20
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 4
-        CustomSleep(30)
-        SendInput, { left }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    return
-}
-
-
-
 
 ;----------------------------밀대용 키 세팅---------------------------------------------
 
@@ -177,6 +146,11 @@ CustomSleep(40)
 return
 
 
+
+F1:: ; 숫자 1
+SendInput, {Blind}1
+CustomSleep(30)
+return
 
 
  F2:: ; 동동주 마시기용, a에 동동주
@@ -236,10 +210,7 @@ return
 
 ;도사는 자힐보다 격수 탭탭힐을 많이 써서 `를 자힐 3틱, 1은 격수 탭탭힐 반복으로
 
-^+1:: ; 빨탭 탭탭힐
-TabTabHeal()
-StopLoop := true
-return
+
 
  TabTabHeal() {
     SendInput, {Esc}
@@ -445,7 +416,11 @@ SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
         CustomSleep(90)
     }
     SendInput, {Esc}
-    CustomSleep(20)
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
     return
 }
 
@@ -453,7 +428,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, 20
+    loop, 10
     {
         if (StopLoop)
             {            
@@ -468,7 +443,11 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
         CustomSleep(90)
     }
     SendInput, {Esc}
-    CustomSleep(20)
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
     return
 }
 
@@ -476,10 +455,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-v:: ; 빨탭 힐+공증 반복 (밀대용)
-TabTabHealRefresh()
-StopLoop := true
-return
 
  TabTabHealRefresh() {
     SendInput, {Esc}
@@ -518,9 +493,8 @@ return
 
 
 
-f:: ;  탭탭 대상 보무
+v:: ;  탭탭 대상 보무
 TabTabBoMu()
-StopLoop := true
 return
 
 TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무장)
@@ -548,8 +522,8 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> 무장
     CustomSleep(100)
-    SendInput, {Esc}
-    CustomSleep(20)
+    ;SendInput, {Esc}
+    ;CustomSleep(20)
     return
 }
 
