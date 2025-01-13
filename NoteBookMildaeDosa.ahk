@@ -86,12 +86,16 @@ return
 
 
 c:: ; 긴혼left
-SpreadHonmaLeft()
+SpreadHonmaLeft(20)
 return
 
 
 f:: ; 짧혼 right
-SpreadHonmaRight()
+SpreadHonmaRight(10)
+return
+
+e:: ; 짧혼 right
+SpreadHonmaRight(5)
 return
 
 
@@ -280,7 +284,7 @@ return
 
 q::6 ;금강불체
 ;w::7 ;무력화
-e::8 ;백호의희원
+;e::8 ;백호의희원
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -397,11 +401,18 @@ return
 
 
 
-SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
+SpreadHonmaLeft(LoopCount) { ;혼마 돌리기(왼쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, 20
+
+    ; LoopCount가 비어 있거나 유효하지 않은 경우 기본값 20으로 설정
+    if (!LoopCount || LoopCount <= 0) {
+        LoopCount := 20
+    }
+
+
+    loop, %LoopCount%
     {
         if (StopLoop)
             {            
@@ -424,11 +435,18 @@ SpreadHonmaLeft() { ;혼마 돌리기(왼쪽)
     return
 }
 
-SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
+SpreadHonmaRight(LoopCount) { ;혼마 돌리기(오른쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, 10
+
+    ; LoopCount가 비어 있거나 유효하지 않은 경우 기본값 20으로 설정
+    if (!LoopCount || LoopCount <= 0) {
+        LoopCount := 20
+    }
+
+
+    loop, %LoopCount%
     {
         if (StopLoop)
             {            
