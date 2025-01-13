@@ -495,7 +495,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 v:: ;  탭탭 대상 보무
 TabTabBoMu()
-StopLoop := true
 return
 
 TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무장)
