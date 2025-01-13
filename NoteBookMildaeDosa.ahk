@@ -491,6 +491,34 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
+g:: ; 둘다 부활 후 탭탭
+Rev()
+Return
+
+
+Rev() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    SendInput, {0}
+    CustomSleep(200)
+    SendInput, {Esc}
+
+
+    SendInput, {0}
+    CustomSleep(40)
+    SendInput, { home }
+    CustomSleep(40)
+    SendInput, { enter }
+    CustomSleep(200)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+}
+
 
 
 v:: ;  탭탭 대상 보무
