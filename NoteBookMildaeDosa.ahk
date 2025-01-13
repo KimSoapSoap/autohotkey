@@ -480,7 +480,7 @@ return
 
 
 
-f:: ;  탭탭 대상 보무
+v:: ;  탭탭 대상 보무
 TabTabBoMu()
 StopLoop := true
 return
