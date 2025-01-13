@@ -13,4 +13,66 @@ HonVs()로 이름을 다르게 바꿔보고 다시 해봄
 
 함수이름 상관없는 것 같으니 그렇다면 코드가 거의 비슷하고 loop 수치만 달라서 그런가?
 left right 는 횟수 같고 left right가 달라도 괜찮은데 뭘까
-일단 up으로 바꿔서 횟수 5로 해서 Hvs()로 만들어봤다
+일단 up으로 바꿔서 횟수 5로 해서 Hvs()로 만들어봤다 -> 에러
+
+
+원래 쓰던 걸 반복 카운트 변수로 받으니까 에러가 떴다
+
+이제 내릴 수 있는 결론은
+코드를 스캔해서 비슷하게 count만 다르다던가 한 줄(left 등)만 다르다던가 하는 것이
+3개 이상 정도 있다고 하면 (혼마 왼,오 돌리는 거 2개까진 괜찮았는데 up ,down 추가해서 4개로 만들 때 감지됐다)
+비정상으로 감지하는 것 같다.
+
+주술은 버튼마다 막 다르니까 괜찮은 걸까
+
+그럼 왜 변수로 숫자 바꾸는 건 감지가 될까
+
+
+어쨌든 함수 이름은 상관없고 거의 유사한 코드가 3개이상? 존재하면 감지되는 느낌이다.
+조금씩 바꾸거나 해서 감지 안 되게 시도하는 방법 뿐인듯
+변수로 숫자만 바꿀 수 있으면 굿인데.
+
+일단 감지되면 그냥 기존 꺼 수치조절해서 쓰자. 변수로 혼 반복회수 조절해서 시도중.
+이때 e키를 사용할 거라서 기존 e::8 ;백호의희원 이 줄은 지웠다.
+
+그리고 왼쪽으로 긴 혼마 1개에 오른쪽으로 중간, 짧은 혼마 이렇게 해줬다.
+
+
+c:: ; 긴혼left
+SpreadHonmaLeft(15)
+return
+
+
+SpreadHonmaLeft(LCount) { ;혼마 돌리기(왼쪽)
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+
+    ; LCount가 비어 있거나 유효하지 않은 경우 기본값 20으로 설정
+    if (!LCount || LCount <= 0) {
+        LCount := 20
+    }
+
+
+    loop, %LCount%
+    {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        SendInput, 4
+        CustomSleep(30)
+        SendInput, { left }
+        CustomSleep(30)
+        SendInput, { enter }
+        CustomSleep(90)
+    }
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    return
+}
