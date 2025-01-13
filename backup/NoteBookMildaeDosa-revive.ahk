@@ -95,17 +95,8 @@ SpreadHonmaRight()
 return
 
 
-;원래 e가 8번 백호의희원인데 어차피 밀대이므로 자동 8번 사용하게 할 것이므로 e키를 매우 짧은 혼으로.
-;c가 약 4초, f가 약 2초이므로 e는 1~3마리정도 혼 돌리는 약 0.8초 정도로 5~6회 루프만 해주자
-e:: ;매우 짧은 혼 right
-SpreadHonmaVS()
-return
-
-
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
-
-
 
 ;----------------------------밀대용 키 세팅---------------------------------------------
 
@@ -289,7 +280,7 @@ return
 
 q::6 ;금강불체
 ;w::7 ;무력화
-;e::8 ;백호의희원
+e::8 ;백호의희원
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -438,36 +429,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     CustomSleep(30)
     StopLoop := false
     loop, 10
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 4
-        CustomSleep(30)
-        SendInput, { right }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    return
-}
-
-
-
-; Very short
-SpreadHonmaVS() { ;혼마 돌리기(오른쪽)
-    SendInput, {Esc}
-    CustomSleep(30)
-    StopLoop := false
-    loop, 6
     {
         if (StopLoop)
             {            
