@@ -98,8 +98,6 @@ return
 
 ; v::는 일단 기본적으로 밀대 힐+공증 반복이다
 
-
-
 ;----------------------------밀대용 키 세팅---------------------------------------------
 
 
@@ -282,7 +280,7 @@ return
 
 q::6 ;금강불체
 ;w::7 ;무력화
-;e::8 ;백호의희원
+e::8 ;백호의희원
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -456,41 +454,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-e:: ;매우 짧혼 right
-HonVs()
-return
-
-; Very short
-Hvs() { 
-    SendInput, {Esc}
-    CustomSleep(30)
-    StopLoop := false
-    loop, 5
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 4
-        CustomSleep(30)
-        SendInput, { up }
-        CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
-    }
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    return
-}
-
-
-
-
 
 
  TabTabHealRefresh() {
@@ -527,34 +490,6 @@ Hvs() {
 }
 
 
-
-g:: ; 둘다 부활 후 탭탭
-Rev()
-Return
-
-
-Rev() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
-    SendInput, {0}
-    CustomSleep(200)
-    SendInput, {Esc}
-
-
-    SendInput, {0}
-    CustomSleep(40)
-    SendInput, { home }
-    CustomSleep(40)
-    SendInput, { enter }
-    CustomSleep(200)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-}
 
 
 
