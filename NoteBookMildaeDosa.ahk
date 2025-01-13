@@ -90,7 +90,11 @@ SpreadHonmaLeft()
 return
 
 
+<<<<<<< HEAD
 f:: ; 짧혼 right(10->7로 반복회수 조정. e에 4~5회로 1~2마리 처리할 짧은혼 추가하려 했으나 비슷한 코드 반복시 감지에 걸려서 타협협)
+=======
+f:: ; 짧혼 right(10 -> 7)
+>>>>>>> bc88085 (mildae)
 SpreadHonmaRight()
 return
 
