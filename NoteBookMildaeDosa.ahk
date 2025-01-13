@@ -439,7 +439,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-1:: ; 빨탭 힐+공증 반복 (밀대용)
+v:: ; 빨탭 힐+공증 반복 (밀대용)
 TabTabHealRefresh()
 return
 
@@ -480,8 +480,9 @@ return
 
 
 
-v:: ;  탭탭 대상 보무
+f:: ;  탭탭 대상 보무
 TabTabBoMu()
+StopLoop := true
 return
 
 TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무장)
@@ -509,12 +510,15 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     CustomSleep(40)
     SendInput, { x } ; 소문자 x -> 무장
     CustomSleep(100)
+    SendInput, {Esc}
+    CustomSleep(20)
     return
 }
 
 
 NumpadEnd:: ;  셀프보무 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
 SelfBoMu()
+StopLoop := true
 return
 
 
@@ -548,10 +552,6 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
     CustomSleep(70)
     SendInput, {Esc}
     CustomSleep(20)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(30)
     return
 }
 
