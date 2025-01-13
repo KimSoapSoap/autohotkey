@@ -439,7 +439,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-v:: ; 빨탭 힐+공증 반복 (밀대용)
+1:: ; 빨탭 힐+공증 반복 (밀대용)
 TabTabHealRefresh()
 return
 
