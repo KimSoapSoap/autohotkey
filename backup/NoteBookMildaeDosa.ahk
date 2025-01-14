@@ -90,7 +90,7 @@ SpreadHonmaLeft()
 return
 
 
-f:: ; 짧혼 right
+f:: ; 짧혼 right(10->7로 반복회수 조정. e에 4~5회로 1~2마리 처리할 짧은혼 추가하려 했으나 비슷한 코드 반복시 감지에 걸려서 타협협)
 SpreadHonmaRight()
 return
 
@@ -428,7 +428,7 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, 10
+    loop, 7
     {
         if (StopLoop)
             {            
@@ -490,6 +490,34 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 }
 
 
+
+g:: ; 둘다 부활 후 탭탭
+Rev()
+Return
+
+
+Rev() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    SendInput, {0}
+    CustomSleep(200)
+    SendInput, {Esc}
+
+
+    SendInput, {0}
+    CustomSleep(40)
+    SendInput, { home }
+    CustomSleep(40)
+    SendInput, { enter }
+    CustomSleep(200)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+}
 
 
 

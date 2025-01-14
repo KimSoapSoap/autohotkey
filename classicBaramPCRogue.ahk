@@ -138,11 +138,12 @@ return
     return
  }
 
+ ;동동주 2번 먹는 거 90부터 올려봤는데 한 번씩 씹혀서 거의 안 씹히는 딜레이까지 올림
  DrinkDongDongJuTwoShot() { 
            SendInput, {Ctrl Down}
            CustomSleep(20)
            SendInput,a
-           CustomSleep(90)
+           CustomSleep(180)
            SendInput,a
            CustomSleep(20)
            SendInput,{Ctrl Up}
