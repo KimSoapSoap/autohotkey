@@ -286,7 +286,7 @@ return
 
 q::6 ;금강불체
 ;w::7 ;무력화
-e::8 ;백호의희원
+;e::8 ;백호의희원
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -457,7 +457,48 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     return
 }
 
+e::
+HonHeal()
+return
 
+;이렇게 하고 ahk파일 자체를 관리자 실행하니까 된다. 컴파일 하면 될지 안 될지 모르겠지만
+;맨 앞에 딜레이 120 붙이니까(주술도 몇개는 이렇게 붙였었네) 감지 안 된 것일 수도 있겠다
+HonHeal() { ;혼힐
+    CustomSleep(120)
+    StopLoop := false
+    loop, 3
+    {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        Loop, 2 {
+            SendInput, {Esc}
+            CustomSleep(30)
+            SendInput, 4
+            CustomSleep(30)
+            SendInput, { right }
+            CustomSleep(30)
+            SendInput, { enter }
+            CustomSleep(60)
+            SendInput, {Esc}
+            CustomSleep(30)
+        }
+        SendInput, {Tab}
+        CustomSleep(40)
+        SendInput, {Tab}
+        CustomSleep(40)
+
+        Loop, 2 {
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+        }
+    }
+    return
+}
 
 
 
