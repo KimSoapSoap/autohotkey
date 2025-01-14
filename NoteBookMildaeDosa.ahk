@@ -15,7 +15,8 @@
 
 global ManaRefresh := 0
 global FourWayMabi := 0
-
+global MildaeHeal := false
+;혼힐할 때 밀대힐 중이면 힐 틱당 힐 마무리 하고 혼 돌리기, 밀대힐 아니면 바로 혼 돌리기 하려고
 
 ; 전역적으로 랜덤 값을 추가하는 함수 정의
 CustomSleep(SleepTime) {
@@ -34,7 +35,7 @@ StopLoopCheck() {
 }
 
 
-*::
+NumpadMult::  ; 넘패드 *키키
 Suspend Off       ; Suspend 상태에서 동작하도록 강제로 해제
 StopLoop := true
 Reload
@@ -90,8 +91,12 @@ SpreadHonmaLeft()
 return
 
 
-f:: ; 짧혼 right(10->7로 반복회수 조정. e에 4~5회로 1~2마리 처리할 짧은혼 추가하려 했으나 비슷한 코드 반복시 감지에 걸려서 타협)
-SpreadHonmaRight()
+f:: ; 혼힐(a,b)  힐은 기본적으로 3틱시전.  혼 a만큼 돌리고 힐3틱을 b만큼 반복. 혼2번시 힐 3틱 최대시전. 혼3번부터 힐로스
+HonHeal(4,3)
+return
+
+e:: ;혼힐 3회
+HonHeal(2,3)
 return
 
 ;e로 정말 짧은 혼은 비슷한 코드로 감지되지 않게 혼 격수힐 번갈아가면서하는 거 혹은 꾹 누르는 걸로로
@@ -104,8 +109,61 @@ return
 
 ; 밀대힐은 일단 기본적으로 밀대 힐+공증 반복이다 (1차하면 백호 추가가)
 
-;----------------------------밀대용 키 세팅---------------------------------------------
+;-------------------------------------------------------------------------
 
+;이렇게 하고 ahk파일 자체를 관리자 실행하니까 된다. 컴파일 하면 될지 안 될지 모르겠지만
+;맨 앞에 딜레이 120 붙이니까(주술도 몇개는 이렇게 붙였었네) 감지 안 된 것일 수도 있겠다
+
+; 혼힐에 혼2번 돌려야 힐이 틱 따라가고 혼3번 돌리니 틱을 못 따라가고 조금씩 밀리는 느낌
+;그래서 f키가 짧혼인데 조금 애매하다 짧게 혼 돌려도 나중엔 hps가 체를 못 따라가니까 힐 계속 하는 게 나은 느낌인데
+;아예 몰려 있으 때는 그냥 a로 돌리고
+;일단 한 번 해보면서 조율하자
+
+;혼힐 짧은혼 -> 혼2번만 돌리고 힐을 하면 힐틱을 따라갈 수 있다. 적은 몹에 괜찮다. 3번부터는 좀 못 따라가는 느낌낌
+HonHeal(HonCount, LoopCount) { 
+    StopLoop := false
+    loop, %LoopCount%
+    {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        if (MildaeHeal) ; 밀대힐 중이면 틱당 힐 더 돌리고 혼 돌리러 감
+            {            
+                Loop, 4 {
+                    SendInput, {Blind}1
+                    CustomSleep(50)
+                }
+            }
+        Loop, %HonCount% {
+            SendInput, {Esc}
+            CustomSleep(30)
+            SendInput, 4
+            CustomSleep(30)
+            ;SendInput, { right }
+            SendInput, { left }
+            CustomSleep(30)
+            SendInput, { enter }
+            CustomSleep(60)
+            SendInput, {Esc}
+            CustomSleep(30)
+        }
+        SendInput, {Tab}
+        CustomSleep(40)
+        SendInput, {Tab}
+        CustomSleep(40)
+
+        Loop, 4 {
+            SendInput, {Blind}1
+            CustomSleep(50)
+        }
+        SendInput, {3}
+        CustomSleep(20)
+
+    }
+    return
+}
 
 
 
@@ -255,7 +313,6 @@ return
 ;도사는 StopLoop를 빠르게 사용할 일이 많아서 2번에도 넣어뒀다.
 2:: ; 루프 정지
 StopLoop := true
-CustomSleep(20)
 return
 
 
@@ -457,53 +514,14 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
     return
 }
 
-e::
-HonHeal()
-return
 
-;이렇게 하고 ahk파일 자체를 관리자 실행하니까 된다. 컴파일 하면 될지 안 될지 모르겠지만
-;맨 앞에 딜레이 120 붙이니까(주술도 몇개는 이렇게 붙였었네) 감지 안 된 것일 수도 있겠다
-HonHeal() { ;혼힐
-    CustomSleep(120)
-    StopLoop := false
-    loop, 3
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        Loop, 2 {
-            SendInput, {Esc}
-            CustomSleep(30)
-            SendInput, 4
-            CustomSleep(30)
-            SendInput, { right }
-            CustomSleep(30)
-            SendInput, { enter }
-            CustomSleep(60)
-            SendInput, {Esc}
-            CustomSleep(30)
-        }
-        SendInput, {Tab}
-        CustomSleep(40)
-        SendInput, {Tab}
-        CustomSleep(40)
 
-        Loop, 2 {
-            SendInput, {Blind}1
-            CustomSleep(50)
-            SendInput, {Blind}1
-            CustomSleep(50)
-        }
-    }
-    return
-}
 
 
 
 
  TabTabHealRefresh() {
+    MildaeHeal := true
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
@@ -531,8 +549,9 @@ HonHeal() { ;혼힐
         Send, {3}
         CustomSleep(50)
     }
+    MildaeHeal := false
     SendInput, {Esc}
-    CustomSleep(40)
+    CustomSleep(30)
     return
 }
 
@@ -564,6 +583,7 @@ Rev() {
     SendInput, {Tab}
     CustomSleep(40)
     SendInput, {Tab}
+    CustomSleep(40)
 }
 
 
