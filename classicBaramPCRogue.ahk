@@ -2,6 +2,10 @@
 ;자객부터는 2백호 3비백  4필살  e비필      5투명 6뢰진주(어그로용) 7노획   0 천공(솔플용)
 ;혹은 2백호 3필살 w비백,  e비필
 
+;a 투평,  s 비투평,  d 비투평 투평  f 비투평 비투평 
+;g 자동 필
+;x 줍기  v 솔로잉 풀버프 
+
 
 ;도적은 PC에서 notebook으로 할 때 Insert 버프를 NumpadEnd로(파티용 무영보버), 솔로잉버프는 둘 다 v키. 사자후를 Del에서 '(홑따옴표)로
 ;원래 도적도 PC에서 End 버프였는데 도사랑 한 손 컨트롤 시 End는 필살검무(나중엔 백호검무)로 바꿨기 때문
@@ -43,7 +47,7 @@ StopLoopCheck() {
 }
 
 
-*::
+Pause::
 Suspend Off       ; Suspend 상태에서 동작하도록 강제로 해제
 StopLoop := true
 Reload
@@ -66,6 +70,22 @@ return
 #IfWinActive MapleStory Worlds-옛날바람
 
 
+`:: ;자동 필
+StopLoop := False
+CustomSleep(30)
+Loop {
+    if (StopLoop)
+        {            
+            Break
+            CustomSleep(20)
+        }
+    PilDongDong()
+    CustomSleep(800)
+    
+}
+return
+
+
 
 
 ;우측 컨트롤 키(키 히스토리로)
@@ -80,14 +100,19 @@ return
 
 
 ~x:: ;줍기
-CustomSleep(30)
-SendInput, {ShiftDown}
-CustomSleep(30)
-SendInput, {,}
-CustomSleep(30)
-SendInput, {ShiftUp}
-CustomSleep(30)
+getget()
 return
+
+getget() { ; 줍기
+    CustomSleep(30)
+    SendInput, {ShiftDown}
+    CustomSleep(30)
+    SendInput, {,}
+    CustomSleep(30)
+    SendInput, {ShiftUp}
+    CustomSleep(30)
+    return
+}
 
 
 
@@ -99,8 +124,8 @@ CustomSleep(30)
 return
 
 
-
-Del:: ; 사자후
+;도적은 DEL키 쓴다고 그냥 PC도 '키로 해보자
+':: ; 사자후
 SendInput, {Esc}
 CustomSleep(30)
 SendInput, {shift down}
@@ -113,6 +138,26 @@ SendInput, z ;  z -> 사자후 도사
 CustomSleep(40)
 return
 
+
+
+
+
+Insert:: ;무영보법 버프만 ;pc는 insert 노트북은 NumpadEnd
+SelfBuffParty()
+StopLoop := true
+return
+
+
+Del:: ; 줍기
+getget()
+return
+
+
+;한 손 컨 위함. 대신 버프는 Insert로
+End:: ;필동동
+PilDongDong()
+StopLoop := true
+return
 
 
 F1:: ; 숫자 1
@@ -143,7 +188,7 @@ return
            SendInput, {Ctrl Down}
            CustomSleep(20)
            SendInput,a
-           CustomSleep(180)
+           CustomSleep(200)
            SendInput,a
            CustomSleep(20)
            SendInput,{Ctrl Up}
@@ -161,10 +206,21 @@ return
 
 
 2:: ;필동동
-SendInput, {Blind}2
-CustomSleep(20)
-DrinkDongDongJuTwoShot()
+PilDongDong()
+StopLoop := true
 return
+
+
+PilDongDong() {
+    SendInput, {Blind}2
+    CustomSleep(30)
+    DrinkDongDongJuTwoShot()
+    return
+}
+
+
+
+
 
 
 
@@ -365,18 +421,6 @@ SpreadHonmaRight() { ;혼마 돌리기(오른쪽)
 
 
 
-;한 손 컨 위함. 대신 버프는 Insert로
-End:: ;필동동
-SendInput, {Blind}2
-CustomSleep(20)
-DrinkDongDongJuTwoShot()
-return
-
-
-Insert:: ;무영보법 버프만 ;pc는 insert 노트북은 NumpadEnd
-SelfBuffParty()
-StopLoop := true
-return
 
 
 v:: ;  솔로잉 풀버프 
