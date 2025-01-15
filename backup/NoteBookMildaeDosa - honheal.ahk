@@ -89,21 +89,20 @@ c:: ; 긴혼left.  20정도도 -> 15로 변경함
 SpreadHonmaLeft(15)
 return
 
-;혼힐을 수정혼 + 적당한 개체수일 때 사용용
-
 ;혼힐(a,b)는  힐은 기본적으로 3틱시전.  혼 a만큼 돌리고 나서 힐3틱 과정정을 b만큼 반복. 혼2번시(a = 2) 힐 3틱 최대시전. 혼3번부터 힐로스
-; a가 2일 땐 너무 숫자가 낮아서 다른 딜레이 10씩 내리고 a 3으로 해서 힐틱 딜레이 로스 거의 안 밀리게 했다. 그래서 3으로 사용
 
-;그래도 격수 피통이 높아지면 혼힐이 나을까 싶기도 하고 hps때문에 혼힐로
-
-;수정혼 + 적당한 몹수
+;짧혼 right vs 혼힐 (4,3) 등 고민.
+;혼힐 4,3으로 할시 어중간한 몹 5~7마리쯤에 한 번에 혼 돌리기가 중간에 힐을 넣기 때문에 애매함
+;그래도 격수 피통이 높아지면 혼힐이 나을까 싶기도 하고 hps때문에
+;아니면 짧혼으로로
 f:: ; 
-HonHeal(3,4)
+;SpreadHonmaRight(7)
+HonHeal(3,3)
 return
 
-;수정혼 + 적은 수수
+;혼힐을 가벼운 수정혼으 느낌으로로
 e:: ;혼힐 -> 수정혼 느낌으로
-HonHeal(3,2)
+HonHeal(2,3)
 return
 
 ;e로 정말 짧은 혼은 비슷한 코드로 감지되지 않게 혼 격수힐 번갈아가면서하는 거 혹은 꾹 누르는 걸로로
@@ -135,12 +134,10 @@ return
 HonHeal(HonCount, LoopCount) { 
     StopLoop := false
     StopHonHeal := false
-    ;MildaeHeal := true  ;밀대힐 아닐 때도 쓰려면 넣어주자. 일단은 빼놨다
 
-    if (MildaeHeal) ; 밀대힐 중이면 틱당 힐 더 돌리고 혼 돌리러 감 -> 힐 끊기지 않는 용도지만 미리 다 입력이 돼있을 것이므로 잠시 뺀다.
-                    ; 이것때문에 타이밍 엇나가서 빼도 괜찮을 것 같았는데 이거 빼면 힐 할 타이밍에 쓰면 힐 안 쓰고 혼 돌려서 넣자.
+    if (MildaeHeal) ; 밀대힐 중이면 틱당 힐 더 돌리고 혼 돌리러 감
         {            
-            Loop, 3 {
+            Loop, 4 {
                 SendInput, {Blind}1
                 CustomSleep(50)
             }
@@ -156,16 +153,16 @@ HonHeal(HonCount, LoopCount) {
 
         Loop, %HonCount% {
             SendInput, {Esc}
-            CustomSleep(20)
+            CustomSleep(30)
             SendInput, 4
             CustomSleep(30)
             ;SendInput, { right }
             SendInput, { left }
             CustomSleep(30)
             SendInput, { enter }
-            CustomSleep(50)  ;아주 살짝 밀리길래 10 줄임
+            CustomSleep(60)
             SendInput, {Esc}
-            CustomSleep(20) ;아주 살짝 밀리길래 10 줄임
+            CustomSleep(30)
         }
         SendInput, {Tab}
         CustomSleep(40)
