@@ -39,14 +39,6 @@ global StopLoop := false
 ; 예를들면 동동주 마시는 건 4방향 마비걸 때 마력 없으면 동동주 먹어주면서 마력 보충할 수 있기 때문에 굳이 loopStop을 끝에 넣지 않는다.
 
 
-;클릭, 휠업, 휠다운은 밀대힐 도중 좌클, 휠업다운시 선택 혼마 사용하게끔.
-;r키도 선택혼인데 손가락 하나 부담을 줄이기 위해서임
-global LButtonClicked := false
-global WheelUpDetected := false
-global WheelDownDetected := false
-global ListenMouseEventCooldown := false
-
-
 global StopHonHeal := false
 
 global ManaRefresh := 0
@@ -400,11 +392,7 @@ q::6 ;금강불체
 ;w::7 ;무력화
 
 t::9 ; 공력주입
-+g:: ; 부활
-CustomSleep(120)
-SendInput, {0}
-return
-
++g::0 ; 부활
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -455,7 +443,7 @@ SelectionHon() {
     SendInput, {Tab}
     CustomSleep(70)
     SendInput, {Tab}
-    CustomSleep(30)
+    CustomSleep(20)
 return
 }
 
@@ -605,58 +593,12 @@ SpreadHonmaRight(count) { ;혼마 돌리기(오른쪽)
 
 
 
-;힐 공증 반복시 클릭 or 휠업 or 휠다운시 선택혼 사용하기 위함
-;밀대힐 중 좌클, 휠업, 휠다운 감지해서 동작을 하면 선택혼 날린다.
-;이때 휠업다운은 드르륵 하면 연타로 들어가서 꼬일 수 있으므로 쿨다운 0.5초
-~LButton::
-    LButtonClicked := true  ; 좌클릭 감지 변수 설정
-return
-
-; 휠 업 감지 핫키
-~WheelUp::
-    WheelUpDetected := true  ; 휠 업 감지
-return
-
-; 휠 다운 감지 핫키
-~WheelDown::
-    WheelDownDetected := true  ; 휠 다운 감지
-return
-
-; 쿨타임 해제 타이머를 위함
-ResetListenMouseEventCooldown:
-    ListenMouseEventCooldown := false
-return
 
 
-ListenMouseEvent() {
-    if (LButtonClicked || WheelUpDetected || WheelDownDetected) {
-        LButtonClicked := false  ; 상태 초기화
-        WheelUpDetected := false
-        WheelDownDetected := false
-
-        if (ListenMouseEventCooldown) {
-            return  ; 쿨타임 중이면 바로 종료
-        }
-        
-        SelectionHon()    
-
-        ; 쿨타임 시작 -> 꼬임방지를 위해서 쿨을 앞에 놔둠
-        ListenMouseEventCooldown := true
-        SetTimer, ResetListenMouseEventCooldown, -250  ; 250ms 후 쿨타임 해제
 
 
-    }
-    return
-}
-
-
-;힐 공증 반복하기
  TabTabHealRefresh() {
     MildaeHeal := true
-    LButtonClicked := false  ; 상태 초기화
-    WheelUpDetected := false
-    WheelDownDetected := false
-
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
@@ -673,11 +615,7 @@ ListenMouseEvent() {
                 Break
                 CustomSleep(20)
             }
-
-           ; 좌클릭 감지 시 로직 수행
-        ListenMouseEvent()        
         Loop, 3 {
-            ListenMouseEvent()
             Send, {1}
             CustomSleep(50)        
             Send, {1}
@@ -685,8 +623,6 @@ ListenMouseEvent() {
             Send, {1}
             CustomSleep(50)     
             }
-
-            ListenMouseEvent()
         Send, {3}
         CustomSleep(50)
     }
