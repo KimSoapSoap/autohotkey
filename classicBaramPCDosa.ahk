@@ -6,6 +6,21 @@
 ; -> 이건 내가 PC로 도사 플레이할 때 가능하다
 
 
+;백호의 희원은 2번이다. 노트북 밀대로 할 때는 2번이 중지고 백호의 희원 2번은 밀대힐에 자동 설정
+;pc로 할 때는 원하는 타이밍에 백호 주기 위해 밀대힐에 2번 빼놓는다. (일단 해보고 넣든가 하자) F3이 정지
+
+;원래 9번이 공력주입, 0번이 부활이어서 공주가 r키, 부활이 T키 였는데
+;r키에 선택혼(마우스 포인트 위치의 몹에 혼마 걸기) 넣고 t키에 공력주입으로 바꿨다
+;그럼 원래 부활이었던 T키는? 쉬프트+g 같은 다른 키로 변경했음. -> g키가 탭탭부활(격수부활) 그리고 본인부활 후 다시 탭탭 사용중이므로
+;어쨌든 원래 qwert 키가 fghij 마법을 67890 눌러서 스킬 쓰는 것인데 자리를 이렇게 저렇게 봐꿨지만
+;공력주입이 9번(i) 부활이 0번(j) 인 건 그냥 그대로 놔두고 쓰자.
+
+;2번 백호의 희원(노트북 밀대는 2번이 정지, 백호의 희원은 밀대힐에서 자동 사용) 3공증 4혼마 5차폐
+;q금강 wasd 이동(밀대는 편하게 한손으로 하려고, pc는 마우스 우클로 이동하면서 이동혼힐 가능)
+;e매우짧혼, f중간혼 (e왕 f는 힐 돌리면서 혼마 3개씩 돌리기를 짧게, 길게) c 혼마만 돌리기
+;r 선택혼 ,t공주 , g 탭탭부활 본인부활 후 다시 탭탭  v보무 b 셀프 무력화 3틱
+
+
 
 
 global StopLoop := false
@@ -181,12 +196,12 @@ HonHeal(HonCount, LoopCount) {
             SendInput, { left }
             CustomSleep(30)
             SendInput, { enter }
-            CustomSleep(50)  ;아주 살짝 밀리길래 10 줄임
+            CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
             SendInput, {Esc}
-            CustomSleep(20) ;아주 살짝 밀리길래 10 줄임
+            CustomSleep(30) 
         }
         SendInput, {Tab}
-        CustomSleep(40)
+        CustomSleep(50)
         SendInput, {Tab}
         CustomSleep(40)
 
@@ -195,7 +210,7 @@ HonHeal(HonCount, LoopCount) {
             CustomSleep(50)
         }
         SendInput, {3}
-        CustomSleep(20)
+        CustomSleep(10)
 
     }
     return
@@ -224,11 +239,7 @@ return
 
 
 
-+space:: ;줍기
-CustomSleep(30)
-SendInput, ,
-CustomSleep(30)
-return
+
 
 
 
@@ -379,7 +390,9 @@ return
 
 q::6 ;금강불체
 ;w::7 ;무력화
-;e::8 ;백호의희원
+
+t::9 ; 공력주입
++g::0 ; 부활
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -412,11 +425,31 @@ return
 }
 
 
-r::9 ;공력주입
-t::0 ;부활
+r:: ; 선택혼
+SelectionHon()
+return
 
- +r::
- CustomSleep(120)
+SelectionHon() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {4}
+    CustomSleep(30)
+    SendInput, {Click}
+    CustomSleep(30)
+    SendInput, {Enter}
+    CustomSleep(60)  ; 원래 후딜90인데 아래 ESC와 나눠서 함
+    SendInput, {Esc} ; 이미 타겟박스인 것을 클릭하면 엔터칠 필요 없이 바로 시전된다. 그때 엔터키 닫기
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(70)
+    SendInput, {Tab}
+    CustomSleep(20)
+return
+}
+
+
+ +r:: ;말타기
+ CustomSleep(100)
  SendInput, {Blind}r
  return
 
