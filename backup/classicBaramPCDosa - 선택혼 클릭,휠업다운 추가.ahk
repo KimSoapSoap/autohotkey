@@ -451,7 +451,7 @@ SelectionHon() {
     SendInput, {Enter}
     CustomSleep(60)  ; 원래 후딜90인데 아래 ESC와 나눠서 함
     SendInput, {Esc} ; 이미 타겟박스인 것을 클릭하면 엔터칠 필요 없이 바로 시전된다. 그때 엔터키 닫기
-    CustomSleep(30)
+    CustomSleep(50)
     SendInput, {Tab}
     CustomSleep(70)
     SendInput, {Tab}
@@ -642,7 +642,8 @@ ListenMouseEvent() {
 
         ; 쿨타임 시작 -> 꼬임방지를 위해서 쿨을 앞에 놔둠
         ListenMouseEventCooldown := true
-        SetTimer, ResetListenMouseEventCooldown, -250  ; 250ms 후 쿨타임 해제
+        SetTimer, ResetListenMouseEventCooldown, -350  ; 350ms 후 쿨타임 해제
+
 
 
     }
@@ -674,10 +675,10 @@ ListenMouseEvent() {
                 CustomSleep(20)
             }
 
-           ; 좌클릭 감지 시 로직 수행
-        ListenMouseEvent()        
+           ; 좌클릭 감지 시 로직 수행      
         Loop, 3 {
             ListenMouseEvent()
+            CustomSleep(20)
             Send, {1}
             CustomSleep(50)        
             Send, {1}
@@ -686,7 +687,8 @@ ListenMouseEvent() {
             CustomSleep(50)     
             }
 
-            ListenMouseEvent()
+        ListenMouseEvent()
+        CustomSleep(20)
         Send, {3}
         CustomSleep(50)
     }
