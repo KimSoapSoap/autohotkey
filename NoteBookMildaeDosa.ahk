@@ -163,12 +163,12 @@ HonHeal(HonCount, LoopCount) {
             SendInput, { left }
             CustomSleep(30)
             SendInput, { enter }
-            CustomSleep(50)  ;아주 살짝 밀리길래 10 줄임
+            CustomSleep(50)  ;밀리면   esc 딜레이와 합해서 80~90으로
             SendInput, {Esc}
-            CustomSleep(20) ;아주 살짝 밀리길래 10 줄임
+            CustomSleep(30) ;
         }
         SendInput, {Tab}
-        CustomSleep(40)
+        CustomSleep(50)
         SendInput, {Tab}
         CustomSleep(40)
 
@@ -177,7 +177,7 @@ HonHeal(HonCount, LoopCount) {
             CustomSleep(50)
         }
         SendInput, {3}
-        CustomSleep(20)
+        CustomSleep(10)
 
     }
     return
