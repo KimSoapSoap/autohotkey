@@ -70,20 +70,36 @@ return
 #IfWinActive MapleStory Worlds-옛날바람
 
 
+
+;자동필을 `(1왼쪽 백틱키)키로 하고 중단은 F3, 2, End 즉 필동동에도 넣었는데 한 손으로만 할 때도 자동필을 켤 수 있게 해주고 싶다
+;우측 쉬프트도 자동필 시작으로 해보자. 일단 더 필요하면 우측 pgup, pgdown키도 손보자
+; 백호검무 배우면 쓸 때 동동주 마실 필요 없으니까 1차 이후에 End에 백호검무 + 정지하면 좋겠다
+; pgdn 필살검무로 하려고 했는데 이는 체력 30만 이상으로 2차하고 진검쯤 되면 
+
 `:: ;자동 필
-StopLoop := False
-CustomSleep(30)
-Loop {
-    if (StopLoop)
-        {            
-            Break
-            CustomSleep(20)
-        }
-    PilDongDong()
-    CustomSleep(800)
-    
-}
+AtPilGum()
 return
+
+RShift:: ;자동 필(한손컨을 위해)
+AtPilGum()
+return
+
+
+AtPilGum() {
+    StopLoop := False
+    CustomSleep(30)
+    Loop {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        PilDongDong()
+        CustomSleep(800)        
+    }
+    return
+}
+
 
 
 
@@ -155,8 +171,9 @@ return
 
 ;한 손 컨 위함. 대신 버프는 Insert로
 End:: ;필동동
-PilDongDong()
 StopLoop := true
+CustomSleep(20)
+PilDongDong()
 return
 
 
@@ -192,6 +209,7 @@ return
            SendInput,a
            CustomSleep(20)
            SendInput,{Ctrl Up}
+           CustomSleep(20)
     return
  }
 
@@ -207,6 +225,7 @@ return
 
 2:: ;필동동
 PilDongDong()
+CustomSleep(20)
 StopLoop := true
 return
 
