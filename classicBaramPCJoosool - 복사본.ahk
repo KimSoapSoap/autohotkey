@@ -1,14 +1,6 @@
 ﻿;PC와 NoteBook의 차이는 사자후가 Del키(PC) vs '(홑따옴표-노트북)   // 보무가 End(PC) vs NumpadEnd(Notebook) 정도의 차이이다.
 ;PC에서 복붙해서 사자후와 보무만 바꾸면 노트북이 된다
 
-;컴파일하지 않고 관리자모드로 실행한다.
-;기본적인 저주,마비, 중독 혹은 +첨 스킬들은 반복회수 매개변수 count를 전달해줘야 하는데 처음 설계할 때 회수 20으로 했어서
-;조정하는 게 아니면 20을 전달해준다
-
-;셀프힐은 4번 해줘야 힐 3틱이 되더라
-
-
-
 global StopLoop := false
 ;루프 중단을 위한 변수. 기본 false
 ;동작 중(예를 들면 루프) 다른 핫키를 쓰면 다른 핫키 동작 후 다시 기존 핫키로 돌아가는 Stack구조이므로
@@ -47,7 +39,7 @@ StopLoopCheck() {
 }
 
 
-Pause::
+*::
 Suspend Off       ; Suspend 상태에서 동작하도록 강제로 해제
 StopLoop := true
 Reload
@@ -97,9 +89,12 @@ Loop,1 ;일단 한 번
         Loop, 1 ; 자힐 + 4방향 마비&저주 
             ;-> 4방향 마비저주 한 번만 해서 중독 애매하게 몇마리리 남은채로 다시 중독 돌리는 이슈
             { 
-            StopLoopCheck()           
-            selfheal(8) ; 
-            CustomSleep(50)                     
+            StopLoopCheck()
+            Loop, 2
+            {
+                SelfHeal() ; 자힐 3틱
+                CustomSleep(50)
+            }            
             FourWayCurseAndParalysis() ;4방향 마비
             CustomSleep(1500) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도
         }
@@ -108,7 +103,7 @@ Loop,1 ;일단 한 번
         Loop,4 ;중독 돌리는 회수
             {
             StopLoopCheck()
-            SpreadPoison(20) ;중독만 돌리기
+            SpreadPoison() ;중독만 돌리기
             CustomSleep(30)
             }
         CustomSleep(1000) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기 ;원래 1200이었음
@@ -123,20 +118,20 @@ Loop,1 ;일단 한 번
             Loop,2 ; 중독첨. 
             {
                 StopLoopCheck()
-                SpreadPoisonAndChum(20)
+                SpreadPoisonAndChum()() 
                 CustomSleep(30)
             }
             Loop,2 ; 저주첨. 
                 {
                     StopLoopCheck()
-                    SpreadCurseAndChum(20)
+                    SpreadCurseAndChum()
                     CustomSleep(30)
                 }
 
             Loop,1 ; 중독첨. 
                 {
                     StopLoopCheck()
-                    SpreadPoisonAndChum(20)
+                    SpreadPoisonAndChum()() 
                     CustomSleep(30)
                 }
             Loop, 1 ;공증
@@ -146,14 +141,14 @@ Loop,1 ;일단 한 번
                     CustomSleep(30)
                     SendInput, 3 ; 공증(실패해도 됨)
                     CustomSleep(30)
-                    selfheal(4) ; 자힐 3틱
+                    SelfHeal() ; 자힐 3틱
                     CustomSleep(50)
                 }
 
             Loop,2 ; 자힐첨 -> 딸피 마무리
                 {            
                 StopLoopCheck()
-                SelfHealAndChum(20) 
+                SelfHealAndChum() 
                 CustomSleep(30)
                 }
             }
@@ -167,7 +162,6 @@ return
 
 g:: ;중독첨첨 사냥 종합합
 ; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (공증, 중독첨2+자힐첨1)x4
-;여기 중독 저주 등 x1 회수는 20이다.
 
 SendInput, {Esc}
 CustomSleep(30)
@@ -184,96 +178,112 @@ Loop,1 ;일단 한 번
     CustomSleep(30),
 
     Loop, 1 ; 일단 처음에는 저주 돌려야 하니까 4방향 마비&저주 걸고 중독2, 저주2
-            ; -> 중첨첨 사냥은 첫 시작을 중독첨2, 저주첨2
+            ; -> 중첨첨 사냥은 중독첨2, 저주첨2
             ; 초반 첫 4방향 저주마비 이후 중독첨2, 저주첨2로 딸피되기 때문에 다음턴 마비 없이 진행
             ; 0으로 시작하는 FourWayMabi 변수가 중독첨2+자힐첨1 반복마다 1씩 올라가는데
             ; 홀수일 때 마비 건다. 0이 시작이고 이때는 첫 4방향 마비저주 걸린 상태므로 패스.
         {       
             StopLoopCheck()
-            Loop, 1 ;
+            Loop, 1 ; 자힐 + 4방향 마비&저주
                 { 
-                StopLoopCheck()         
-                FourWayCurseAndParalysis() ;4방향 마비저주 
-                SelfHealAndChum(4) ;셀프힐&첨 3틱
-                CustomSleep(30)
-                }            
+                StopLoopCheck()
+                Loop, 1
+                    {
+                    SelfHeal() ; 자힐 3틱
+                    CustomSleep(50)
+                    }            
+                FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
+                CustomSleep(50)
+                }
+            
             Loop,2 ;중독첨 돌리는 횟수
                 {
-                StopLoopCheck()            
-                SpreadPoisonAndChum(20) ; 중독첨2
-                CustomSleep(30)
-                }
-            Loop,2 ;저주첨 돌리는 횟수
-                {
                 StopLoopCheck()
-                SpreadCurseAndChum(20) ; 저주첨2
+            
+                SpreadPoisonAndChum() ; 중독첨2
                 CustomSleep(30)
                 }
 
-            CustomSleep(100) ;원래 오토감지 방지용으로 1100 했는데 걍 1000
+            Loop,2 ;저주첨 돌리는 횟수
+                {
+                StopLoopCheck()
+                SpreadCurseAndChum() ; 저주첨2
+                CustomSleep(30)
+                }
+
+            CustomSleep(1100) 
         }
     
 
 
     Loop , 4  ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독첨2 저주첨1 자힐첨1) x4
-        ;맨 처음 4방향 마비저주 이후에는 그냥 마비 뺐다.
-    ;   힐량증가 마력비례 1% 패치로 첫 4방향 마비저주 외에는 마비 없이 간다.
         ;그냥 중독사냥이 아니라 중독첨첨이라 빨리 잡는 것이 목적이므로 
+    ;   힐량증가 마력비례 1% 패치로 첫 4방향 마비저주 외에는 마비 없이 간다.
         ;마비 딜레이 신경 안 써도 되니 첫 마비이후 중독첨2 자힐첨1로 딜레이 맞췄는데 이제는 중독첨2 저주첨1 자힐첨1 하면 될듯
     {       
         StopLoopCheck()
         Loop, 1 ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
             { 
-            StopLoopCheck()         
-            SelfHealAndChum(4)
-            CustomSleep(50)         
+            StopLoopCheck()
+            
+            Loop, 2 ; 자힐 횟수
+            {
+                SelfHeal() ; 자힐 3틱
+                CustomSleep(50)
+            }
              ;if (Mod(FourWayMabi, 2) == 1) ;홀수 일 때만 마비 진행.
                 ;{  
-                ;FourWayCurseAndParalysis() ;4방향 마비
+                ;FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
                 ;}
             CustomSleep(100)
-        }      
+        }
+        
+
         Loop,2 ;중독첨
             {
             StopLoopCheck()
-            SpreadPoisonAndChum(20) ;중독첨 돌리기
-            CustomSleep(30)
-            }
-        Loop,1 ;저주첨 
-            {
-            StopLoopCheck()
-            SpreadCurseAndChum(20) ; 저주첨 돌리기
-            CustomSleep(30)
-            }
-       
-        Loop,1 ; 자힐첨
-            {            
-            StopLoopCheck()
-            SelfHealAndChum(20) 
+            SpreadPoisonAndChum() ;중독첨 돌리기
             CustomSleep(30)
             }
 
+        Loop,1 ;저주첨 
+            {
+            StopLoopCheck()
+            SpreadCurseAndChum() ; 저주첨 돌리기
+            CustomSleep(30)
+            }
+
+
+            
         Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
             ;공증 실패하면 마나 부족 이슈
-            ;원래는 자힐첨 앞에서 홀수마다 한 번씩 공증했는데 자힐첨 뒤에 짝수마다(첫 번째에도 공증 시도)로 잠시 바꿔봄
-            
+            ;   
             {
-            if (Mod(ManaRefresh, 2) == 0)
+            if (Mod(ManaRefresh, 2) == 1)
                 {            
                     SendInput, {Esc}
                     CustomSleep(20)  
                     StopLoopCheck()
                     CustomSleep(30)
                     SendInput, 3 ; 공증(실패해도 됨)
-                    CustomSleep(30)               
+                    CustomSleep(30)
+                    SelfHeal() ; 자힐 3틱
+                    CustomSleep(50)    
                 }
+
             ManaRefresh++     
             }
 
-        FourWayMabi++
-        CustomSleep(100) ; 매크로 체크방지 1초 -> 걍 100으로
-        } ; (중독첨2 저주첨1 자힐첨1) x4 반복 루프 종료
+        Loop,1 ; 자힐첨
+            {            
+            StopLoopCheck()
+            SelfHealAndChum() 
+            CustomSleep(30)
+            }
 
+        FourWayMabi++
+        CustomSleep(1100) ; 매크로 체크방지 1초
+        }
 
         Loop, 1 ; (공증 + 중독&첨 x4  + 자힐첨x2) 1번
             {
@@ -282,20 +292,21 @@ Loop,1 ;일단 한 번
             CustomSleep(30)
             SendInput, 3 ; 공증(실패해도 됨)
             CustomSleep(30)
-            SelfHealAndChum(4) ; 자힐첨 3틱
+            SelfHeal() ; 자힐 3틱
             CustomSleep(50)
+
 
             Loop,4 ; 중독첨. 풀피상태여서 자힐첨 2번보다 중독첨2 + 자힐첨1 이렇게 가자.
             {
                 StopLoopCheck()
-                SpreadPoisonAndChum(20) 
+                SpreadPoisonAndChum()() 
                 CustomSleep(30)
             }
 
             Loop,2 ; 셀프힐 + 첨 횟수 조정(일단 1) -> 딸피 마무리
                 {            
                 StopLoopCheck()
-                SelfHealAndChum(20) 
+                SelfHealAndChum() 
                 CustomSleep(30)
                 }
             }
@@ -328,10 +339,11 @@ Loop,1 ;일단 한 번
         Loop, 1 ; 자힐 (쩔용 전체 마비 들어가므로 4방향 마비&저주 임시 제외)            
             { 
             StopLoopCheck()
-        
-            selfheal(8) ; 자힐 3틱 x2
-            CustomSleep(50)
-                      
+            Loop, 2
+            {
+                SelfHeal() ; 자힐 3틱
+                CustomSleep(50)
+            }            
             ;FourWayCurseAndParalysis() ;4방향 마비
             CustomSleep(50) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도. 중독 저주 마비 돌리느라 1500에서 50으로
         }
@@ -340,7 +352,7 @@ Loop,1 ;일단 한 번
         Loop,3 ;중독 돌리는 회수
             {
             StopLoopCheck()
-            SpreadPoison(20) ;중독만 돌리기
+            SpreadPoison() ;중독만 돌리기
             CustomSleep(30)
             }
 
@@ -348,7 +360,7 @@ Loop,1 ;일단 한 번
             Loop,2 ;마비 돌리는 회수
                 {
                 StopLoopCheck()
-                SpreadParalysis(20) ;마비만 돌리기
+                SpreadParalysis() ;마비만 돌리기
                 CustomSleep(30)
                 }
         }
@@ -357,7 +369,7 @@ Loop,1 ;일단 한 번
             Loop,2 ;저주 돌리는 회수
                 {
                 StopLoopCheck()
-                SpreadCurse(20) ;저주만 돌리기
+                SpreadCurse() ;저주만 돌리기
                 CustomSleep(30)
                 }
         }
@@ -445,15 +457,15 @@ return
 
 
 1:: ; 자힐 3틱
-SelfHeal(4)
+SelfHeal()
 StopLoop := true
 return
 
- SelfHeal(count) { ; 셀프힐 3틱.  반복 3번하면 2번만 나가고 4번해야 3틱이 나가더라.
+ SelfHeal() {
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    Loop, %count%
+    Loop, 4
     {
         if (StopLoop)
             {            
@@ -478,11 +490,11 @@ return
 ;자힐 + 첨 할 때 어쩓 첨이 계속 써지고 알트탭 해서 나갔다 와야 풀렸는데 ctrl + 5(넘패드5) 하니까 풀렸다
 
  `:: ; (자힐 3틱x4 + 첨 ) 4~5틱
-SelfHealAndChum(20)
+SelfHealAndChum()
 StopLoop := true
 return
 
- SelfHealAndChum(count) {
+ SelfHealAndChum() {
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
@@ -493,7 +505,7 @@ return
     CustomSleep(30)
     StopLoop := false
     CustomSleep(20)
-    Loop, %count%
+    Loop, 20
     {
         if (StopLoop)
             {                
@@ -531,16 +543,16 @@ e::8 ;활력
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
-SpreadVitality(20)
+SpreadVitality()
 StopLoop := true
 return
 
 
-SpreadVitality(count) { ;활력 돌리기
+SpreadVitality() { ;활력 돌리기
 SendInput, {Esc}
 CustomSleep(30)
 StopLoop := false
-loop, %count%
+loop, 20
     if (StopLoop)
         {            
             Break
@@ -635,15 +647,15 @@ Despair() {  ;절망
 
 ;지금은 c(큐센 계산기 모드. 원래는 a였다.)
 c::  ;마비만 돌리기(6번을절망으로 바꾸면 절망 돌리기)
-SpreadParalysis(20)
+SpreadParalysis()
 StopLoop := true
 return
 
-SpreadParalysis(count) {
+SpreadParalysis() {
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, %count%
+    loop, 20
     {
         if (StopLoop)
             {            
@@ -665,11 +677,11 @@ SpreadParalysis(count) {
 
 ; shift + c (큐센 계산기 모드. 원래는 shift + a였다)
 +c::  ;마비 돌리기 + 첨 (6번을절망으로 바꾸면 절망 돌리기 + 첨)
-SpreadParalysisAndChum(20)
+SpreadParalysisAndChum()
 StopLoop := true
 return
 
-SpreadParalysisAndChum(count) { ;마비 돌리기 + 첨
+SpreadParalysisAndChum() { ;마비 돌리기 + 첨
     SendInput, {Esc}
     CustomSleep(120)
     SendInput, {5 Down} ; 5키 눌림
@@ -677,7 +689,7 @@ SpreadParalysisAndChum(count) { ;마비 돌리기 + 첨
     SendInput, {0 Down} ; 0키 눌림
     CustomSleep(20)
     StopLoop := false
-    loop, %count%
+    loop, 20
     {
         if (StopLoop)
             {            
@@ -706,7 +718,7 @@ SpreadParalysisAndChum(count) { ;마비 돌리기 + 첨
 
 
 s::  ;중독 돌리기 + 첨
-SpreadPoisonAndChum(20)
+SpreadPoisonAndChum()
 StopLoop := true
 return
 
@@ -716,7 +728,7 @@ SendInput, {Blind}s
 return
 
 
-SpreadPoisonAndChum(count) ;중독 돌리기 + 첨
+SpreadPoisonAndChum() ;중독 돌리기 + 첨
     {
     SendInput, {Esc}
     CustomSleep(30)
@@ -725,7 +737,7 @@ SpreadPoisonAndChum(count) ;중독 돌리기 + 첨
     SendInput, {0 Down} ; 0키 눌림
     CustomSleep(20)
     StopLoop := false
-    loop, %count%
+    loop, 20
     {
         if (StopLoop)
             {            
@@ -769,16 +781,16 @@ SpreadPoisonAndChum(count) ;중독 돌리기 + 첨
 
 ; +NumpadDiv 원래 그냥 중독 돌리기가 쉬프트 조합인데(큐센 오피스 +s) 손가락 편의를 위해 NumpadDot (큐센 오피스 모드에서 c키)
 d::  ;중독만 돌리기
-SpreadPoison(20)
+SpreadPoison()
 StopLoop := true
 return
 
-SpreadPoison(count) ;중독만 돌리기
+SpreadPoison() ;중독만 돌리기
 {
     SendInput, {Esc}
     CustomSleep(120)
     StopLoop := false
-    loop, %count%
+    loop, 20
     {
         if (StopLoop)
             {            
@@ -801,16 +813,16 @@ SpreadPoison(count) ;중독만 돌리기
 
 ;NumpadDot (큐센 계산기모드) c 였었다.  a와(마비 돌리기) 잠시 교체
 a:: ;저주만 돌리기
-SpreadCurse(20)
+SpreadCurse()
 StopLoop := true
 return
 
 
-SpreadCurse(count) { ;저주만 돌리기
+SpreadCurse() { ;저주만 돌리기
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    loop, %count%
+    loop, 20
     {
         if (StopLoop)
             {            
@@ -831,11 +843,11 @@ SpreadCurse(count) { ;저주만 돌리기
 
 ;NumpadDel (큐센 계산기모드) shift + c 였다. shift + a(마비돌리기 + 첨)와 잠시 교체
 +a:: ;저주 돌리기 + 첨
-SpreadCurseAndChum(20)
+SpreadCurseAndChum()
 StopLoop := true
 return
 
-SpreadCurseAndChum(count) { ;저주 돌리기 + 첨
+SpreadCurseAndChum() { ;저주 돌리기 + 첨
     SendInput, {Esc}
     CustomSleep(120)
     SendInput, {5 Down} 
@@ -843,7 +855,7 @@ SpreadCurseAndChum(count) { ;저주 돌리기 + 첨
     SendInput, {0 Down} 
     CustomSleep(20)
     StopLoop := false
-    loop, %count%
+    loop, 20
     {
         if (StopLoop)
             {            

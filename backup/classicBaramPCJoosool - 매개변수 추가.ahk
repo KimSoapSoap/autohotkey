@@ -47,7 +47,7 @@ StopLoopCheck() {
 }
 
 
-Pause::
+*::
 Suspend Off       ; Suspend 상태에서 동작하도록 강제로 해제
 StopLoop := true
 Reload
@@ -167,7 +167,6 @@ return
 
 g:: ;중독첨첨 사냥 종합합
 ; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (공증, 중독첨2+자힐첨1)x4
-;여기 중독 저주 등 x1 회수는 20이다.
 
 SendInput, {Esc}
 CustomSleep(30)
@@ -184,25 +183,32 @@ Loop,1 ;일단 한 번
     CustomSleep(30),
 
     Loop, 1 ; 일단 처음에는 저주 돌려야 하니까 4방향 마비&저주 걸고 중독2, 저주2
-            ; -> 중첨첨 사냥은 첫 시작을 중독첨2, 저주첨2
+            ; -> 중첨첨 사냥은 중독첨2, 저주첨2
             ; 초반 첫 4방향 저주마비 이후 중독첨2, 저주첨2로 딸피되기 때문에 다음턴 마비 없이 진행
             ; 0으로 시작하는 FourWayMabi 변수가 중독첨2+자힐첨1 반복마다 1씩 올라가는데
             ; 홀수일 때 마비 건다. 0이 시작이고 이때는 첫 4방향 마비저주 걸린 상태므로 패스.
         {       
             StopLoopCheck()
-            Loop, 1 ;
+            Loop, 1 ; 자힐 + 4방향 마비&저주
                 { 
-                StopLoopCheck()         
-                FourWayCurseAndParalysis() ;4방향 마비저주 
-                SelfHealAndChum(4) ;셀프힐&첨 3틱
-                CustomSleep(30)
-                }            
+                StopLoopCheck()
+                Loop, 1
+                    {
+                    selfheal(4) ; 자힐 3틱
+                    CustomSleep(50)
+                    }            
+                FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
+                CustomSleep(50)
+                }
+            
             Loop,2 ;중독첨 돌리는 횟수
                 {
-                StopLoopCheck()            
+                StopLoopCheck()
+            
                 SpreadPoisonAndChum(20) ; 중독첨2
                 CustomSleep(30)
                 }
+
             Loop,2 ;저주첨 돌리는 횟수
                 {
                 StopLoopCheck()
@@ -210,42 +216,67 @@ Loop,1 ;일단 한 번
                 CustomSleep(30)
                 }
 
-            CustomSleep(100) ;원래 오토감지 방지용으로 1100 했는데 걍 1000
+            CustomSleep(1100) 
         }
     
 
 
     Loop , 4  ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독첨2 저주첨1 자힐첨1) x4
-        ;맨 처음 4방향 마비저주 이후에는 그냥 마비 뺐다.
-    ;   힐량증가 마력비례 1% 패치로 첫 4방향 마비저주 외에는 마비 없이 간다.
         ;그냥 중독사냥이 아니라 중독첨첨이라 빨리 잡는 것이 목적이므로 
+    ;   힐량증가 마력비례 1% 패치로 첫 4방향 마비저주 외에는 마비 없이 간다.
         ;마비 딜레이 신경 안 써도 되니 첫 마비이후 중독첨2 자힐첨1로 딜레이 맞췄는데 이제는 중독첨2 저주첨1 자힐첨1 하면 될듯
     {       
         StopLoopCheck()
         Loop, 1 ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
             { 
-            StopLoopCheck()         
-            SelfHealAndChum(4)
-            CustomSleep(50)         
+            StopLoopCheck()
+         
+            selfheal(8) ; 자힐 3틱 x 2
+            CustomSleep(50)
+         
              ;if (Mod(FourWayMabi, 2) == 1) ;홀수 일 때만 마비 진행.
                 ;{  
-                ;FourWayCurseAndParalysis() ;4방향 마비
+                ;FourWayCurseAndParalysis() ;4방향 마비, 마비 삑날까봐
                 ;}
             CustomSleep(100)
-        }      
+        }
+        
+
         Loop,2 ;중독첨
             {
             StopLoopCheck()
             SpreadPoisonAndChum(20) ;중독첨 돌리기
             CustomSleep(30)
             }
+
         Loop,1 ;저주첨 
             {
             StopLoopCheck()
             SpreadCurseAndChum(20) ; 저주첨 돌리기
             CustomSleep(30)
             }
-       
+
+
+            
+        Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
+            ;공증 실패하면 마나 부족 이슈
+            ;   
+            {
+            if (Mod(ManaRefresh, 2) == 1)
+                {            
+                    SendInput, {Esc}
+                    CustomSleep(20)  
+                    StopLoopCheck()
+                    CustomSleep(30)
+                    SendInput, 3 ; 공증(실패해도 됨)
+                    CustomSleep(30)
+                    selfheal(4) ; 자힐 3틱
+                    CustomSleep(50)    
+                }
+
+            ManaRefresh++     
+            }
+
         Loop,1 ; 자힐첨
             {            
             StopLoopCheck()
@@ -253,27 +284,9 @@ Loop,1 ;일단 한 번
             CustomSleep(30)
             }
 
-        Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
-            ;공증 실패하면 마나 부족 이슈
-            ;원래는 자힐첨 앞에서 홀수마다 한 번씩 공증했는데 자힐첨 뒤에 짝수마다(첫 번째에도 공증 시도)로 잠시 바꿔봄
-            
-            {
-            if (Mod(ManaRefresh, 2) == 0)
-                {            
-                    SendInput, {Esc}
-                    CustomSleep(20)  
-                    StopLoopCheck()
-                    CustomSleep(30)
-                    SendInput, 3 ; 공증(실패해도 됨)
-                    CustomSleep(30)               
-                }
-            ManaRefresh++     
-            }
-
         FourWayMabi++
-        CustomSleep(100) ; 매크로 체크방지 1초 -> 걍 100으로
-        } ; (중독첨2 저주첨1 자힐첨1) x4 반복 루프 종료
-
+        CustomSleep(1100) ; 매크로 체크방지 1초
+        }
 
         Loop, 1 ; (공증 + 중독&첨 x4  + 자힐첨x2) 1번
             {
@@ -282,8 +295,9 @@ Loop,1 ;일단 한 번
             CustomSleep(30)
             SendInput, 3 ; 공증(실패해도 됨)
             CustomSleep(30)
-            SelfHealAndChum(4) ; 자힐첨 3틱
+            selfheal(4) ; 자힐 3틱
             CustomSleep(50)
+
 
             Loop,4 ; 중독첨. 풀피상태여서 자힐첨 2번보다 중독첨2 + 자힐첨1 이렇게 가자.
             {
