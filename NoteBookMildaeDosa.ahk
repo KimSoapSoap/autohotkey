@@ -6,6 +6,21 @@
 ; -> 이건 내가 PC로 도사 플레이할 때 가능하다
 
 
+;백호의 희원은 2번이다. 노트북 밀대로 할 때는 2번이 중지고 백호의 희원 2번은 밀대힐에 자동 설정
+;pc로 할 때는 원하는 타이밍에 백호 주기 위해 밀대힐에 2번 빼놓는다. (일단 해보고 넣든가 하자) F3이 정지
+
+;원래 9번이 공력주입, 0번이 부활이어서 공주가 r키, 부활이 T키 였는데
+;r키에 선택혼(마우스 포인트 위치의 몹에 혼마 걸기) 넣고 t키에 공력주입으로 바꿨다
+;그럼 원래 부활이었던 T키는? 쉬프트+g 같은 다른 키로 변경했음. -> g키가 탭탭부활(격수부활) 그리고 본인부활 후 다시 탭탭 사용중이므로
+;어쨌든 원래 qwert 키가 fghij 마법을 67890 눌러서 스킬 쓰는 것인데 자리를 이렇게 저렇게 봐꿨지만
+;공력주입이 9번(i) 부활이 0번(j) 인 건 그냥 그대로 놔두고 쓰자.
+
+;2번 백호의 희원(노트북 밀대는 2번이 정지, 백호의 희원은 밀대힐에서 자동 사용) 3공증 4혼마 5차폐
+;q금강 wasd 이동(밀대는 편하게 한손으로 하려고, pc는 마우스 우클로 이동하면서 이동혼힐 가능)
+;e매우짧혼, f중간혼 (e왕 f는 힐 돌리면서 혼마 3개씩 돌리기를 짧게, 길게) c 혼마만 돌리기
+;r 선택혼 ,t공주 , g 탭탭부활 본인부활 후 다시 탭탭  v보무 b 셀프 무력화 3틱
+;선택혼은 r키로 마우스 오버하면 클릭해서 혼마 건다. 밀대힐중(탭탭힐리프레쉬) 좌클릭, 휠업, 휠다운해도 선택혼 가능하다.
+
 
 
 
@@ -23,6 +38,14 @@ global StopLoop := false
 ; 핫키 시작할 땐 StopLoop := false(루프있다면 -> 루프 내부에 if (StopLoop) 조건이 있을 때 )
 ; 핫키 끝날 땐 StopLoop := true (동작 후 이전 핫키 루프를 중단하려면)
 ; 예를들면 동동주 마시는 건 4방향 마비걸 때 마력 없으면 동동주 먹어주면서 마력 보충할 수 있기 때문에 굳이 loopStop을 끝에 넣지 않는다.
+
+
+;클릭, 휠업, 휠다운은 밀대힐 도중 좌클, 휠업다운시 선택 혼마 사용하게끔.
+;r키도 선택혼인데 손가락 하나 부담을 줄이기 위해서임
+global LButtonClicked := false
+global WheelUpDetected := false
+global WheelDownDetected := false
+global ListenMouseEventCooldown := false
 
 
 global StopHonHeal := false
@@ -49,7 +72,7 @@ StopLoopCheck() {
 }
 
 
-NumpadMult::  ; 넘패드 *키키
+NumpadMult::  ; 리로드 ;노트북은 NumpadMult
 Suspend Off       ; Suspend 상태에서 동작하도록 강제로 해제
 StopLoop := true
 Reload
@@ -59,6 +82,13 @@ return
 Suspend, Toggle
 ;StopLoop := true    
 return
+
+
+F5:: ; 오토핫키 중단, 한 손 키보드에 필요
+Suspend, Toggle
+;StopLoop := true    
+return
+
 
 CapsLock::
 Pause
@@ -72,7 +102,15 @@ return
 #IfWinActive MapleStory Worlds-옛날바람
 
 
-;----------------------------밀대용 키 세팅---------------------------------------------
+;----------------------------밀대용 키 세팅--------------------------------------------
+;pc에서는 wasd 안 쓰려고 했다. 만약 무빙으로 뭘 해보려면 우클릭 이동인데 이때는 wasd이동하고 오른손은 마우스 괜찮겠다
+;한 번 해볼까?
+; pc에서 wasd 안 쓸 거면 그냥 wasd 지우고 여기에 다른 키들 넣어도 된다.
+;근데 무빙 컨트롤 재밌겠는데..?
+;일단 wasd 놔두고 키보드로 하다가 마우스 이동으로도 한 번 해보자
+;혼 안 걸린 거 마우스 찍어서 써줄 수도 있다
+
+;일단 wasd 안 지우고 한 번 해보고 바꾸자
 
 ;왼쪽 이동
 a::left
@@ -174,9 +212,9 @@ HonHeal(HonCount, LoopCount) {
             SendInput, { left }
             CustomSleep(30)
             SendInput, { enter }
-            CustomSleep(50)  ;밀리면   esc 딜레이와 합해서 80~90으로
+            CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
             SendInput, {Esc}
-            CustomSleep(30) ;
+            CustomSleep(30) 
         }
         SendInput, {Tab}
         CustomSleep(50)
@@ -217,11 +255,7 @@ return
 
 
 
-+space:: ;줍기
-CustomSleep(30)
-SendInput, ,
-CustomSleep(30)
-return
+
 
 
 
@@ -372,7 +406,13 @@ return
 
 q::6 ;금강불체
 ;w::7 ;무력화
-;e::8 ;백호의희원
+
+t::9 ; 공력주입
++g:: ; 부활
+CustomSleep(120)
+SendInput, {0}
+return
+
 
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
@@ -405,11 +445,31 @@ return
 }
 
 
-r::9 ;공력주입
-t::0 ;부활
+r:: ; 선택혼
+SelectionHon()
+return
 
- +r::
- CustomSleep(120)
+SelectionHon() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {4}
+    CustomSleep(30)
+    SendInput, {Click}
+    CustomSleep(30)
+    SendInput, {Enter}
+    CustomSleep(60)  ; 원래 후딜90인데 아래 ESC와 나눠서 함
+    SendInput, {Esc} ; 이미 타겟박스인 것을 클릭하면 엔터칠 필요 없이 바로 시전된다. 그때 엔터키 닫기
+    CustomSleep(50)
+    SendInput, {Tab}
+    CustomSleep(70)
+    SendInput, {Tab}
+    CustomSleep(30)
+return
+}
+
+
+ +r:: ;말타기
+ CustomSleep(100)
  SendInput, {Blind}r
  return
 
@@ -441,7 +501,9 @@ VisionRecovery() {  ;시력회복
 
 
 
-
+b::
+SelfNeutralize()
+return
 
 
 
@@ -551,12 +613,59 @@ SpreadHonmaRight(count) { ;혼마 돌리기(오른쪽)
 
 
 
+;힐 공증 반복시 클릭 or 휠업 or 휠다운시 선택혼 사용하기 위함
+;밀대힐 중 좌클, 휠업, 휠다운 감지해서 동작을 하면 선택혼 날린다.
+;이때 휠업다운은 드르륵 하면 연타로 들어가서 꼬일 수 있으므로 쿨다운 0.5초
+~LButton::
+    LButtonClicked := true  ; 좌클릭 감지 변수 설정
+return
+
+; 휠 업 감지 핫키
+~WheelUp::
+    WheelUpDetected := true  ; 휠 업 감지
+return
+
+; 휠 다운 감지 핫키
+~WheelDown::
+    WheelDownDetected := true  ; 휠 다운 감지
+return
+
+; 쿨타임 해제 타이머를 위함
+ResetListenMouseEventCooldown:
+    ListenMouseEventCooldown := false
+return
+
+
+ListenMouseEvent() {
+    if (LButtonClicked || WheelUpDetected || WheelDownDetected) {
+        LButtonClicked := false  ; 상태 초기화
+        WheelUpDetected := false
+        WheelDownDetected := false
+
+        if (ListenMouseEventCooldown) {
+            return  ; 쿨타임 중이면 바로 종료
+        }
+        
+        SelectionHon()    
+
+        ; 쿨타임 시작 -> 꼬임방지를 위해서 쿨을 앞에 놔둠
+        ListenMouseEventCooldown := true
+        SetTimer, ResetListenMouseEventCooldown, -350  ; 350ms 후 쿨타임 해제
 
 
 
+    }
+    return
+}
 
+
+;힐 공증 반복하기
  TabTabHealRefresh() {
     MildaeHeal := true
+    LButtonClicked := false  ; 상태 초기화
+    WheelUpDetected := false
+    WheelDownDetected := false
+
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
@@ -573,7 +682,11 @@ SpreadHonmaRight(count) { ;혼마 돌리기(오른쪽)
                 Break
                 CustomSleep(20)
             }
+
+           ; 좌클릭 감지 시 로직 수행      
         Loop, 3 {
+            ListenMouseEvent()
+            CustomSleep(20)
             Send, {1}
             CustomSleep(50)        
             Send, {1}
@@ -581,6 +694,9 @@ SpreadHonmaRight(count) { ;혼마 돌리기(오른쪽)
             Send, {1}
             CustomSleep(50)     
             }
+
+        ListenMouseEvent()
+        CustomSleep(20)
         Send, {3}
         CustomSleep(50)
     }
