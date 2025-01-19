@@ -80,6 +80,9 @@ return
 AtPilGum()
 return
 
+
+
+
 RShift:: ;자동 필(한손컨을 위해)
 AtPilGum()
 return
@@ -171,9 +174,9 @@ return
 
 ;한 손 컨 위함. 대신 버프는 Insert로
 End:: ;필동동
-StopLoop := true
 CustomSleep(20)
 PilDongDong()
+StopLoop := true
 return
 
 
@@ -201,7 +204,7 @@ return
  }
 
  ;동동주 2번 먹는 거 90부터 올려봤는데 한 번씩 씹혀서 거의 안 씹히는 딜레이까지 올림
- DrinkDongDongJuTwoShot() { 
+ DrinkDongDongJuTwoShot() {     
            SendInput, {Ctrl Down}
            CustomSleep(20)
            SendInput,a
