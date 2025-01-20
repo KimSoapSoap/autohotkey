@@ -84,7 +84,7 @@ return
 
 
 RShift:: ;자동 필(한손컨을 위해)
-AtPilGum()
+AtBaekGum()()
 return
 
 
@@ -97,9 +97,35 @@ AtPilGum() {
                 Break
                 CustomSleep(20)
             }
-        SendInput, {Blind}2
+        SendInput, {Blind}8
         CustomSleep(30)
         DrinkDongDongJuTwoShot()
+        CustomSleep(800)
+    }
+    return
+}
+
+
+AtBaekGum() {
+    StopLoop := false
+    CustomSleep(30)
+    Loop {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        SendInput, {Blind}2
+        CustomSleep(30)
+        SendInput, {Ctrl Down}
+        CustomSleep(20)
+        SendInput,a
+        CustomSleep(200)
+        SendInput,a
+        CustomSleep(20)
+        SendInput,{Ctrl Up}
+        CustomSleep(20)
+
         CustomSleep(800)
     }
     return
@@ -177,9 +203,17 @@ return
 ;한 손 컨 위함. 대신 버프는 Insert로
 End:: ;필동동
 Critical
-StopLoop := true
+SendInput, {Blind}2 ;PilDongDong()
 CustomSleep(20)
-PilDongDong()
+SendInput, {Ctrl Down}
+CustomSleep(20)
+SendInput,a
+CustomSleep(200)
+SendInput,a
+CustomSleep(20)
+SendInput,{Ctrl Up}
+CustomSleep(20)
+StopLoop := true
 return
 
 
@@ -229,16 +263,17 @@ return
 
 
 
-2:: ;필동동
+2:: ;백검 ;마 좀 올릴 때까지 동동주 먹어준다
 Critical
+SendInput, {Blind}2 ;PilDongDong()
+CustomSleep(30)
+DrinkDongDongJuTwoShot()
 StopLoop := true
-CustomSleep(20)
-PilDongDong()
 return
 
 
 PilDongDong() {
-    SendInput, {Blind}2
+    SendInput, {Blind}8
     CustomSleep(30)
     DrinkDongDongJuTwoShot()
     return
@@ -249,15 +284,12 @@ PilDongDong() {
 
 
 
-
-
-
-3:: ;비영 + 필
+3:: ;비영 + 백호검무
 SendInput, {Blind}1
 CustomSleep(30)
 SendInput, {Blind}2
-CustomSleep(20)
-DrinkDongDongJuTwoShot()
+;CustomSleep(20)
+;DrinkDongDongJuTwoShot()
 return
 
 
