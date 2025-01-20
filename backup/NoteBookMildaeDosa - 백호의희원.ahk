@@ -72,7 +72,7 @@ StopLoopCheck() {
 }
 
 
-Pause::  ; 리로드 ;노트북은 NumpadMult
+NumpadMult::  ; 리로드 ;노트북은 NumpadMult
 Suspend Off       ; Suspend 상태에서 동작하도록 강제로 해제
 StopLoop := true
 Reload
@@ -82,6 +82,13 @@ return
 Suspend, Toggle
 ;StopLoop := true    
 return
+
+
+F5:: ; 오토핫키 중단, 한 손 키보드에 필요
+Suspend, Toggle
+;StopLoop := true    
+return
+
 
 CapsLock::
 Pause
@@ -224,7 +231,7 @@ HonHeal(HonCount, LoopCount) {
             SendInput, {Blind}2 ;백호호
             CustomSleep(50)
         }
-        SendInput, {3}
+        SendInput, {3} ;
         CustomSleep(20)
         ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
         ;CustomSleep(20)
@@ -779,7 +786,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
 }
 
 
-End:: ;  셀프보무 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
+NumpadEnd:: ;  셀프보무 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
 SelfBoMu()
 StopLoop := true
 return
