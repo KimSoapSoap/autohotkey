@@ -221,12 +221,20 @@ HonHeal(HonCount, LoopCount) {
         SendInput, {Tab}
         CustomSleep(40)
 
-        Loop, 4 {
+        Loop, 1 {
             SendInput, {Blind}1
             CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}2 ;백호호
+            CustomSleep(50)
         }
-        SendInput, {3}
-        CustomSleep(10)
+        SendInput, {3} ;
+        CustomSleep(20)
+        ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
+        ;CustomSleep(20)
 
     }
     return
@@ -693,12 +701,16 @@ ListenMouseEvent() {
             CustomSleep(50)        
             Send, {1}
             CustomSleep(50)     
+            Send, {2} ; 백호
+            CustomSleep(50)        
             }
 
         ListenMouseEvent()
         CustomSleep(20)
         Send, {3}
         CustomSleep(50)
+        ;Send, {2} ;원래 공증하고 후딜 50줬는데 백호의희원 배우고 공증 후 백호 쓰고 후딜 30 30 으로 했다가 힐받고 백호주려고 공증뒤엔 다시 뺌
+        ;CustomSleep(30)
     }
     MildaeHeal := false
     SendInput, {Esc}
