@@ -89,7 +89,7 @@ return
 
 
 AtPilGum() {
-    StopLoop := False
+    StopLoop := false
     CustomSleep(30)
     Loop {
         if (StopLoop)
@@ -97,8 +97,10 @@ AtPilGum() {
                 Break
                 CustomSleep(20)
             }
-        PilDongDong()
-        CustomSleep(800)        
+        SendInput, {Blind}2
+        CustomSleep(30)
+        DrinkDongDongJuTwoShot()
+        CustomSleep(800)
     }
     return
 }
@@ -174,9 +176,10 @@ return
 
 ;한 손 컨 위함. 대신 버프는 Insert로
 End:: ;필동동
+Critical
+StopLoop := true
 CustomSleep(20)
 PilDongDong()
-StopLoop := true
 return
 
 
@@ -227,9 +230,10 @@ return
 
 
 2:: ;필동동
-PilDongDong()
-CustomSleep(20)
+Critical
 StopLoop := true
+CustomSleep(20)
+PilDongDong()
 return
 
 
