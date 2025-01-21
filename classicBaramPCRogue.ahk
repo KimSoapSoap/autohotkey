@@ -205,6 +205,7 @@ End:: ;필동동
 Critical
 SendInput, {Blind}2 ;PilDongDong()
 CustomSleep(20)
+Loop, 1 {
 SendInput, {Ctrl Down}
 CustomSleep(20)
 SendInput,a
@@ -213,6 +214,7 @@ SendInput,a
 CustomSleep(20)
 SendInput,{Ctrl Up}
 CustomSleep(20)
+}
 StopLoop := true
 return
 

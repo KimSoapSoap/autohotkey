@@ -440,6 +440,8 @@ return
 F3:: ;자신 선택 & StopLoop
 SendInput, {Home}
 CustomSleep(20)
+SendInput, {Blind}r ;북방 파밍할 때 말 편하게 타려고
+CustomSleep(20)
 StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
 return
 
@@ -477,8 +479,17 @@ return
 
 ;자힐 + 첨 할 때 어쩓 첨이 계속 써지고 알트탭 해서 나갔다 와야 풀렸는데 ctrl + 5(넘패드5) 하니까 풀렸다
 
- `:: ; (자힐 3틱x4 + 첨 ) 4~5틱
+F4::
+SendInput, {shift down}
+CustomSleep(30)
+SendInput, {m}
+CustomSleep(30)
+SendInput, {shift Up}
+return
+
+`:: ; (자힐 3틱x4 + 첨 ) 4~5틱 ;북방파망시 셀프힐첨대신 셀프탭탭힐 사용(주석 이용)
 SelfHealAndChum(20)
+;SelfTapTapHeal(20)
 StopLoop := true
 return
 
@@ -515,6 +526,43 @@ return
     CustomSleep(20)
     return
 }
+
+
+SelfTapTapHeal(count) {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(30)
+    StopLoop := false
+    CustomSleep(20)
+    Loop, %count%
+    {
+        if (StopLoop)
+            {                
+                Break
+                CustomSleep(20)
+            }
+        Send, {1}
+        CustomSleep(50)        
+        Send, {1}
+        CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)        
+        Send, {1}
+        CustomSleep(50)
+        
+    }
+    SendInput, {Esc}
+    CustomSleep(30)
+    return
+}
+
+
+
  
  
 
