@@ -479,7 +479,7 @@ return
 
 ;자힐 + 첨 할 때 어쩓 첨이 계속 써지고 알트탭 해서 나갔다 와야 풀렸는데 ctrl + 5(넘패드5) 하니까 풀렸다
 
-F4::
+F4:: ;지도
 SendInput, {shift down}
 CustomSleep(30)
 SendInput, {m}
