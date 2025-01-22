@@ -828,7 +828,42 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
 
 
 
+F6:: ;이미지 서칭 테스트
+TabTabChase()
+return
 
+TabTabChase() {
+    tabtab := A_ScriptDir . "\img\dosa\tabtab.png"
+
+    ImageSearch, FoundX2, FoundY2, 0, 0, A_ScreenWidth, A_ScreenHeight, %tabtab% ;탭탭라인 검색
+    ImgResult1 := ErrorLevel ; 탭탭된 캐릭터 따라가기 위함
+    if(ImgResult1 = 0) {
+        SendInput, {Blind}0
+        MouseMove, FoundX1, FoundY1
+        CustomSleep(30)
+        Click, Right
+    } 
+}
+return
+
+F7::
+DeathCheck()
+return
+
+DeathCheck() {
+    death := A_ScriptDir . "\img\dosa\death.png"
+
+    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %death% ;유령상태
+    ImgResult1 := ErrorLevel ; 
+    if(ImgResult1 = 0) {
+        SendInput, {Blind}0        
+    } else if(ImgResult1 = 1) {
+        SendInput, {Blind}1
+    } else {
+        SendInput, {Blind}2
+    }
+}
+return
 
 
 
