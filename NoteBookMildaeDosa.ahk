@@ -241,7 +241,57 @@ HonHeal(HonCount, LoopCount) {
 }
 
 
+ChaseHonHeal() { 
+    StopLoop := false
+    StopHonHeal := false
 
+    loop
+    {
+        if (StopLoop || StopHonHeal)
+            {            
+                Break
+                CustomSleep(20)
+            }
+
+        DeathCheck()
+        Loop, 3 {
+            SendInput, {Esc}
+            CustomSleep(20)
+            SendInput, 4
+            CustomSleep(30)
+            SendInput, { left }
+            CustomSleep(30)
+            SendInput, { enter }
+            CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
+            SendInput, {Esc}
+            CustomSleep(30) 
+        }
+        SendInput, {Tab}
+        CustomSleep(50)
+        SendInput, {Tab}
+        CustomSleep(40)
+
+        TabTabChase()
+        Loop, 1 {
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}2 ;백호
+            CustomSleep(30) ;후딜 50이었는데 추적과 나눔눔
+            TabTabChase()
+        }
+        SendInput, {3} ;
+        CustomSleep(20)
+        TabTabChase()  ;이거 넣기 전까지는 일단 괜찮았다. 넣어보고 이상하면 빼자
+        ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
+        ;CustomSleep(20)
+
+    }
+    return
+}
 
 
 
@@ -282,9 +332,13 @@ return
 
 
 
-F1:: ; 숫자 1
-SendInput, {Blind}1
-CustomSleep(30)
+F1:: ; 추적혼힐
+ChaseHonHeal()
+return
+
+^1:: ;추적 밀대
+CustomSleep(120)
+ChaseMildae()
 return
 
 
@@ -384,6 +438,7 @@ return
 ;도사는 StopLoop를 빠르게 사용할 일이 많아서 2번에도 넣어뒀다.
 2:: ; 루프 정지
 StopLoop := true
+Click, Right up
 return
 
 
@@ -826,6 +881,65 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
 }
 
 
+ChaseMildae() {
+    MildaeHeal := true
+    LButtonClicked := false  ; 상태 초기화
+    WheelUpDetected := false
+    WheelDownDetected := false
+
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(30)
+    StopLoop := false
+    CustomSleep(20)
+
+    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
+    {
+        if (StopLoop)
+            {                
+                Break
+                CustomSleep(20)
+            }
+
+           ; 좌클릭 감지 시 로직 수행      
+        DeathCheck()
+        CustomSleep(10)
+        TabTabChase()
+        CustomSleep(10)
+        Loop, 3 {
+            ListenMouseEvent()
+            CustomSleep(20)
+            Send, {1}
+            CustomSleep(50)        
+            Send, {1}
+            CustomSleep(50)        
+            Send, {1}
+            CustomSleep(50)     
+            Send, {2} ; 백호
+            CustomSleep(50)        
+            TabTabChase()
+            CustomSleep(20)
+            }        
+        ListenMouseEvent()
+        CustomSleep(20)
+        Send, {3}
+        CustomSleep(50)
+        TabTabChase()
+        CustomSleep(20)
+        ;Send, {2} ;원래 공증하고 후딜 50줬는데 백호의희원 배우고 공증 후 백호 쓰고 후딜 30 30 으로 했다가 힐받고 백호주려고 공증뒤엔 다시 뺌
+        ;CustomSleep(30)
+    }
+    MildaeHeal := false
+    SendInput, {Esc}
+    CustomSleep(30)
+    return
+}
+
+
+
 
 
 F6:: ;이미지 서칭 테스트
@@ -833,16 +947,21 @@ TabTabChase()
 return
 
 TabTabChase() {
-    tabtab := A_ScriptDir . "\img\dosa\tabtab.png"
+    tabtab := A_ScriptDir . "\img\dosa\tabtab4.png" ;탭탭4번 그림으로
 
-    ImageSearch, FoundX2, FoundY2, 0, 0, A_ScreenWidth, A_ScreenHeight, %tabtab% ;탭탭라인 검색
+    ImageSearch, FoundX1, FoundY1, 0, 0, A_ScreenWidth, A_ScreenHeight,*30 %tabtab% ;탭탭라인 검색
     ImgResult1 := ErrorLevel ; 탭탭된 캐릭터 따라가기 위함
     if(ImgResult1 = 0) {
-        SendInput, {Blind}0
+        ;SendInput, {Blind}1 ;확인용 코드
         MouseMove, FoundX1, FoundY1
-        CustomSleep(30)
-        Click, Right
-    } 
+        Click, Right down
+        CustomSleep(50)
+        Click, Right up
+    } else if(ImgResult1 = 1) {
+        ;SendInput, {2} ;확인용 코드
+    } else {
+        ;SendInput, 3 ;확인용 코드
+    }
 }
 return
 
@@ -856,11 +975,9 @@ DeathCheck() {
     ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %death% ;유령상태
     ImgResult1 := ErrorLevel ; 
     if(ImgResult1 = 0) {
-        SendInput, {Blind}0        
+        Rev()
     } else if(ImgResult1 = 1) {
-        SendInput, {Blind}1
     } else {
-        SendInput, {Blind}2
     }
 }
 return
