@@ -222,6 +222,7 @@ Loop,1 ;일단 한 번
         ;마비 딜레이 신경 안 써도 되니 첫 마비이후 중독첨2 자힐첨1로 딜레이 맞췄는데 이제는 중독첨2 저주첨1 자힐첨1 하면 될듯
     {       
         StopLoopCheck()
+        SafeRestoreMana() ; 마나 부족시 공증
         Loop, 1 ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
             { 
             StopLoopCheck()         
@@ -232,27 +233,29 @@ Loop,1 ;일단 한 번
                 ;FourWayCurseAndParalysis() ;4방향 마비
                 ;}
             CustomSleep(100)
-        }      
+        }          
+        SafeRestoreMana()    
         Loop,2 ;중독첨
             {
             StopLoopCheck()
             SpreadPoisonAndChum(20) ;중독첨 돌리기
             CustomSleep(30)
             }
+        SafeRestoreMana()    
         Loop,1 ;저주첨 
             {
             StopLoopCheck()
             SpreadCurseAndChum(20) ; 저주첨 돌리기
             CustomSleep(30)
             }
-       
+        SafeRestoreMana()
         Loop,1 ; 자힐첨
             {            
             StopLoopCheck()
             SelfHealAndChum(20) 
             CustomSleep(30)
             }
-
+        SafeRestoreMana()
         Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
             ;공증 실패하면 마나 부족 이슈
             ;원래는 자힐첨 앞에서 홀수마다 한 번씩 공증했는데 자힐첨 뒤에 짝수마다(첫 번째에도 공증 시도)로 잠시 바꿔봄
@@ -1144,10 +1147,67 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
 }
 
 
+F6:: ;이미지 서칭 테스트
+HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
+
+ImageSearch, FoundX2, FoundY2, 1300, 700, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
+ImgResult2 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것 -> 공력증강 상용시 위험
+if(ImgResult2 = 0) {
+    SendInput, {Blind}0
+} else if(ImgResult2 = 1) {
+    SendInput, {Blind}1
+} else {
+    SendInput, 2
+}
+return
 
 
 
+SafeRestoreMana() { ; 체력 절반쯤 이상이면 공력증강(안전한 공력증강)
+      ; 이미지 경로 설정 (실행한 스크립트의 상대경로)
+      ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
+      HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
 
+    ; 화면의 특정 영역에서 이미지 검색    
+    ; ImageSearch, OutputX, OutputY, X1, Y1, X2, Y2, ImageFile(변수사용은 %%로 감싸서 %ImagePath%)
+    ; 이미지를 검색하고 나서 결과는 ErrorLevel에 저장되는데 이를 다른 이름의 변수에 넣어서 활용해도 된다.( ImageResult1 := ErrorLevel 이런식으로)
+    ; ErrorLevel = 0은 이미지가 발견o, 1은 발견x, 2는 이미지 경로를 찾을 수 없음
+    ; 만약 이미지 일치정도를 조절하려면
+    ; ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, *100 %ImagePath% 
+    ;-> 이미지파일 앞에 *숫자는 일치허용범위 조절 가능 0~255까지 가능하며 기본0(완전 동일한 것을 검색) 높을 수록 유사도가 낮아도 매칭됨
+    ; 0~150정도로 ㄱㄱ
+    ; *숫자 말고 *TransColor: 특정 색상을 무시 ( 예: *Trans0xFFFFFF  -> 흰색 배경 무시)
+    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+    ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
+    CustomSleep(10)
+    ImageSearch, FoundX2, FoundY2, 1300, 700, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
+    ImgResult2 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것 -> 공력증강 상용시 위험
+
+
+    if (ImgResult1 = 1 && ImgResult2 = 1) ;마나 거의 없고 피 절반쯤 이상일 때
+                        ; -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용하자
+        {            
+            ; 공력증강
+            SendInput, {3}
+            CustomSleep(30)
+        }
+    return
+}
+
+
+RestoreMana() {
+    ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
+    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+    ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
+    if (ImgResult1 = 1) { ;마나 거의 없을 때(체력 상관x)
+    ;   -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용
+        
+        ; 공력증강
+        SendInput, {3}
+        CustomSleep(30)
+    }
+    return
+}
 
 
 
