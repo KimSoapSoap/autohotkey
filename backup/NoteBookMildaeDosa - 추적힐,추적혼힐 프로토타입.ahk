@@ -280,12 +280,12 @@ ChaseHonHeal() {
             SendInput, {Blind}1
             CustomSleep(50)
             SendInput, {Blind}2 ;백호
-            CustomSleep(30) ;후딜 50이었는데 추적을 뒤에 넣고 30으로 줄이면 얼추 비슷
+            CustomSleep(30) ;후딜 50이었는데 추적과 나눔눔
             TabTabChase()
         }
         SendInput, {3} ;
         CustomSleep(20)
-        ;TabTabChase()  ;이거 넣기 전까지는 일단 괜찮았다. 넣어보고 이상하면 빼자
+        TabTabChase()  ;이거 넣기 전까지는 일단 괜찮았다. 넣어보고 이상하면 빼자
         ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
         ;CustomSleep(20)
 
@@ -955,7 +955,7 @@ TabTabChase() {
         ;SendInput, {Blind}1 ;확인용 코드
         MouseMove, FoundX1, FoundY1
         Click, Right down
-        CustomSleep(10) ; 원래 50 했었다
+        CustomSleep(50)
         Click, Right up
     } else if(ImgResult1 = 1) {
         ;SendInput, {2} ;확인용 코드
