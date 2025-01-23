@@ -228,7 +228,7 @@ HonHeal(HonCount, LoopCount) {
             CustomSleep(50)
             SendInput, {Blind}1
             CustomSleep(50)
-            SendInput, {Blind}2 ;백호호
+            SendInput, {Blind}2 ;백호
             CustomSleep(50)
         }
         SendInput, {3} ;
@@ -242,8 +242,22 @@ HonHeal(HonCount, LoopCount) {
 
 
 ChaseHonHeal() { 
+    MildaeHeal := true
+    LButtonClicked := false  ; 상태 초기화
+    WheelUpDetected := false
+    WheelDownDetected := false
+
     StopLoop := false
     StopHonHeal := false
+
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(50)
+
+    
 
     loop
     {
@@ -251,6 +265,7 @@ ChaseHonHeal() {
             {            
                 Break
                 CustomSleep(20)
+                Click, Right up ;추적 우클릭이동 해제
             }
 
         DeathCheck()
@@ -290,6 +305,8 @@ ChaseHonHeal() {
         ;CustomSleep(20)
 
     }
+    CustomSleep(20)
+    Click, Right up  ;추적 우클릭 해제 방지2
     return
 }
 
@@ -361,9 +378,9 @@ return
 
 
 F3:: ;자신 선택 & StopLoop
+StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
 SendInput, {Home}
 CustomSleep(20)
-StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
 return
 
 
@@ -438,7 +455,6 @@ return
 ;도사는 StopLoop를 빠르게 사용할 일이 많아서 2번에도 넣어뒀다.
 2:: ; 루프 정지
 StopLoop := true
-Click, Right up
 return
 
 
@@ -729,14 +745,14 @@ ListenMouseEvent() {
     WheelUpDetected := false
     WheelDownDetected := false
 
+    StopLoop := false
+
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
     CustomSleep(40)
     SendInput, {Tab}
-    CustomSleep(30)
-    StopLoop := false
-    CustomSleep(20)
+    CustomSleep(50)
 
     Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
     {
@@ -902,6 +918,7 @@ ChaseMildae() {
             {                
                 Break
                 CustomSleep(20)
+                Click, Right up ;추적 우클릭이동 해제
             }
 
            ; 좌클릭 감지 시 로직 수행      
@@ -935,6 +952,7 @@ ChaseMildae() {
     MildaeHeal := false
     SendInput, {Esc}
     CustomSleep(30)
+    Click, Right up  ;추적 우클릭 해제 방지2
     return
 }
 
@@ -947,16 +965,18 @@ TabTabChase()
 return
 
 TabTabChase() {
+    Click, Right up ;우클 해제
+
     tabtab := A_ScriptDir . "\img\dosa\tabtab4.png" ;탭탭4번 그림으로
 
     ImageSearch, FoundX1, FoundY1, 0, 0, A_ScreenWidth, A_ScreenHeight,*30 %tabtab% ;탭탭라인 검색
     ImgResult1 := ErrorLevel ; 탭탭된 캐릭터 따라가기 위함
     if(ImgResult1 = 0) {
         ;SendInput, {Blind}1 ;확인용 코드
-        MouseMove, FoundX1, FoundY1
-        Click, Right down
+        MouseMove, FoundX1+30, FoundY1+50
+        Click, Right down ;우클 이동
         CustomSleep(10) ; 원래 50 했었다
-        Click, Right up
+
     } else if(ImgResult1 = 1) {
         ;SendInput, {2} ;확인용 코드
     } else {
