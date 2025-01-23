@@ -230,6 +230,8 @@ HonHeal(HonCount, LoopCount) {
             CustomSleep(50)
             SendInput, {Blind}2 ;백호
             CustomSleep(50)
+            SendInput, {Blind}1 ;백호 쿨일 때 생명 3틱 쓰려고. 틱당 3회 회복은 50후딜로는 4번 해야되더라
+            CustomSleep(50)
         }
         SendInput, {3} ;
         CustomSleep(20)
@@ -295,7 +297,9 @@ ChaseHonHeal() {
             SendInput, {Blind}1
             CustomSleep(50)
             SendInput, {Blind}2 ;백호
-            CustomSleep(30) ;후딜 50이었는데 추적을 뒤에 넣고 30으로 줄이면 얼추 비슷
+            CustomSleep(50) ;후딜 50이었는데 추적을 뒤에 넣고 30으로 줄이면 얼추 비슷
+            SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고
+            CustomSleep(50)
             TabTabChase()
         }
         SendInput, {3} ;
