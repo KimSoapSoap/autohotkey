@@ -29,6 +29,8 @@ global StopLoop := false
 global ManaRefresh := 0
 global FourWayMabi := 0
 
+; 지도 상태를 관리하는 변수 (처음엔 닫힌 상태로 초기화)
+global isMapOpen := false
 
 ; 전역적으로 랜덤 값을 추가하는 함수 정의
 CustomSleep(SleepTime) {
@@ -136,12 +138,32 @@ AtBaekGum() {
 
 
 ;우측 컨트롤 키(키 히스토리로)
-SC11D:: ;도적 한 손 드리블할 때. 우측 ctrl로 비영승보 사용
+SC11D:: ;도적 한 손 드리블할 때. 우측 ctrl로 비영승보 사용. 투컴시 필요할까봐 말타기도 넣음
+SendInput, {Blind}r 
+CustomSleep(20)
 SendInput, {Blind}1
 return
 
 
 
+
+
+AppsKey:: ;한손컨시 지도(우측 ctrl 왼쪽 키)
+CustomSleep(100)
+if (isMapOpen) {
+    ; 지도가 열려 있다면 ESC로 닫기
+    SendInput, {ESC}
+    isMapOpen := false
+} else {
+    ; 지도가 닫혀 있다면 Shift + M으로 열기
+    SendInput, {Shift Down}
+    CustomSleep(30)
+    SendInput, {M}
+    CustomSleep(30)
+    SendInput, {Shift Up}
+    isMapOpen := true
+}
+return
 
 
 
@@ -257,11 +279,20 @@ return
 
 
 F3:: ;자신 선택 & StopLoop
+StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
 SendInput, {Home}
 CustomSleep(20)
-StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
+SendInput, {Blind}r ;북방 파밍할 때 말 편하게 타려고
 return
 
+
+F4:: ;지도
+SendInput, {shift down}
+CustomSleep(30)
+SendInput, {m}
+CustomSleep(30)
+SendInput, {shift Up}
+return
 
 
 
