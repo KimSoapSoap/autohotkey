@@ -348,16 +348,19 @@ CustomSleep(40)
 return
 
 
-
-F1:: ; 추적혼힐
-ChaseHonHeal()
-return
-
 ^1:: ;추적 밀대
 CustomSleep(120)
 ChaseMildae()
 return
 
+^2:: ;따라가기
+CustomSleep(120)
+ChaseOnly()
+return
+
+F1:: ; 추적혼힐
+ChaseHonHeal()
+return
 
  F2:: ; 동동주 마시기용, a에 동동주
  DrinkDongDongJu()
@@ -903,14 +906,13 @@ ChaseMildae() {
     WheelUpDetected := false
     WheelDownDetected := false
 
+    StopLoop := false
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
     CustomSleep(40)
     SendInput, {Tab}
-    CustomSleep(30)
-    StopLoop := false
-    CustomSleep(20)
+    CustomSleep(50)
 
     Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
     {
@@ -958,6 +960,46 @@ ChaseMildae() {
 
 
 
+ChaseOnly() {
+    LButtonClicked := false  ; 상태 초기화
+    WheelUpDetected := false
+    WheelDownDetected := false
+
+    StopLoop := false
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(50)
+
+    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
+    {
+        if (StopLoop)
+            {                
+                Break
+                CustomSleep(20)
+                Click, Right up ;추적 우클릭이동 해제
+            }
+
+           ; 좌클릭 감지 시 로직 수행      
+        DeathCheck()
+        CustomSleep(30)       
+        ListenMouseEvent()
+        CustomSleep(30)
+        TabTabChase()
+        CustomSleep(50)
+    }
+    SendInput, {Esc}
+    CustomSleep(30)
+    Click, Right up  ;추적 우클릭 해제 방지2
+    return
+}
+
+
+
+
+
 
 
 F6:: ;이미지 서칭 테스트
@@ -965,7 +1007,7 @@ TabTabChase()
 return
 
 TabTabChase() {
-    Click, Right up ;우클 해제
+    ;Click, Right up ;우클 해제. 어차피 계속 따라다닐 거면 중지할 때만 해제해주면 되지 않나?. 여기서 우클 해제는 이걸 빼보자.
 
     tabtab := A_ScriptDir . "\img\dosa\tabtab4.png" ;탭탭4번 그림으로
 
