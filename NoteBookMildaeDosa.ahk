@@ -349,12 +349,12 @@ return
 
 
 ^1:: ;추적 밀대
-CustomSleep(120)
+CustomSleep(150)
 ChaseMildae()
 return
 
 ^2:: ;따라가기
-CustomSleep(120)
+CustomSleep(150)
 ChaseOnly()
 return
 
@@ -384,12 +384,13 @@ F3:: ;자신 선택 & StopLoop
 StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
 SendInput, {Home}
 CustomSleep(20)
+SendInput, {Blind}r
 return
 
 
 `:: ; 자힐 3틱
 SelfHeal()
-StopLoop := true
+;StopLoop := true ;중단 안 하는쪽으로 가기 위해 주석처리
 return
 
  SelfHeal() {
@@ -411,7 +412,11 @@ return
         CustomSleep(90)
     }
     SendInput, {Esc}
-    CustomSleep(20)    
+    CustomSleep(20)
+    SendInput, {Tab} ;격수 힐 중이었을 때를 대비해 마지막에 탭탭
+    CustomSleep(50)
+    SendInput, {Tab}
+    CustomSleep(40)
     return
 }
 
