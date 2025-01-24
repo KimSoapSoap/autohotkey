@@ -61,6 +61,13 @@ CustomSleep(SleepTime) {
     Sleep, SleepTime + RandomValue
 }
 
+; 랜덤 좌표값을 위함
+GetRandomValue(x, minRange, maxRange) {
+    Random, offset, minRange, maxRange ;  x값에 minRange, maxRange 설정해서  x값에 더해주는 것 (음수 가능)
+    return x + offset
+}
+
+
 
 StopLoopCheck() {
     if (StopLoop)
@@ -1095,6 +1102,10 @@ return
 
 TabTabChase() {
     ;Click, Right up ;우클 해제. 어차피 계속 따라다닐 거면 중지할 때만 해제해주면 되지 않나?. 여기서 우클 해제는 이걸 빼보자.
+    ;우선 x좌표는 딱 중간쯤이라 좌우로는 캐릭이 중간에 잘 선다. y좌표만 길통과할 때 편의를 위해서 랜덤으로 박스 조금 위, 아래에도 위치할 수 있게 했다.
+    ;좌우 이동 랜덤은 조금 더 지켜보고 해보자.
+
+    RY := GetRandomValue(50,-80, 50) ;y좌표에 사용할 것이므로 찾은 좌표에서 -를 해주면 위로, +해주면 아래로 가는 것에 주의.
 
     tabtab := A_ScriptDir . "\img\dosa\tabtab4.png" ;탭탭4번 그림으로
 
@@ -1102,7 +1113,7 @@ TabTabChase() {
     ImgResult1 := ErrorLevel ; 탭탭된 캐릭터 따라가기 위함
     if(ImgResult1 = 0) {
         ;SendInput, {Blind}1 ;확인용 코드
-        MouseMove, FoundX1+30, FoundY1+50, 1
+        MouseMove, FoundX1+30, FoundY1 + RY, 1  ;x값은 +30해두면 위아래는 우클이동시 중간에 잘 붙음 y값이 +50이었는데 랜덤값줘서 우클이동시 뒤아래로 움직이게
         Click, Right down ;우클 이동
         ;CustomSleep(10) ; 원래 50 했었고 힐틱 밀리는 원인일까 싶어 빼놨다
 
