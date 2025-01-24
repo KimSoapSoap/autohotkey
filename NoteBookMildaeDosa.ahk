@@ -147,7 +147,7 @@ return
 
 ;수정혼 + 적당한 몹수
 f:: ; 
-HonHeal(3,99)
+HonHeal(3,4)
 return
 
 ;수정혼 + 적은 수수
