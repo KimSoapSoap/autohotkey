@@ -293,6 +293,11 @@ CustomSleep(150)
 ChaseOnly()
 return
 
++space:: ;제자리 혼힐
+CustomSleep(150)
+StandingHonHeal()
+return
+
 F1:: ; 추적혼힐
 ChaseHonHeal()
 return
@@ -410,6 +415,8 @@ return
 CustomSleep(120)
 SendInput, {Blind}2
 return
+
+
 
 ; sendInput Esc 뒤에 CustomSleep(20) 하니까 탭탭이 씹히고 30으로 하니까 괜찮더라
 ;꼬임 방지 esc 뒤에 sleep은 최소 30으로 해준다.
@@ -705,22 +712,26 @@ ListenMouseEvent() {
                 CustomSleep(20)
             }
         DeathCheck()
-        Loop, 3 { ;왜 3회 반복으로 해놨지? 다른 별다른 로직이 없어서 그런가.  -> 결론은 루프3에 생명3+백호1 사용
+        Loop, 1 { ;왜 3회 반복으로 해놨지? 다른 별다른 로직이 없어서 그런가.  -> 결론은 루프3에 생명3+백호1 사용
             ; 루프1. 즉 반복 없을 때는 힐3틱 주려면 힐스킬 4번 넣어야 된다. 후딜 50으로 생명3번 넣으면 2번만 시전하고 한 번씩 백호 패스함.
             ; 생명x3 + 백호1에서 마지막에 생명 하나 더 넣어놔야 백호 쿨 있을 때 생명2백호1, 없을 때 생명3 시전 가능
             ; 루프3 이면 그냥 힐3 백호1만 넣어줘도 많이 시도하므로 힐틱이 밀리지 않고 백호도 꼬박꼬박 잘 쓴다.
+
+            ;아니면 루프1로 하고 앞에 기원3번을 후딜70으로 하면 괜찮았다.
 
             ;좌클릭,휠 업다운 감지 시 로직 수행      
             ListenMouseEvent()
             CustomSleep(20)
             Send, {1}
-            CustomSleep(50)        
+            CustomSleep(70)        
             Send, {1}
-            CustomSleep(50)        
+            CustomSleep(70)        
             Send, {1}
-            CustomSleep(50)     
+            CustomSleep(70)     
             Send, {2} ; 백호
-            CustomSleep(50)         
+            CustomSleep(50)  
+            Send, {1}
+            CustomSleep(20)                     
             
             }
 
@@ -896,7 +907,7 @@ ChaseMildae() {
 
 
 
-ChaseHonHeal() { 
+ChaseHonHeal() {  ;추적 혼힐힐
     MildaeHeal := true
     LButtonClicked := false  ; 상태 초기화
     WheelUpDetected := false
@@ -911,8 +922,6 @@ ChaseHonHeal() {
     CustomSleep(40)
     SendInput, {Tab}
     CustomSleep(50)
-
-    
 
     loop
     {
@@ -964,6 +973,73 @@ ChaseHonHeal() {
     return
 }
 
+
+
+
+
+StandingHonHeal() { ;제자리 혼힐힐
+    MildaeHeal := true
+    LButtonClicked := false  ; 상태 초기화
+    WheelUpDetected := false
+    WheelDownDetected := false
+
+    StopLoop := false
+    StopHonHeal := false
+
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(50)
+
+    loop
+    {
+        if (StopLoop || StopHonHeal)
+            {            
+                Break
+                CustomSleep(20)
+                Click, Right up ;추적 우클릭이동 해제
+            }
+
+        DeathCheck()
+        Loop, 3 {
+            SendInput, {Esc}
+            CustomSleep(20)
+            SendInput, 4
+            CustomSleep(30)
+            SendInput, { left }
+            CustomSleep(30)
+            SendInput, { enter }
+            CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
+            SendInput, {Esc}
+            CustomSleep(30) 
+        }
+        SendInput, {Tab}
+        CustomSleep(50)
+        SendInput, {Tab}
+        CustomSleep(10) ; 후딜 40인데 뒤에 추적있어서 후딜 10으로 낮춰봄
+
+        Loop, 1 {
+            SendInput, {Blind}1 ;탭탭추적 빼니까 한 번씩 백호 건너띈다. 너무 빨리 힐틱이 돌아서 그런듯 그래서 앞에 생명3 후딜70으로 하니까 괜찮아졌다.
+            CustomSleep(70)
+            SendInput, {Blind}1
+            CustomSleep(70)
+            SendInput, {Blind}1
+            CustomSleep(70)
+            SendInput, {Blind}2 ;백호
+            CustomSleep(50) 
+            SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고 넣음. 후딜50으로는 생명4번 넣어야 기원 힐틱 3번 가능. 백호 쿨 있으면 생명2백호1, 없으면 생명3
+            CustomSleep(50) ; 
+        }
+        SendInput, {3} ;
+        CustomSleep(20)
+
+    }
+    CustomSleep(20)
+    Click, Right up  ;추적 우클릭 해제 방지2
+    return
+}
 
 
 
