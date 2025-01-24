@@ -705,8 +705,12 @@ ListenMouseEvent() {
                 CustomSleep(20)
             }
         DeathCheck()
-        Loop, 3 {
-           ; 좌클릭,휠 업다운 감지 시 로직 수행      
+        Loop, 3 { ;왜 3회 반복으로 해놨지? 다른 별다른 로직이 없어서 그런가.  -> 결론은 루프3에 생명3+백호1 사용
+            ; 루프1. 즉 반복 없을 때는 힐3틱 주려면 힐스킬 4번 넣어야 된다. 후딜 50으로 생명3번 넣으면 2번만 시전하고 한 번씩 백호 패스함.
+            ; 생명x3 + 백호1에서 마지막에 생명 하나 더 넣어놔야 백호 쿨 있을 때 생명2백호1, 없을 때 생명3 시전 가능
+            ; 루프3 이면 그냥 힐3 백호1만 넣어줘도 많이 시도하므로 힐틱이 밀리지 않고 백호도 꼬박꼬박 잘 쓴다.
+
+            ;좌클릭,휠 업다운 감지 시 로직 수행      
             ListenMouseEvent()
             CustomSleep(20)
             Send, {1}
@@ -716,7 +720,8 @@ ListenMouseEvent() {
             Send, {1}
             CustomSleep(50)     
             Send, {2} ; 백호
-            CustomSleep(50)        
+            CustomSleep(50)         
+            
             }
 
         ListenMouseEvent()
@@ -864,31 +869,23 @@ ChaseMildae() {
 
            ; 좌클릭 감지 시 로직 수행      
         DeathCheck()
-        CustomSleep(10)
         TabTabChase()
-        CustomSleep(10)
-        Loop, 3 {
-            ListenMouseEvent()
-            CustomSleep(20)
-            Send, {1}
-            CustomSleep(50)        
-            Send, {1}
-            CustomSleep(50)        
-            Send, {1}
-            CustomSleep(50)     
-            Send, {2} ; 백호
-            CustomSleep(50)        
-            TabTabChase()
-            CustomSleep(20)
-            }        
+        Loop, 1 {
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}2 ;백호
+            CustomSleep(50) 
+            SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고 넣음. 후딜50으로는 생명4번 넣어야 기원 힐틱 3번 가능. 백호 쿨 있으면 생명2백호1, 없으면 생명3
+            CustomSleep(10) ; 후딜 50인데 뒤에 추적있어서 후딜 10으로 낮춰봄
+        }
+        TabTabChase()
         ListenMouseEvent()
+        Send, {3} ;공력증강
         CustomSleep(20)
-        Send, {3}
-        CustomSleep(50)
-        TabTabChase()
-        CustomSleep(20)
-        ;Send, {2} ;원래 공증하고 후딜 50줬는데 백호의희원 배우고 공증 후 백호 쓰고 후딜 30 30 으로 했다가 힐받고 백호주려고 공증뒤엔 다시 뺌
-        ;CustomSleep(30)
     }
     MildaeHeal := false
     SendInput, {Esc}
@@ -942,7 +939,7 @@ ChaseHonHeal() {
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
-        CustomSleep(40)
+        CustomSleep(10) ; 후딜 40인데 뒤에 추적있어서 후딜 10으로 낮춰봄
 
         TabTabChase()
         Loop, 1 {
@@ -953,16 +950,13 @@ ChaseHonHeal() {
             SendInput, {Blind}1
             CustomSleep(50)
             SendInput, {Blind}2 ;백호
-            CustomSleep(50) ;후딜 50이었는데 추적을 뒤에 넣고 30으로 줄이면 얼추 비슷
-            SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고
-            CustomSleep(50)
+            CustomSleep(50) 
+            SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고 넣음. 후딜50으로는 생명4번 넣어야 기원 힐틱 3번 가능. 백호 쿨 있으면 생명2백호1, 없으면 생명3
+            CustomSleep(10) ; 후딜 50인데 뒤에 추적있어서 후딜 10으로 낮춰봄
             TabTabChase()
         }
         SendInput, {3} ;
         CustomSleep(20)
-        ;TabTabChase()  ;이거 넣고 힐틱 밀리면 빼자자
-        ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
-        ;CustomSleep(20)
 
     }
     CustomSleep(20)
@@ -1032,7 +1026,7 @@ TabTabChase() {
     ImgResult1 := ErrorLevel ; 탭탭된 캐릭터 따라가기 위함
     if(ImgResult1 = 0) {
         ;SendInput, {Blind}1 ;확인용 코드
-        MouseMove, FoundX1+30, FoundY1+50
+        MouseMove, FoundX1+30, FoundY1+50, 1
         Click, Right down ;우클 이동
         ;CustomSleep(10) ; 원래 50 했었고 힐틱 밀리는 원인일까 싶어 빼놨다
 
