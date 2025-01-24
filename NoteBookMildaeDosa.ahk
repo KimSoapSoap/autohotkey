@@ -147,7 +147,7 @@ return
 
 ;수정혼 + 적당한 몹수
 f:: ; 
-HonHeal(3,4)
+HonHeal(3,99)
 return
 
 ;수정혼 + 적은 수수
@@ -208,7 +208,6 @@ HonHeal(HonCount, LoopCount) {
             CustomSleep(20)
             SendInput, 4
             CustomSleep(30)
-            ;SendInput, { right }
             SendInput, { left }
             CustomSleep(30)
             SendInput, { enter }
@@ -221,6 +220,7 @@ HonHeal(HonCount, LoopCount) {
         SendInput, {Tab}
         CustomSleep(40)
 
+        DeathCheck() ; 탭탭하고 나서 도사 유령확인 넣어봄 힐틱 밀리면 이거 뺀다
         Loop, 1 {
             SendInput, {Blind}1
             CustomSleep(50)
@@ -232,6 +232,8 @@ HonHeal(HonCount, LoopCount) {
             CustomSleep(50)
             SendInput, {Blind}1 ;백호 쿨일 때 생명 3틱 쓰려고. 틱당 3회 회복은 50후딜로는 4번 해야되더라
             CustomSleep(50)
+            ;SendInput, {Blind}1 ;백호 쿨일 때 생명2번만 나가더라. 혼마랑 같이 써져서 제한때문인지 테스트 후 힐틱 밀리면 빼던가 하자
+            ;CustomSleep(50)
         }
         SendInput, {3} ;
         CustomSleep(20)
@@ -242,77 +244,6 @@ HonHeal(HonCount, LoopCount) {
     return
 }
 
-
-ChaseHonHeal() { 
-    MildaeHeal := true
-    LButtonClicked := false  ; 상태 초기화
-    WheelUpDetected := false
-    WheelDownDetected := false
-
-    StopLoop := false
-    StopHonHeal := false
-
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(50)
-
-    
-
-    loop
-    {
-        if (StopLoop || StopHonHeal)
-            {            
-                Break
-                CustomSleep(20)
-                Click, Right up ;추적 우클릭이동 해제
-            }
-
-        DeathCheck()
-        Loop, 3 {
-            SendInput, {Esc}
-            CustomSleep(20)
-            SendInput, 4
-            CustomSleep(30)
-            SendInput, { left }
-            CustomSleep(30)
-            SendInput, { enter }
-            CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
-            SendInput, {Esc}
-            CustomSleep(30) 
-        }
-        SendInput, {Tab}
-        CustomSleep(50)
-        SendInput, {Tab}
-        CustomSleep(40)
-
-        TabTabChase()
-        Loop, 1 {
-            SendInput, {Blind}1
-            CustomSleep(50)
-            SendInput, {Blind}1
-            CustomSleep(50)
-            SendInput, {Blind}1
-            CustomSleep(50)
-            SendInput, {Blind}2 ;백호
-            CustomSleep(50) ;후딜 50이었는데 추적을 뒤에 넣고 30으로 줄이면 얼추 비슷
-            SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고
-            CustomSleep(50)
-            TabTabChase()
-        }
-        SendInput, {3} ;
-        CustomSleep(20)
-        ;TabTabChase()  ;이거 넣기 전까지는 일단 괜찮았다. 넣어보고 이상하면 빼자
-        ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
-        ;CustomSleep(20)
-
-    }
-    CustomSleep(20)
-    Click, Right up  ;추적 우클릭 해제 방지2
-    return
-}
 
 
 
@@ -968,6 +899,84 @@ ChaseMildae() {
 
 
 
+ChaseHonHeal() { 
+    MildaeHeal := true
+    LButtonClicked := false  ; 상태 초기화
+    WheelUpDetected := false
+    WheelDownDetected := false
+
+    StopLoop := false
+    StopHonHeal := false
+
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(50)
+
+    
+
+    loop
+    {
+        if (StopLoop || StopHonHeal)
+            {            
+                Break
+                CustomSleep(20)
+                Click, Right up ;추적 우클릭이동 해제
+            }
+
+        DeathCheck()
+        Loop, 3 {
+            SendInput, {Esc}
+            CustomSleep(20)
+            SendInput, 4
+            CustomSleep(30)
+            SendInput, { left }
+            CustomSleep(30)
+            SendInput, { enter }
+            CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
+            SendInput, {Esc}
+            CustomSleep(30) 
+        }
+        SendInput, {Tab}
+        CustomSleep(50)
+        SendInput, {Tab}
+        CustomSleep(40)
+
+        TabTabChase()
+        Loop, 1 {
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}1
+            CustomSleep(50)
+            SendInput, {Blind}2 ;백호
+            CustomSleep(50) ;후딜 50이었는데 추적을 뒤에 넣고 30으로 줄이면 얼추 비슷
+            SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고
+            CustomSleep(50)
+            TabTabChase()
+        }
+        SendInput, {3} ;
+        CustomSleep(20)
+        ;TabTabChase()  ;이거 넣고 힐틱 밀리면 빼자자
+        ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
+        ;CustomSleep(20)
+
+    }
+    CustomSleep(20)
+    Click, Right up  ;추적 우클릭 해제 방지2
+    return
+}
+
+
+
+
+
+
+
+
 ChaseOnly() {
     LButtonClicked := false  ; 상태 초기화
     WheelUpDetected := false
@@ -1025,7 +1034,7 @@ TabTabChase() {
         ;SendInput, {Blind}1 ;확인용 코드
         MouseMove, FoundX1+30, FoundY1+50
         Click, Right down ;우클 이동
-        CustomSleep(10) ; 원래 50 했었다
+        ;CustomSleep(10) ; 원래 50 했었고 힐틱 밀리는 원인일까 싶어 빼놨다
 
     } else if(ImgResult1 = 1) {
         ;SendInput, {2} ;확인용 코드
@@ -1035,11 +1044,18 @@ TabTabChase() {
 }
 return
 
+
+
+
+
+
+
 F7::
 DeathCheck()
 return
 
 DeathCheck() {
+    SendInput, {Blind}0 ; 도사 본인 유령 체크하는 것이라서 격수는 알 수 없기에 일단 부활 시전 한 번 하고(탭탭상황) 도사 유령확인. 꼬이면 뺸다
     death := A_ScriptDir . "\img\dosa\death.png"
 
     ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %death% ;유령상태
