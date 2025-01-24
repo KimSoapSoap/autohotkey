@@ -773,9 +773,9 @@ ListenMouseEvent() {
                 Break
                 CustomSleep(20)
             }
-
-           ; 좌클릭 감지 시 로직 수행      
+        DeathCheck()
         Loop, 3 {
+           ; 좌클릭,휠 업다운 감지 시 로직 수행      
             ListenMouseEvent()
             CustomSleep(20)
             Send, {1}
@@ -791,9 +791,8 @@ ListenMouseEvent() {
         ListenMouseEvent()
         CustomSleep(20)
         Send, {3}
-        CustomSleep(50)
-        ;Send, {2} ;원래 공증하고 후딜 50줬는데 백호의희원 배우고 공증 후 백호 쓰고 후딜 30 30 으로 했다가 힐받고 백호주려고 공증뒤엔 다시 뺌
-        ;CustomSleep(30)
+        CustomSleep(30) ; 공증 후 후딜 50이었는데 맨 앞에 도사 사망체크 넣고 후딜 30으로 줄임
+        
     }
     MildaeHeal := false
     SendInput, {Esc}
