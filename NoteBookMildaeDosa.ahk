@@ -224,7 +224,9 @@ HonHeal(HonCount, LoopCount) {
             SendInput, { enter }
             CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
             SendInput, {Esc}
-            CustomSleep(30) 
+            CustomSleep(20) ;원래 후딜 30이었는데 금강불체 넣고 20, 10으로 나눔
+            SendInput, {Blind}6  ;금강불체. 탭탭힐 리프레쉬에서 공격이 나가서 blind 6으로 했다.
+            CustomSleep(10) 
         }
         SendInput, {Tab}
         CustomSleep(50)
@@ -497,9 +499,11 @@ SelectionHon() {
     SendInput, {Click}
     CustomSleep(30)
     SendInput, {Enter}
-    CustomSleep(60)  ; 원래 후딜90인데 아래 ESC와 나눠서 함
+    CustomSleep(60)  ; 원래 후딜90인데 아래 ESC와 나눠서 함. 60, 30이어야 하는데 esc 뒤에 여유있게 50줌. 이걸 다시 금강이랑 30, 20으로 나눔.(금강노쿨이라)
     SendInput, {Esc} ; 이미 타겟박스인 것을 클릭하면 엔터칠 필요 없이 바로 시전된다. 그때 엔터키 닫기
-    CustomSleep(50)
+    CustomSleep(30)
+    SendInput, {Blind}6  ;금강불체. 탭탭힐리프레쉬에서 그냥6으로 하니까 공격이 나가서 Blind 6으로 했다
+    CustomSleep(20)
     SendInput, {Tab}
     CustomSleep(70)
     SendInput, {Tab}
@@ -723,6 +727,8 @@ ListenMouseEvent() {
                 CustomSleep(20)
             }
         DeathCheck()
+        SendInput, {Blind}6  ;금강불체. 그냥 6하니까 공격이 나가더라라
+        CustomSleep(20)
         Loop, 1 { ;왜 3회 반복으로 해놨지? 다른 별다른 로직이 없어서 그런가.  -> 결론은 루프3에 생명3+백호1 사용
             ; 루프1. 즉 반복 없을 때는 힐3틱 주려면 힐스킬 4번 넣어야 된다. 후딜 50으로 생명3번 넣으면 2번만 시전하고 한 번씩 백호 패스함.
             ; 생명x3 + 백호1에서 마지막에 생명 하나 더 넣어놔야 백호 쿨 있을 때 생명2백호1, 없을 때 생명3 시전 가능
@@ -749,7 +755,9 @@ ListenMouseEvent() {
         ListenMouseEvent()
         CustomSleep(20)
         Send, {3}
-        CustomSleep(30) ; 공증 후 후딜 50이었는데 맨 앞에 도사 사망체크 넣고 후딜 30으로 줄임
+        CustomSleep(20) ; 공증 후 후딜 50이었는데 금강하고 나누고 후딜 30, 20 (뭔가 밀리면 30 20을 20 10으로)
+        SendInput, {Blind}6  ;금강불체
+        CustomSleep(20)
         
     }
     MildaeHeal := false
@@ -892,6 +900,8 @@ ChaseMildae() {
            ; 좌클릭 감지 시 로직 수행      
         DeathCheck()
         TabTabChase()
+        SendInput, {Blind}6  ;금강불체
+        CustomSleep(20)
         Loop, 1 {
             SendInput, {Blind}1
             CustomSleep(50)
@@ -907,6 +917,8 @@ ChaseMildae() {
         TabTabChase()
         ListenMouseEvent()
         Send, {3} ;공력증강
+        CustomSleep(20)
+        SendInput, {Blind}6  ;금강불체
         CustomSleep(20)
     }
     MildaeHeal := false
@@ -957,7 +969,7 @@ ChaseHonHeal() {  ;추적 혼힐
             CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
             SendInput, {Esc}
             CustomSleep(20) ; 후딜 30인데 금강이랑 나눠서 20, 10으로
-            SendInput, {6}
+            SendInput, {6} ;금강불체
             CustomSleep(10)
         }
         MouseMove, TabTabX, TabTabY, 1 ; 마우스 이동(우클 누른상태태). 탭탭추적은 탭탭 이후에만 가능했는데 이전 검색 좌표+@를 전달해서 마우스이동해서 긴 텀 보완
@@ -1032,12 +1044,14 @@ StandingHonHeal() { ;제자리 혼힐힐
             SendInput, { enter }
             CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
             SendInput, {Esc}
-            CustomSleep(30) 
+            CustomSleep(20)  ;후딜 30이었는데 금강불체랑 나눠서 20, 10
+            SendInput, {6} ;금강불체  
+            CustomSleep(10) 
         }
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
-        CustomSleep(10) ; 후딜 40인데 뒤에 추적있어서 후딜 10으로 낮춰봄
+        CustomSleep(40)
 
         Loop, 1 {
             SendInput, {Blind}1 ;탭탭추적 빼니까 한 번씩 백호 건너띈다. 너무 빨리 힐틱이 돌아서 그런듯 그래서 앞에 생명3 후딜70으로 하니까 괜찮아졌다.
