@@ -55,22 +55,11 @@ global FourWayMabi := 0
 global MildaeHeal := false
 ;혼힐할 때 밀대힐 중이면 힐 틱당 힐 마무리 하고 혼 돌리기, 밀대힐 아니면 바로 혼 돌리기 하려고
 
-global TabTabX := 0
-global TabTabY := 0
-
-
 ; 전역적으로 랜덤 값을 추가하는 함수 정의
 CustomSleep(SleepTime) {
     Random, RandomValue, 1, 10
     Sleep, SleepTime + RandomValue
 }
-
-; 랜덤 좌표값을 위함
-GetRandomValue(x, minRange, maxRange) {
-    Random, offset, minRange, maxRange ;  x값에 minRange, maxRange 설정해서  x값에 더해주는 것 (음수 가능)
-    return x + offset
-}
-
 
 
 StopLoopCheck() {
@@ -304,11 +293,6 @@ CustomSleep(150)
 ChaseOnly()
 return
 
-+space:: ;제자리 혼힐
-CustomSleep(150)
-StandingHonHeal()
-return
-
 F1:: ; 추적혼힐
 ChaseHonHeal()
 return
@@ -426,8 +410,6 @@ return
 CustomSleep(120)
 SendInput, {Blind}2
 return
-
-
 
 ; sendInput Esc 뒤에 CustomSleep(20) 하니까 탭탭이 씹히고 30으로 하니까 괜찮더라
 ;꼬임 방지 esc 뒤에 sleep은 최소 30으로 해준다.
@@ -723,26 +705,22 @@ ListenMouseEvent() {
                 CustomSleep(20)
             }
         DeathCheck()
-        Loop, 1 { ;왜 3회 반복으로 해놨지? 다른 별다른 로직이 없어서 그런가.  -> 결론은 루프3에 생명3+백호1 사용
+        Loop, 3 { ;왜 3회 반복으로 해놨지? 다른 별다른 로직이 없어서 그런가.  -> 결론은 루프3에 생명3+백호1 사용
             ; 루프1. 즉 반복 없을 때는 힐3틱 주려면 힐스킬 4번 넣어야 된다. 후딜 50으로 생명3번 넣으면 2번만 시전하고 한 번씩 백호 패스함.
             ; 생명x3 + 백호1에서 마지막에 생명 하나 더 넣어놔야 백호 쿨 있을 때 생명2백호1, 없을 때 생명3 시전 가능
             ; 루프3 이면 그냥 힐3 백호1만 넣어줘도 많이 시도하므로 힐틱이 밀리지 않고 백호도 꼬박꼬박 잘 쓴다.
-
-            ;아니면 루프1로 하고 앞에 기원3번을 후딜70으로 하면 괜찮았다.
 
             ;좌클릭,휠 업다운 감지 시 로직 수행      
             ListenMouseEvent()
             CustomSleep(20)
             Send, {1}
-            CustomSleep(70)        
+            CustomSleep(50)        
             Send, {1}
-            CustomSleep(70)        
+            CustomSleep(50)        
             Send, {1}
-            CustomSleep(70)     
+            CustomSleep(50)     
             Send, {2} ; 백호
-            CustomSleep(50)  
-            Send, {1}
-            CustomSleep(20)                     
+            CustomSleep(50)         
             
             }
 
@@ -918,7 +896,7 @@ ChaseMildae() {
 
 
 
-ChaseHonHeal() {  ;추적 혼힐
+ChaseHonHeal() { 
     MildaeHeal := true
     LButtonClicked := false  ; 상태 초기화
     WheelUpDetected := false
@@ -926,14 +904,15 @@ ChaseHonHeal() {  ;추적 혼힐
 
     StopLoop := false
     StopHonHeal := false
-    chaseCount := 0
 
-    SendInput, {Esc} ;여기 탭탭부분 첫 추적에 필요해서 넣음
+    SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
     CustomSleep(40)
     SendInput, {Tab}
     CustomSleep(50)
+
+    
 
     loop
     {
@@ -945,7 +924,6 @@ ChaseHonHeal() {  ;추적 혼힐
             }
 
         DeathCheck()
-        ;TabTabChase() ;공증 이후 혼 돌리기 전 한 번 추가. 이거 넣으니까 힐틱 살짝 밀려서 뺌. 대신 이동은 훨씬 낫긴 하다(방 통과 등)
         Loop, 3 {
             SendInput, {Esc}
             CustomSleep(20)
@@ -958,7 +936,6 @@ ChaseHonHeal() {  ;추적 혼힐
             SendInput, {Esc}
             CustomSleep(30) 
         }
-        MouseMove, TabTabX, TabTabY, 1 ; 마우스 이동(우클 누른상태태). 탭탭추적은 탭탭 이후에만 가능했는데 이전 검색 좌표+@를 전달해서 마우스이동해서 긴 텀 보완
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
@@ -979,75 +956,6 @@ ChaseHonHeal() {  ;추적 혼힐
             TabTabChase()
         }
         SendInput, {3} ;
-        CustomSleep(10) ;공증 후딜 20이었는데 루프 순서상 다음에 뭐 있어서 걍 10
-        
-
-    }
-    CustomSleep(20)
-    Click, Right up  ;추적 우클릭 해제 방지2       
-    return
-}
-
-
-
-
-
-StandingHonHeal() { ;제자리 혼힐힐
-    MildaeHeal := true
-    LButtonClicked := false  ; 상태 초기화
-    WheelUpDetected := false
-    WheelDownDetected := false
-
-    StopLoop := false
-    StopHonHeal := false
-
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(50)
-
-    loop
-    {
-        if (StopLoop || StopHonHeal)
-            {            
-                Break
-                CustomSleep(20)
-                Click, Right up ;추적 우클릭이동 해제
-            }
-
-        DeathCheck()
-        Loop, 3 {
-            SendInput, {Esc}
-            CustomSleep(20)
-            SendInput, 4
-            CustomSleep(30)
-            SendInput, { left }
-            CustomSleep(30)
-            SendInput, { enter }
-            CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
-            SendInput, {Esc}
-            CustomSleep(30) 
-        }
-        SendInput, {Tab}
-        CustomSleep(50)
-        SendInput, {Tab}
-        CustomSleep(10) ; 후딜 40인데 뒤에 추적있어서 후딜 10으로 낮춰봄
-
-        Loop, 1 {
-            SendInput, {Blind}1 ;탭탭추적 빼니까 한 번씩 백호 건너띈다. 너무 빨리 힐틱이 돌아서 그런듯 그래서 앞에 생명3 후딜70으로 하니까 괜찮아졌다.
-            CustomSleep(70)
-            SendInput, {Blind}1
-            CustomSleep(70)
-            SendInput, {Blind}1
-            CustomSleep(70)
-            SendInput, {Blind}2 ;백호
-            CustomSleep(50) 
-            SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고 넣음. 후딜50으로는 생명4번 넣어야 기원 힐틱 3번 가능. 백호 쿨 있으면 생명2백호1, 없으면 생명3
-            CustomSleep(50) ; 
-        }
-        SendInput, {3} ;
         CustomSleep(20)
 
     }
@@ -1055,6 +963,7 @@ StandingHonHeal() { ;제자리 혼힐힐
     Click, Right up  ;추적 우클릭 해제 방지2
     return
 }
+
 
 
 
@@ -1090,8 +999,7 @@ ChaseOnly() {
         ListenMouseEvent()
         CustomSleep(30)
         TabTabChase()
-        CustomSleep(500)
-        MouseMove, TabTabX, TabTabY, 1
+        CustomSleep(50)
     }
     SendInput, {Esc}
     CustomSleep(30)
@@ -1111,20 +1019,6 @@ return
 
 TabTabChase() {
     ;Click, Right up ;우클 해제. 어차피 계속 따라다닐 거면 중지할 때만 해제해주면 되지 않나?. 여기서 우클 해제는 이걸 빼보자.
-    ;우선 x좌표는 딱 중간쯤이라 좌우로는 캐릭이 중간에 잘 선다. y좌표만 길통과할 때 편의를 위해서 랜덤으로 박스 조금 위, 아래에도 위치할 수 있게 했다.
-    ;보통 좌측하단이 검색돼서 상단으로 80만큼, 하단으로 50만큼 해서 캐릭터 탭탭박스 살짝 위 아래로를 벗어나는 데까지 범위가 들어가게 해줬다. 위아래로 이동을 위해
-    ;좌우 이동 랜덤은 조금 더 지켜보고 해보자.
-
-    RX := GetRandomValue(30,-20, 70)
-    RY := GetRandomValue(50,-110, 80) ;y좌표에 사용할 것이므로 찾은 좌표에서 -를 해주면 위로, +해주면 아래로 가는 것에 주의.(기존 50, -80,50)
-    ;TestY ;혼힐추적할 때 y값을 50 + (-100 ~ 70) 랜덤값을 하지 않고 아예 -50 or 120 이런식으로 캐릭터 위 or 아래로 클릭하게 해볼까?
-    ;global 변수 chaseCount 하나 만들고 추적함수 실행시 초기화, 추적함수 끝날 때 ++ 하고 홀수짝수 일 때마다 특정 값을 리턴해주면 될 듯듯
-    ;해보니까 딜레이 좀 넣어줘야되고 이동이 그닥 자연스럽지는 않더라.
-
-    ;변수값 만들어서 두 번은 검색좌표 + 고정값으로 탭탭추적, 한 번은 검색좌표 + x는 고정값 y는 랜덤값으로 좌표 전달후 중간에 마우스 이동만 넣어줌
-    ;혼과 힐 사이 탭탭추적 텀이 좀 있었는데 그 사이에 탭탭 하기 전에 (탭탭 추적은 탭탭 이후에만 가능) 이전에 탭탭 추적시 찾은 좌표에 랜덤값 전달해서
-    ;마우스 이동만 추가 해주니 혼과 힐 사이 텀이 조금 보완돼서 이동이 좀 자연스러워졌다
-    
 
     tabtab := A_ScriptDir . "\img\dosa\tabtab4.png" ;탭탭4번 그림으로
 
@@ -1132,23 +1026,17 @@ TabTabChase() {
     ImgResult1 := ErrorLevel ; 탭탭된 캐릭터 따라가기 위함
     if(ImgResult1 = 0) {
         ;SendInput, {Blind}1 ;확인용 코드
-        MouseMove, FoundX1+ 30, FoundY1 + 40, 1  ;x값은 +30해두면 위아래는 우클이동시 중간에 잘 붙음 y값이 +50이었는데 랜덤값줘서 우클이동시 뒤아래로 움직이게
+        MouseMove, FoundX1+30, FoundY1+50, 1
         Click, Right down ;우클 이동
         ;CustomSleep(10) ; 원래 50 했었고 힐틱 밀리는 원인일까 싶어 빼놨다
-
 
     } else if(ImgResult1 = 1) {
         ;SendInput, {2} ;확인용 코드
     } else {
         ;SendInput, 3 ;확인용 코드
     }
-
-    ;힐틱 밀림 방지를 위해서 2번은 탭탭추적, 한 번은 검색한 좌표 + 랜덤Y값을 변수에 넘겨서 마우스만 이동시키기 위함
-    TabTabX := FoundX1 + 30
-    TabTabY := FoundY1 + RY
-
-return
 }
+return
 
 
 

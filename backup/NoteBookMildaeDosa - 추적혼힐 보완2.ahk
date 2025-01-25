@@ -1090,8 +1090,7 @@ ChaseOnly() {
         ListenMouseEvent()
         CustomSleep(30)
         TabTabChase()
-        CustomSleep(500)
-        MouseMove, TabTabX, TabTabY, 1
+        CustomSleep(50)
     }
     SendInput, {Esc}
     CustomSleep(30)

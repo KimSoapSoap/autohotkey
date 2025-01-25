@@ -38,6 +38,12 @@ CustomSleep(SleepTime) {
     Sleep, SleepTime + RandomValue
 }
 
+; 랜덤값 획득을 위한 함수
+GetRandomValue(x, range) {
+    Random, offset, -range, range ; -range ~ +range 사이의 랜덤 값 생성
+    return x + offset
+}
+
 
 StopLoopCheck() {
     if (StopLoop)
@@ -118,17 +124,17 @@ AtBaekGum() {
                 CustomSleep(20)
             }
         SendInput, {Blind}2
-        CustomSleep(30)
-        SendInput, {Ctrl Down}
-        CustomSleep(20)
-        SendInput,a
-        CustomSleep(200)
-        SendInput,a
-        CustomSleep(20)
-        SendInput,{Ctrl Up}
-        CustomSleep(20)
+        ;CustomSleep(30)
+        ;SendInput, {Ctrl Down}
+        ;CustomSleep(20)
+        ;SendInput,a
+        ;CustomSleep(200)
+        ;SendInput,a
+        ;CustomSleep(20)
+        ;SendInput,{Ctrl Up}
+        ;CustomSleep(20)
 
-        CustomSleep(800)
+        CustomSleep(1180) ;동동주 마실 땐 800, 안 마실 땐 1180
     }
     return
 }
@@ -227,7 +233,7 @@ End:: ;필동동
 Critical
 SendInput, {Blind}2 ;PilDongDong()
 CustomSleep(20)
-Loop, 1 {
+Loop, 0 {
 SendInput, {Ctrl Down}
 CustomSleep(20)
 SendInput,a
@@ -300,7 +306,7 @@ return
 Critical
 SendInput, {Blind}2 ;PilDongDong()
 CustomSleep(30)
-DrinkDongDongJuTwoShot()
+;DrinkDongDongJuTwoShot()
 StopLoop := true
 return
 
