@@ -956,7 +956,9 @@ ChaseHonHeal() {  ;추적 혼힐
             SendInput, { enter }
             CustomSleep(50)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음
             SendInput, {Esc}
-            CustomSleep(30) 
+            CustomSleep(20) ; 후딜 30인데 금강이랑 나눠서 20, 10으로
+            SendInput, {6}
+            CustomSleep(10)
         }
         MouseMove, TabTabX, TabTabY, 1 ; 마우스 이동(우클 누른상태태). 탭탭추적은 탭탭 이후에만 가능했는데 이전 검색 좌표+@를 전달해서 마우스이동해서 긴 텀 보완
         SendInput, {Tab}
@@ -980,9 +982,11 @@ ChaseHonHeal() {  ;추적 혼힐
         }
         SendInput, {3} ;
         CustomSleep(10) ;공증 후딜 20이었는데 루프 순서상 다음에 뭐 있어서 걍 10
+        ;백호 뒤에 혼힐을 여기에 둬도 될 듯 한데 딜레이상 큰 차이는 없다.
         
 
     }
+    SendInput, {Esc} ; 정지 이전에 격수가 다음 맵으로 넘어갔을 때 내게 걸린 흰박스나 탭탭박스 닫기. 어차피 다시 쓸 때 탭탭하니까.
     CustomSleep(20)
     Click, Right up  ;추적 우클릭 해제 방지2       
     return
