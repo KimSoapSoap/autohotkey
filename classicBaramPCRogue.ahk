@@ -229,20 +229,20 @@ return
 
 
 ;한 손 컨 위함. 대신 버프는 Insert로
-End:: ;필동동
+End:: ;백호검무
 Critical
-SendInput, {Blind}2 ;PilDongDong()
-CustomSleep(20)
-Loop, 0 {
-SendInput, {Ctrl Down}
-CustomSleep(20)
-SendInput,a
-CustomSleep(200)
-SendInput,a
-CustomSleep(20)
-SendInput,{Ctrl Up}
-CustomSleep(20)
-}
+SendInput, {Blind}2
+;CustomSleep(20)
+;Loop, 1 {
+;SendInput, {Ctrl Down}
+;CustomSleep(20)
+;SendInput,a
+;CustomSleep(200)
+;SendInput,a
+;CustomSleep(20)
+;SendInput,{Ctrl Up}
+;CustomSleep(20)
+;}
 StopLoop := true
 return
 
@@ -304,8 +304,9 @@ return
 
 2:: ;백검 ;마 좀 올릴 때까지 동동주 먹어준다
 Critical
-SendInput, {Blind}2 ;PilDongDong()
-CustomSleep(30)
+;PilDongDong()  ;필살검무
+SendInput, {Blind}2  ;백호검무
+;CustomSleep(30)
 ;DrinkDongDongJuTwoShot()
 StopLoop := true
 return
