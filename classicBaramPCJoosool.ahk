@@ -149,6 +149,8 @@ StopLoop := true
 return
 
 
+
+
 d::  ;중독만 돌리기.
 ;입력대기 키로 사용할 것이므로 if로 조건 걸어줌 -> 입력대기중일 때는 또다른 동작 수행. 입력대기가 아닐 때는 원래 d키 동작 수행
 if (IsWaiting) {
@@ -160,6 +162,27 @@ if (IsWaiting) {
 SpreadPoison(magicCount)
 StopLoop := true
 return
+
+
+
+;좌클릭도 입력대기시 일단 헬파이어로 만들어 봄
+LButton::
+;입력대기 키로 사용할 것이므로 if로 조건 걸어줌 -> 입력대기중일 때는 또다른 동작 수행. 입력대기가 아닐 때는 원래 d키 동작 수행
+if (IsWaiting) {
+    ; 대기 상태일 때 동작. 이때 d를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용해야됨
+    Send, {o}
+    Send, {LButton}
+    return
+}
+
+;일반적인 d 핫키 동작
+Send, {LButton}
+return
+
+
+
+
+
 
 +d::  ;중독 돌리기 + 첨
 SpreadPoisonAndChum(magicCount)
@@ -1405,7 +1428,6 @@ return
 ;esc(대기상태에서 c를 누르면 esc입력됨)감지되면 취소로직 -> esc눌러서 말타기 로직 수행
 ;이런 식이다.
 
-
 ;이거 활용하면 헬파이어 뿐만 아니라 
 ;d 누르면 헬파로직, a누르면 삼매로직, c누르면 취소 이런식으로 활용하면 좋을듯
 ;일단은 s(말내리고)대기 d 저주헬파 공증 자힐,   c는 취소 이렇게 하자
@@ -1413,18 +1435,20 @@ return
 
 
 
+
+;s : 입력대기 // c, esc: 취소 // d, 좌클릭 : 저주 헬파 공증 자힐
 InputWaiting() {    
     ;대기 상태 true
     IsWaiting := true    
 
-    SendInput, {Blind}r ;말에서 타고 있으면 말에서 내리기
+    SendInput, {Blind}r ;말에서 타고 있으면 말에서 내리기. 다음에 내리고 나서 말에 마비거는 건 어떨까 싶음
     CustomSleep(30)
     SendInput, {4} ;저주 타겟박스 띄워서 타겟 선택하는 용도.
     CustomSleep(30)
 
     ; Enter와 d 키 입력 대기 (5초 타임아웃)
     Input, UserInput, V L1 T10, {o}{ESC}
-    
+    CustomSleep(20)    
     if (ErrorLevel = "EndKey:o") {
         ;MsgBox, Enter was pressed!
         ; Enter를 눌렀을 때 실행할 로직 추가
@@ -1437,37 +1461,47 @@ InputWaiting() {
         ;공증 성공여부는 풀마나가 되므로 풀마나 이미지로 공증성공 확인.
         ;만약 페이백을 못 받았을 경우 동동주 먹고 공력증강 시전
         SendInput, {Esc}
-        CustomSleep(30)
+        CustomSleep(50)
         SendInput, {4} ;저주
-        CustomSleep(30)
-        SendInput, {Enter}
-        CustomSleep(150)
-        SendInput, {2} ; 헬파
+        CustomSleep(50)
+        SendInput, {Enter} ; 
+        CustomSleep(90)
+        ;헬파가 씹히는 경우가 생기더라. 저주시전 enter 후딜 더 넣고 헬파를 SendInput말고 Send, 2로 바꿔봤다
+        ;그래도 씹히면 후딜 좀 더 올리고 보완으로 Send, {2} 를 두 번 누르게 했다.
+        ;후딜 340에서도 한 번씩 씹히길래 그냥 일반적인 저주 후딜 90으로 하고
+        ;헬파누르고 esc 눌러서 취소하는 반복루프 몇개 넣어두자. 총 후딜 50에 반복루프 5에 아직 씹히는 거 못 봄
+        ;그래도 씹히면 다른 방법을 또 생각해보자.
+        Loop,5 {            
+            Send, {Blind}2 ; 헬파 
+            CustomSleep(30)
+            SendInput, {Esc}
+            CustomSleep(20)
+        }
+        Send, {Blind}2 ; 헬파 
         CustomSleep(30)
         SendInput, {Enter}
         CustomSleep(90)
         CheckZeroMana() ; isZeroMana 변수에 상태 저장. 마나 존재하면 false, 마나 없으면 true
         CustomSleep(30)
-        Loop {
+        Loop ,15 { ;루프가 무한대라면 만약 말에서 내린 상태에서 s->d를 해버리면 말 탄 상태에서 무한 공증시도를 하게 된다.
             CheckFullMana()
+            CustomSleep(20)
             if(isFullMana) { ; 공증하고 와서 풀마나 확인되면 자힐 살짝하고 루프 빠져나감
                 ;이때 말 타고 있었으면 말에 다시 타게 r키 탑승
                 SelfTapTapHeal(3)
-                CustomSleep(30)
                 SendInput, {Blind}r
-                CustomSleep(30)
                 ;MsgBox, 풀마나
                 Break
             }
 
             if(isZeroMana) { ;마나 0이면(페이백x) 동동주 마시고 공증
                 DrinkDongDongJu()
-                CustomSleep(50)
+                CustomSleep(70)
                 SendInput, {3}
-                CustomSleep(30)
+                CustomSleep(100)
             } else { ;마나 있으면(페이백o) 그냥 공증
                 SendInput, {3}
-                CustomSleep(30)
+                CustomSleep(50)
             }               
         }
     } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
@@ -1482,7 +1516,7 @@ InputWaiting() {
         ;MsgBox, Time out! No key was pressed.
         ; 타임아웃 시 실행할 로직 추가
     } else {
-        ;MsgBox, Unexpected input: %ErrorLevel%  ;혹시 모를 디버깅을 위해 일단 놔뒀다가 다시 주석처리하고 탈것 다시 타도록
+        MsgBox, Unexpected input: %ErrorLevel%  ;혹시 모를 디버깅을 위해 일단 놔뒀다가 다시 주석처리하고 탈것 다시 타도록
         CustomSleep(30)
         SendInput, {Blind}r
     }
