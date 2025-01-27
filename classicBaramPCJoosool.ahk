@@ -83,6 +83,11 @@ global isFullMana := false
 ;마나가 거의 바닥인지 아닌지 판별에 활용할 변수(예를들면 헬파쓰고 0인지 페이백을 받아서 공증쓸 마나가 남았는지)
 global isZeroMana := false
 
+;공증 썼는지(헬파가 씹혀서 풀마나 상태가 공증 이후인지 헬파가 안 나가서 그런지 판별위함)
+global isRefreshed := false
+
+;걸리지 않는 대상에게 사용했는지 판별
+global isWrongTarget := false
 
 
 ; 전역적으로 랜덤 값을 추가하는 함수 정의
@@ -1438,8 +1443,11 @@ return
 
 ;s : 입력대기 // c, esc: 취소 // d, 좌클릭 : 저주 헬파 공증 자힐
 InputWaiting() {    
-    ;대기 상태 true
-    IsWaiting := true    
+    StopLoop := false ;초기화
+
+    IsWaiting := true    ;대기 상태 true
+    isRefreshed := false
+    isWrongTarget := false
 
     SendInput, {Blind}r ;말에서 타고 있으면 말에서 내리기. 다음에 내리고 나서 말에 마비거는 건 어떨까 싶음
     CustomSleep(30)
@@ -1465,44 +1473,67 @@ InputWaiting() {
         SendInput, {4} ;저주
         CustomSleep(50)
         SendInput, {Enter} ; 
-        CustomSleep(90)
+        CustomSleep(120)
         ;헬파가 씹히는 경우가 생기더라. 저주시전 enter 후딜 더 넣고 헬파를 SendInput말고 Send, 2로 바꿔봤다
         ;그래도 씹히면 후딜 좀 더 올리고 보완으로 Send, {2} 를 두 번 누르게 했다.
         ;후딜 340에서도 한 번씩 씹히길래 그냥 일반적인 저주 후딜 90으로 하고
         ;헬파누르고 esc 눌러서 취소하는 반복루프 몇개 넣어두자. 총 후딜 50에 반복루프 5에 아직 씹히는 거 못 봄
         ;그래도 씹히면 다른 방법을 또 생각해보자.
-        Loop,5 {            
-            Send, {Blind}2 ; 헬파 
-            CustomSleep(30)
-            SendInput, {Esc}
+       
+        ;SendInput, {Blind}2 ; 헬파 
+        ;CustomSleep(30)
+        ;SendInput, {Enter}
+        ;CustomSleep(90)    
+
+        Loop ,20 { ;루프 회수없으면 만약 말에서 내린 상태에서 s->d를 해버릴 때 말에 타버리면 말탄 상태에서 무한 공증시도를 하게 된다.
+            StopLoopCheck()
             CustomSleep(20)
-        }
-        Send, {Blind}2 ; 헬파 
-        CustomSleep(30)
-        SendInput, {Enter}
-        CustomSleep(90)
-        CheckZeroMana() ; isZeroMana 변수에 상태 저장. 마나 존재하면 false, 마나 없으면 true
-        CustomSleep(30)
-        Loop ,15 { ;루프가 무한대라면 만약 말에서 내린 상태에서 s->d를 해버리면 말 탄 상태에서 무한 공증시도를 하게 된다.
-            CheckFullMana()
+            CheckFullMana() ; 풀마나 확인
             CustomSleep(20)
-            if(isFullMana) { ; 공증하고 와서 풀마나 확인되면 자힐 살짝하고 루프 빠져나감
-                ;이때 말 타고 있었으면 말에 다시 타게 r키 탑승
-                SelfTapTapHeal(3)
-                SendInput, {Blind}r
-                ;MsgBox, 풀마나
-                Break
+            CheckTarget() ; 시전대상확인
+            CustomSleep(20) 
+            if(isWrongTarget) {
+                break
+                CustomSleep(20)
             }
 
-            if(isZeroMana) { ;마나 0이면(페이백x) 동동주 마시고 공증
-                DrinkDongDongJu()
-                CustomSleep(70)
-                SendInput, {3}
-                CustomSleep(100)
-            } else { ;마나 있으면(페이백o) 그냥 공증
-                SendInput, {3}
-                CustomSleep(50)
-            }               
+            if(isFullMana) { ; 풀마나 상태일 때 (공력증강 or 헬파 씹힘)
+                if(isRefreshed) { ;풀마나가 공증하고 온 것인지 헬파가 안 나가서인지 판별. 공증하고 왔으면 자힐 후 말타고 break
+                    SelfTapTapHeal(3)
+                    CustomSleep(20)
+                    ;이때 말 타고 있었으면 말에 다시 타게 r키 탑승
+                    SendInput, {Blind}r
+                    ;MsgBox, 풀마나
+                    Break
+                } else { ;헬파가 안 나가서 공증없이 온 거면 break 안 걸리고 헬파 한 번 더 시도하고 다시 공증시도로 내려감
+                     ;공증 안 하고 풀마나 상태면 헬파 한 번 더 써봄
+
+                     ; 주의할 점이 헬파가 씹히는 상태가 랜덤으로 고정이라면 헬파 안 나가고 무한 뺑뺑이 걸릴 수 있음
+                    SendInput, {Blind}2 ; 헬파 
+                    CustomSleep(30)
+                    SendInput, {Enter}
+                    CustomSleep(90) 
+                    CheckZeroMana() ;헬파 시도하니까 이후를 위해 마나 확인
+                    isRefreshed := false
+                }                 
+            } else {  ;풀마나 아닐 때(헬파 사용된 것)
+                CheckZeroMana() ; isZeroMana 변수에 상태 저장.(헬파 사용시 페이백인지 아닌지 판별)
+                CustomSleep(30)
+                ;풀마나 아닐 때는 헬파가 나간 것이고 페이백인지 아닌지 판별해서 공력증강
+                if(isZeroMana) { ;마나 0이면(페이백x) 동동주 마시고 공증
+                    DrinkDongDongJu()
+                    CustomSleep(70)
+                    SendInput, {3}
+                    CustomSleep(100)
+                } else { ;마나 있으면(페이백o) 그냥 공증
+                    SendInput, {3}
+                    CustomSleep(50)
+                    CustomSleep(100)
+                }               
+                ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용
+                isRefreshed := true
+            }
+            
         }
     } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
         ;MsgBox, esc was pressed!
@@ -1522,6 +1553,7 @@ InputWaiting() {
     }
     
     IsWaiting := false ;초기화
+    isRefreshed := false
     SendInput, {Esc}
     CustomSleep(30)
     return
@@ -1551,6 +1583,13 @@ return
 CheckFullMana()
 if(isFullMana) {
     MsgBox, 풀마나
+}
+return
+
+!F6::
+CheckTarget()
+if(isWrongTarget) {
+    MsgBox, 잘못된 대상
 }
 return
 
@@ -1599,6 +1638,7 @@ SafeRestoreMana() { ; 체력 절반쯤 이상이면 공력증강(안전한 공�
 
 
 RestoreMana() {
+    
     ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
     ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
@@ -1632,11 +1672,29 @@ CheckFullMana() {
     isFullMana := false ;초기화
 
     FullManaImgPath := A_ScriptDir . "\img\joosool\fullmana.png"
-    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %FullManaImgPath% ; 마나존재 이미지
+    ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다.
+    ;한 120쯤으로 하면 힐 3틱정도만 허용.
+    ;숫자를 더 올리면 허용 범위가 넓어진다.
+    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, *160 %FullManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
     if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
         isFullMana = true
         ;MsgBox, 풀마나
+    }
+    return
+}
+
+;잘못된 대상에게 사용한 것 판별
+CheckTarget() {
+    isWrongTarget := false ;초기화
+
+    WrongTargetImgPath := A_ScriptDir . "\img\joosool\wrongtarget.png"
+    
+    ImageSearch, FoundX1, FoundY1, 1200, 500, A_ScreenWidth, A_ScreenHeight, %WrongTargetImgPath% ; 잘못된대상 이미지
+    ImgResult1 := ErrorLevel  
+    if (ImgResult1 = 0) { ;이미지가 검색되면 잘못된 대상에게 마법 사용
+        isWrongTarget = true
+        ;MsgBox, 잘못된 대상
     }
     return
 }
