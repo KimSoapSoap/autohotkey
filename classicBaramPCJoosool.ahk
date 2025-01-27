@@ -64,8 +64,6 @@ global StopLoop := false
 ; 예를들면 동동주 마시는 건 4방향 마비걸 때 마력 없으면 동동주 먹어주면서 마력 보충할 수 있기 때문에 굳이 loopStop을 끝에 넣지 않는다.
 
 
-
-
 global ManaRefresh := 0
 global FourWayMabi := 0
 
@@ -74,6 +72,16 @@ global JjulCount := 0
 ; 지도 상태를 관리하는 변수 (처음엔 닫힌 상태로 초기화)
 global isMapOpen := false
 
+
+
+;입력대기를 사용할 때 활용할 변수
+global isWaiting := false
+
+;공력증강 성공여부 판별에 활용할 변수
+global isFullMana := false
+
+;마나가 거의 바닥인지 아닌지 판별에 활용할 변수(예를들면 헬파쓰고 0인지 페이백을 받아서 공증쓸 마나가 남았는지)
+global isZeroMana := false
 
 
 
@@ -141,7 +149,14 @@ StopLoop := true
 return
 
 
-d::  ;중독만 돌리기
+d::  ;중독만 돌리기.
+;입력대기 키로 사용할 것이므로 if로 조건 걸어줌 -> 입력대기중일 때는 또다른 동작 수행. 입력대기가 아닐 때는 원래 d키 동작 수행
+if (IsWaiting) {
+    ; 대기 상태일 때 동작. 이때 d를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용해야됨
+    Send, {o}
+    return
+}
+; 일반적인 d 핫키 동작
 SpreadPoison(magicCount)
 StopLoop := true
 return
@@ -152,9 +167,17 @@ StopLoop := true
 return
 
 c::  ;마비만 돌리기(6번을절망으로 바꾸면 절망 돌리기)
+;입력대기시 동작
+if (IsWaiting) {
+    ; esc는 안 되므로 안 쓰는 키 p를 써서 이걸 취소로 사용하자.
+    Send, {ESC}
+    return
+}
+; 일반적인 d 핫키 동작
 SpreadParalysis(magicCount)
 StopLoop := true
 return
+
 
 
 
@@ -283,16 +306,16 @@ return
 
 
 F3:: ;자신 선택 & StopLoop
-SendInput, {Home}
-CustomSleep(20)
-SendInput, {Blind}r ;북방 파밍할 때 말 편하게 타려고
-CustomSleep(20)
-StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
+SelfTargetAndStopLoop()
 return
+
+
 
 F4:: ;지도
 OpenMap()
 return
+
+;맨 아래에 F6에 이미지 서치 테스트 핫키 있음
 
 
 1:: ; 자힐 3틱
@@ -329,8 +352,14 @@ return
 
 
 
-
-
+SelfTargetAndStopLoop() {    
+    SendInput, {Home}
+    CustomSleep(20)
+    SendInput, {Blind}r ;북방 파밍할 때 말 편하게 타려고
+    CustomSleep(20)
+    StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
+    return
+}
 
 
 
@@ -1349,6 +1378,127 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
 }
 
 
+
+s::  ;입력대기.
+InputWaiting()
+return
+
+
+
+
+;V: 키 입력 값을 저장하지 않고, 단순히 입력 이벤트를 감지합니다.
+;L1: 한 번의 키 입력만 대기합니다.
+;T5: 5초의 입력대기 시간. 시간 변경 가능. 입력대기를 하지 않으려면 T5 구문 자체를 빼버리면 됨
+
+;키 입력이 발생하면 ErrorLevel에 입력된 키 정보가 저장됩니다.
+;예를 들어, Enter를 누르면 ErrorLevel은 EndKey:Enter가 됩니다.( if(ErrorLevel = "EndKey:o") {...} 이런 식으로 사용)
+;대기시간 설정 안 할 거면 아래와 같이 T부분은 뺀다.
+;Input, UserInput, V L1, {Enter}{Esc} ; Enter 또는 ESC를 대기
+
+;입력감지에 방향키, insert, del, home, end, PgUp, PgDn, 이런 키는 안 먹히더라
+;ESC는 입력감지 이름을 ESCAPE라고 해야 한다.
+;Enter키는 특이하게도 입력감지에는 인식이 되는데 Enter키 감지시 내부 로직에 Enter키 입력이 있으면 안 먹히더라
+;입력감지를 O키로 바꿔서 d를 누르면 o를 누르는 걸로 하고 해당 로직에 Enter키를 넣어서 시전을 해준다.
+
+;즉 정리하자면 s를 누르면 말타기(타고 있으면 내리기)-저주 타겟창 등 로직 수행 뒤 입력대기상태에 걸리는데(isWaiting 변수활용)
+;입력대기상태에서 ;d를 누르면 해당 타겟에 저주 - 헬파 - 공증 -자힐 - 말타기 로직을 수행하고
+;esc(대기상태에서 c를 누르면 esc입력됨)감지되면 취소로직 -> esc눌러서 말타기 로직 수행
+;이런 식이다.
+
+
+;이거 활용하면 헬파이어 뿐만 아니라 
+;d 누르면 헬파로직, a누르면 삼매로직, c누르면 취소 이런식으로 활용하면 좋을듯
+;일단은 s(말내리고)대기 d 저주헬파 공증 자힐,   c는 취소 이렇게 하자
+;a로 삼매한다면 해당 타겟박스 위치 좌표저장하고 해당 좌표에 저주 -> 해당위치, 상하좌우 저주 돌리고 해당 좌표에 다시 삼매 던지면될듯
+
+
+
+InputWaiting() {    
+    ;대기 상태 true
+    IsWaiting := true    
+
+    SendInput, {Blind}r ;말에서 타고 있으면 말에서 내리기
+    CustomSleep(30)
+    SendInput, {4} ;저주 타겟박스 띄워서 타겟 선택하는 용도.
+    CustomSleep(30)
+
+    ; Enter와 d 키 입력 대기 (5초 타임아웃)
+    Input, UserInput, V L1 T10, {o}{ESC}
+    
+    if (ErrorLevel = "EndKey:o") {
+        ;MsgBox, Enter was pressed!
+        ; Enter를 눌렀을 때 실행할 로직 추가
+
+        ;저주 -> 헬파 -> 공증(마나 감지될 때까지 계속 시도) -> 자힐 3틱
+        ;헬파쓰고 페이백 받으면 마나 오링(바닥)상태를 기존 마나량 이미지로 서치해서는 판별할 수가 없다.
+        ;페이백으로 마나가 남았는지 공증 성공했는지 판별 불가.
+        ;그래서 페이백 못 받았을 경우와 페이백 받았을 경우 모두를 고려해야 한다.
+
+        ;공증 성공여부는 풀마나가 되므로 풀마나 이미지로 공증성공 확인.
+        ;만약 페이백을 못 받았을 경우 동동주 먹고 공력증강 시전
+        SendInput, {Esc}
+        CustomSleep(30)
+        SendInput, {4} ;저주
+        CustomSleep(30)
+        SendInput, {Enter}
+        CustomSleep(150)
+        SendInput, {2} ; 헬파
+        CustomSleep(30)
+        SendInput, {Enter}
+        CustomSleep(90)
+        CheckZeroMana() ; isZeroMana 변수에 상태 저장. 마나 존재하면 false, 마나 없으면 true
+        CustomSleep(30)
+        Loop {
+            CheckFullMana()
+            if(isFullMana) { ; 공증하고 와서 풀마나 확인되면 자힐 살짝하고 루프 빠져나감
+                ;이때 말 타고 있었으면 말에 다시 타게 r키 탑승
+                SelfTapTapHeal(3)
+                CustomSleep(30)
+                SendInput, {Blind}r
+                CustomSleep(30)
+                MsgBox, 풀마나
+                Break
+            }
+
+            if(isZeroMana) { ;마나 0이면(페이백x) 동동주 마시고 공증
+                DrinkDongDongJu()
+                CustomSleep(50)
+                SendInput, {3}
+                CustomSleep(30)
+            } else { ;마나 있으면(페이백o) 그냥 공증
+                SendInput, {3}
+                CustomSleep(30)
+            }               
+        }
+    } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
+        ;MsgBox, esc was pressed!
+        ;Esc를 눌렀을 때 실행할 로직 추가 (대기상태에서 c키 눌러도 esc임)
+
+        ;취소하면 말에 다시 탑승
+        CustomSleep(30)
+        SendInput, {Blind}r
+
+    } else if (ErrorLevel = "Timeout") {
+        ;MsgBox, Time out! No key was pressed.
+        ; 타임아웃 시 실행할 로직 추가
+    } else {
+        ;MsgBox, Unexpected input: %ErrorLevel%  ;혹시 모를 디버깅을 위해 일단 놔뒀다가 다시 주석처리하고 탈것 다시 타도록
+        CustomSleep(30)
+        SendInput, {Blind}r
+    }
+    
+    IsWaiting := false ;초기화
+    SendInput, {Esc}
+    CustomSleep(30)
+    return
+}
+
+
+
+
+
+
+
 F6:: ;이미지 서칭 테스트
 HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
 
@@ -1364,6 +1514,16 @@ if(ImgResult2 = 0) {
 return
 
 
+;아래 RestoreMana는 마나가 조금 남아 있는 이미지를 검색해서 못 찾을 경우(마나가 거의 바닥)공력증강을 사용하는 것이다.
+;(Safe는 체력이 절반쯤 이상일 때)
+;스킬을 사용하다가 마나가 거의 바닥이 되면 이를 인지하고 공력증강을 사용하는 것인데 헬파 쓰고 마나가 남은 이미지를 못 찾은 것은
+;페이백을 받지 못해서 마나가 0 (혹은 그에 근접할 정도로 극미량의 페이백)이 되는 것이므로 동동주 마시고 공력증강 사용하면 된다.
+;하지만 아래에 만들어 둔 것은 자동첨첨사냥할 때 스킬을 사용하다가 마나가 바닥일 경우 공증을 쓰기 위함이기 때문에
+;아무래도 이미지가 감지 안 될정도로 마나가 낮아졌지만 마나통이 큰 만큼 공증을 사용할만큼의 마나는 몇백 남아있기 때문에
+;굳이 여기다가 동동주 마시고 공증을 해줄 필요는 없다.
+
+;헬파쓰고 나서는 CheckZeroMana()를 하나 만들어서 mana 이미지가 감지되면 페이백, 못 받았다면 0이라 보고
+;각각의 경우에 따라 isZeroMana를 변경해주고 동동주 마시고 공증할지 그냥 공증할지 정하면 될 것이다.
 
 SafeRestoreMana() { ; 체력 절반쯤 이상이면 공력증강(안전한 공력증강)
       ; 이미지 경로 설정 (실행한 스크립트의 상대경로)
@@ -1402,8 +1562,7 @@ RestoreMana() {
     ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
     if (ImgResult1 = 1) { ;마나 거의 없을 때(체력 상관x)
-    ;   -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용
-        
+    ;   -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용        
         ; 공력증강
         SendInput, {3}
         CustomSleep(30)
@@ -1412,10 +1571,46 @@ RestoreMana() {
 }
 
 
+;마나 0 확인 (헬파 이후 페이백 받았는지 0인지 확인)
+CheckZeroMana() {
+    isZeroMana := false ;초기화
+
+    ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
+    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+    ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나존재 -> 헬파 이후 페이백 받은 것, 안 되면 페이백 못 받고 마나 0
+    if (ImgResult1 = 0) { ;마나 발견 -> 페이백
+        isZeroMana := false
+    } else { ;발견 안 됨 -> 마나 0
+       isZeroMana := true
+    }
+    return
+}
+
+;풀마나 확인(공력증강 성공)
+CheckFullMana() {
+    isFullMana := false ;초기화
+
+    FullManaImgPath := A_ScriptDir . "\img\joosool\fullmana.png"
+    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %FullManaImgPath% ; 마나존재 이미지
+    ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
+    if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
+        isFullMana = true
+        ;MsgBox, 풀마나
+    }
+    return
+}
 
 
+F7::
+CheckFullMana()
+if(isFullMana) {
+    MsgBox, 풀마나
+}
+return
 
 
-#If
+#If  ;IfWinActive 조건부 종료
+
+
     
 
