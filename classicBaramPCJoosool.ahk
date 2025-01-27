@@ -1483,12 +1483,14 @@ InputWaiting() {
         SendInput, {4} ;저주
         CustomSleep(50)
         SendInput, {Enter} ; 
-        CustomSleep(120)
+        CustomSleep(100)
         ;헬파가 씹히는 경우가 생기더라. 저주시전 enter 후딜 더 넣고 헬파를 SendInput말고 Send, 2로 바꿔봤다
         ;그래도 씹히면 후딜 좀 더 올리고 보완으로 Send, {2} 를 두 번 누르게 했다.
         ;후딜 340에서도 한 번씩 씹히길래 그냥 일반적인 저주 후딜 90으로 하고
         ;헬파누르고 esc 눌러서 취소하는 반복루프 몇개 넣어두자. 총 후딜 50에 반복루프 5에 아직 씹히는 거 못 봄
         ;그래도 씹히면 다른 방법을 또 생각해보자.
+        
+        ;결론은 헬파 쿨타임 타이머가 좀 고장나서 그랬던 거였고 반복 재시전으로 해결.
        
         ;SendInput, {Blind}2 ; 헬파 
         ;CustomSleep(30)
@@ -1500,11 +1502,19 @@ InputWaiting() {
             CustomSleep(20)
             CheckFullMana() ; 풀마나 확인
             CustomSleep(20)
-            CheckWrongTarget() ; 시전대상확인
+            CheckWrongTarget() ; 시전대상확인. 쿨 안 돼서 재시전 하다가 방향키로 타겟 바껴버렸는데 잘못된 대상이면 중단하기 위해 루프 내부로
             CustomSleep(20) 
-            CheckCastOnHorse() ; 말에 탄 상태에서 시전
+            CheckCastOnHorse() ; 말에 탄 상태에서 시전을 루프에 내부에서 한 번 더 체크하는 이유는 타겟체크와 같다. 시저 반복하다가 말타기 대비
             CustomSleep(20)
-            if(isWrongTarget || isRiding) {
+            ;원래는 잘못된 대상과 말탄상태 둘 다 or 조건으로 묶어서 break 걸었는데
+            ;말 탄 상태에서 자기 자신에게 시전할 때 말에서 내려서 저주를 거는데 잘못된 대상이면 다시 말에 타야되므로 r 넣어줬다.
+            if(isWrongTarget) {
+                SendInput, {Blind}r
+                CustomSleep(20)
+                break
+                CustomSleep(20)
+            }
+            else if(isRiding) { ;헬파 쓸 때 말에 타버려서 말 탄 상태 시전하면 루프 탈출
                 break
                 CustomSleep(20)
             }
