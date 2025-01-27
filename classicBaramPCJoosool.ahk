@@ -1456,7 +1456,7 @@ InputWaiting() {
                 CustomSleep(30)
                 SendInput, {Blind}r
                 CustomSleep(30)
-                MsgBox, 풀마나
+                ;MsgBox, 풀마나
                 Break
             }
 
@@ -1510,6 +1510,13 @@ if(ImgResult2 = 0) {
     SendInput, {Blind}1
 } else {
     SendInput, 2
+}
+return
+
++F6::
+CheckFullMana()
+if(isFullMana) {
+    MsgBox, 풀마나
 }
 return
 
@@ -1601,12 +1608,7 @@ CheckFullMana() {
 }
 
 
-F7::
-CheckFullMana()
-if(isFullMana) {
-    MsgBox, 풀마나
-}
-return
+
 
 
 #If  ;IfWinActive 조건부 종료
