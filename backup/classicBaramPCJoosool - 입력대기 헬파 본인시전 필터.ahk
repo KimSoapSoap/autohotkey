@@ -81,10 +81,7 @@ global isWaiting := false
 global isFullMana := false
 
 ;마나가 거의 바닥인지 아닌지 판별에 활용할 변수(예를들면 헬파쓰고 0인지 페이백을 받아서 공증쓸 마나가 남았는지)
-global isLowMana := false
-
-;시전시 마나가 부족한지 확인
-global notEnoughMana := false
+global isZeroMana := false
 
 ;공증 썼는지(헬파가 씹혀서 풀마나 상태가 공증 이후인지 헬파가 안 나가서 그런지 판별위함)
 global isRefreshed := false
@@ -94,8 +91,6 @@ global isWrongTarget := false
 
 ;말에 탄 상태 확인
 global isRiding := false
-
-
 
 
 ; 전역적으로 랜덤 값을 추가하는 함수 정의
@@ -1518,7 +1513,8 @@ InputWaiting() {
                 CustomSleep(20)
                 break
                 CustomSleep(20)
-            } else if(isRiding) { ;헬파 쓸 때 말에 타버려서 말 탄 상태 시전하면 루프 탈출
+            }
+            else if(isRiding) { ;헬파 쓸 때 말에 타버려서 말 탄 상태 시전하면 루프 탈출
                 break
                 CustomSleep(20)
             }
@@ -1539,14 +1535,14 @@ InputWaiting() {
                     CustomSleep(30)
                     SendInput, {Enter}
                     CustomSleep(90) 
-                    CheckLowMana() ;헬파 시도하니까 이후를 위해 마나 확인
+                    CheckZeroMana() ;헬파 시도하니까 이후를 위해 마나 확인
                     isRefreshed := false
                 }                 
             } else {  ;풀마나 아닐 때(헬파 사용된 것)
-                CheckLowMana() ; isLowMana 변수에 상태 저장.(헬파 사용시 페이백인지 아닌지 판별)
+                CheckZeroMana() ; isZeroMana 변수에 상태 저장.(헬파 사용시 페이백인지 아닌지 판별)
                 CustomSleep(30)
                 ;풀마나 아닐 때는 헬파가 나간 것이고 페이백인지 아닌지 판별해서 공력증강
-                if(isLowMana) { ;마나 0이면(페이백x) 동동주 마시고 공증.  여기는 헬파니까 checkEnoughtMana()로 확인 불필요
+                if(isZeroMana) { ;마나 0이면(페이백x) 동동주 마시고 공증
                     DrinkDongDongJu()
                     CustomSleep(70)
                     SendInput, {3}
@@ -1573,7 +1569,7 @@ InputWaiting() {
         ;MsgBox, Time out! No key was pressed.
         ; 타임아웃 시 실행할 로직 추가
     } else {
-        ;MsgBox, Unexpected input: %ErrorLevel%  ;혹시 모를 디버깅을 위해 일단 놔뒀다가 다시 주석처리하고 탈것 다시 타도록
+        MsgBox, Unexpected input: %ErrorLevel%  ;혹시 모를 디버깅을 위해 일단 놔뒀다가 다시 주석처리하고 탈것 다시 타도록
         CustomSleep(30)
         SendInput, {Blind}r
     }
@@ -1626,13 +1622,6 @@ if(isRiding) {
 }
 return
 
-F7::
-CheckEnoughMana()
-if(notEnoughMana) {
-    MsgBox, 마나부족
-}
-return
-
 
 ;아래 RestoreMana는 마나가 조금 남아 있는 이미지를 검색해서 못 찾을 경우(마나가 거의 바닥)공력증강을 사용하는 것이다.
 ;(Safe는 체력이 절반쯤 이상일 때)
@@ -1642,9 +1631,8 @@ return
 ;아무래도 이미지가 감지 안 될정도로 마나가 낮아졌지만 마나통이 큰 만큼 공증을 사용할만큼의 마나는 몇백 남아있기 때문에
 ;굳이 여기다가 동동주 마시고 공증을 해줄 필요는 없다.
 
-;헬파쓰고 나서는 CheckLowMana()를 하나 만들어서 mana 이미지가 감지되면 페이백, 못 받았다면 0이라 본다(첨첨사냥시에는 0은 아니지만 CheckEnoughMana()로 마나량 확인)
-;각각의 경우에 따라 isLowMana를 변경해주고 동동주 마시고 공증할지 그냥 공증할지 정하면 될 것이다.
-;isLowMana로 판별하지만 미세하게 마나가 남아 있을 수도 있다. 이때는 CheckEnoughMana로 시전시 마나량 충분여부를 판별
+;헬파쓰고 나서는 CheckZeroMana()를 하나 만들어서 mana 이미지가 감지되면 페이백, 못 받았다면 0이라 보고
+;각각의 경우에 따라 isZeroMana를 변경해주고 동동주 마시고 공증할지 그냥 공증할지 정하면 될 것이다.
 
 SafeRestoreMana() { ; 체력 절반쯤 이상이면 공력증강(안전한 공력증강)
       ; 이미지 경로 설정 (실행한 스크립트의 상대경로)
@@ -1693,17 +1681,17 @@ RestoreMana() {
 }
 
 
-;마나가 바닥인지 확인 (헬파 이후 페이백 받았는지 아닌지 판별용도. 첨첨사냥시 마나부족도 이걸로 체크하므로 CheckEnoughMana()로 시전가능 판별 필요)
-CheckLowMana() {
-    isLowMana := false ;초기화    
+;마나 0 확인 (헬파 이후 페이백 받았는지 0인지 확인)
+CheckZeroMana() {
+    isZeroMana := false ;초기화
 
     ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
     ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나존재 -> 헬파 이후 페이백 받은 것, 안 되면 페이백 못 받고 마나 0
     if (ImgResult1 = 0) { ;마나 발견 -> 페이백
-        isLowMana := false
-    } else { ;발견 안 됨 -> 마나 바닥 -> 시전시 마나량 충분한지 확인은 필요시 해당 로직에서 checkEnoughtMana로 처리
-       isLowMana := true       
+        isZeroMana := false
+    } else { ;발견 안 됨 -> 마나 0
+       isZeroMana := true
     }
     return
 }
@@ -1755,22 +1743,6 @@ CheckCastOnHorse() {
     return
 }
 
-
-
-;시전에 필요한 마나가 충분한지 판별
-CheckEnoughMana() {
-    notEnoughMana := false ;초기화.
-
-    NotEnoughtManaImgPath := A_ScriptDir . "\img\joosool\notEnoughMana.png"
-    
-    ImageSearch, FoundX1, FoundY1, 1200, 500, A_ScreenWidth, A_ScreenHeight, %NotEnoughManaImgPath% ; 시전시 마나 충분한지 확인
-    ImgResult1 := ErrorLevel  
-    if (ImgResult1 = 0) { ;이미지가 검색되면 시전시 필요한 마나 부족한 것
-        notEnoughMana = true  ;마나량 부족
-        
-    }
-    return
-}
 
 
 
