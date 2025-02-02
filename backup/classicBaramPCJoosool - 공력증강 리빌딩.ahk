@@ -23,21 +23,16 @@ global magicCount := 6
 ; -> 중독첨도 잘 안 쓰기 때문에 shift + d로 빼는 것도 괜찮을 듯. 헬파 써야되므로 중독이나 저주 따로 돌리고 자힐첨으로 주로 피채움
 ; -> v 중독자동사냥도 이제 거의 안 쓰는 편. 첨첨자동사냥에 shift 붙여서 뺴는 것도 괜찮겠다. 중독 쩔도 바꾸던가 하자
 
-;중독첨첨 자동사냥 g, 중독자동사냥 shift + g,  중독쩔은 alt + g로 변경했다.. 필요할 때 b와 잠깐 핫키 교체하면 될 듯
-;그리고 s중독첨 돌리기도 잘 안 쓴다. -> shift + d로 변경. 
-
-
-; s 입력대기 -> 입력대기중  d  :저주+헬파(말에서 내리고 쏘고 말타기) 공증 자힐. 첨첨사냥이나 중독사냥중 입력대기 + d는 단순 헬파만
-
-
+;자동사냥 b로 바꿈 -> 중독자동사냥 shift + b,  중독쩔은 alt + b로 해뒀다. 필요할 때 b와 잠깐 핫키 교체하면 될 듯
+;그리고 d중독돌리기도 잘 안 쓴다. 숲지대하면 좀 쓰려나? 중독을 g로 바꾸려고 했는데 일단 보류
+;s 중독첨을 shift + 중독키(현재는 d)로 바꿨으므로   s키, g키, v키가 남는다.
 
 ;일단 s키에 헬파 입력대기를 만들어서 사용해보자.
 ;s 누르고 입력대기 할 때 원하는 키 누르면 저주 + 헬파 + 공증 + 자힐 몇번 쓰는 걸로
 ;취소키 & 타임아웃도 넣어서 취소키 누르거나 일정시간 안 쏘면 취소되게
-;말타고 다니는 상황이라 가정하고 헬파 쏠 때 말에서 내리고 쏘고 다시 탐
-
-;첨첨 사냥이나 중독사냥시에는 입력대기 후 헬파를 쏘면 단순 헬파만 쏘기
-
+;말타고 다니는 상황이라 가정하고 키 누르면 말에서 내기도록 하고 가능하다면 첫 4방향 마비 빠르게 돌리고 말 마비시켜둔 채로
+;헬파 쏘고 나면 다시 말 타는 걸로?
+;일단 
 
 
 ;주술용 wasd 이동은 신극지방 해보고 만들자. wasd이동 + 마우스 선택헬파같은 기능 추가해서.
@@ -102,12 +97,6 @@ global isWrongTarget := false
 
 ;말에 탄 상태 확인
 global isRiding := false
-
-;탭탭창 열려 있는지 확인
-global isTabTabOn := false
-
-;중독첨첨 혹은 중독사냥 중인지 확인
-global isHunting := false
 
 
 
@@ -267,7 +256,7 @@ return
 
 
 
-g:: ;중독첨첨 사냥 종합합
+b:: ;중독첨첨 사냥 종합합
 ; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (공증, 중독첨2+자힐첨1)x4
 ;여기 중독 저주 등 x1 회수는 20이다.
 PoisonChumHunt()
@@ -280,7 +269,7 @@ return
 ; 중독사냥 종합(마지막에 첨첨 마무리). 원래 v였는데 자주 안 쓰므로 첨첨사냥인 g에서 shift 붙여서 shift + g로 변경
 ;보무, (4방향 마비저주주 + 중독 돌리기 4번) x4 이후 중독첨2 저주첨2 자힐첨2
 ;이것도 맨 처음 한 번은 중독2에 저주2 어떨까 싶음
-+g::
++b::
 CustomSleep(190) ; 쉬프트 + g 누르고 키 떼는 딜레이
 PoisonHunt()
 StopLoop := true
@@ -289,7 +278,7 @@ return
 
 
 
-!g:: ;쩔용 중독 저주 마비 돌리기
+!b:: ;쩔용 중독 저주 마비 돌리기
 PoisonJJul()
 StopLoop := true
 return
@@ -1103,7 +1092,6 @@ PoisonHunt() {
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    isHunting := true
     Loop,1 ;일단 한 번
         
         {
@@ -1180,7 +1168,6 @@ PoisonHunt() {
                 }
         }
     CustomSleep(30)
-    isHunting := false
     return
     }
 
@@ -1191,7 +1178,6 @@ PoisonChumHunt() {
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    isHunting := true
     ManaRefresh := 0
     FourWayMabi := 0
 
@@ -1324,7 +1310,6 @@ PoisonChumHunt() {
         }
     CustomSleep(30)
     StopLoop := true
-    isHunting := false
     ManaRefresh := 0
     FourWayMabi := 0
     return
@@ -1432,20 +1417,6 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
 }
 
 
-CastHellFire() { ; 다른 동작중 저주 + 헬파이어 시전하기. 탭탭인지 아닌지에 따라서 헬파이어 시전 후 탭탭 원상복구
-    SendInput, {4} ; 저주
-    CustomSleep(30)
-    SendInput, {Enter}
-    CustomSleep(100)
-    SendInput, {Blind}2 ; 헬파 
-    CustomSleep(30)
-    SendInput, {Enter}
-    CustomSleep(90) 
-
-}
-
-
-
 
 s::  ;입력대기.
 InputWaiting()
@@ -1489,54 +1460,21 @@ InputWaiting() {
     isRefreshed := false
     isWrongTarget := false
     isRiding := false
-    notEnoughMana := False
-    isTabTabOn := false
-
-    if(isHunting) { ;첨첨사냥 혹은 중독사냥 중이면 탭탭이 열려 있는지 확인 해두기
-        CheckTabTabOn()
-        CustomSleep(30)
-    }
+    notEnoughMana := false
 
     ;입력대기시 미리 내려서 타겟 지정후 마법시전보다 말탄 상태에서 타겟 선택하고(저주로 대상 정하는 것)
     ;마법을 시전할 때 내려서 지정했던 타겟에 마법을 시전한다면 타겟박스가 말을 가로질러가며 한 번 더 누르는 것을 방지 가능
     ;훨씬 편할 것이다.
-
-    SendInput, {esc} 
-    CustomSleep(30)   
+   
     SendInput, {4} ;저주 타겟박스 띄워서 타겟 선택하는 용도.
     CustomSleep(30)
 
     ; Enter와 d 키 입력 대기 (10초 타임아웃)
     Input, UserInput, V L1 T10, {o}{ESC}
     CustomSleep(20)    
-    if (ErrorLevel = "EndKey:o") { ; 입력대기중 d키 눌렀을 때 헬파이어 -> d를 입력대기중에는 o가 입력되게 해서 연동. 마우스클릭도 o
+    if (ErrorLevel = "EndKey:o") {
         ;MsgBox, Enter was pressed!
         ; Enter를 눌렀을 때 실행할 로직 추가
-
-        if(isHunting) { ;첨첨 사냥중에는 단순 저주 + 헬파이어 시전만(탭탭창 열려 있는 상태면 탭탭창 복구)
-            SendInput, {Esc}
-            CustomSleep(30)
-            SendInput, {4} ;저주
-            CustomSleep(50)
-            SendInput, {Enter} 
-            CustomSleep(100)
-            SendInput, {Blind}2 ; 헬파 
-            CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90) 
-            if(isTabTabOn) { ; 탭탭 상태였다면 탭탭으로 원상복구
-                SendInput, {Esc}
-                CustomSleep(30)
-                SendInput, {Tab}
-                CustomSleep(50)
-                SendInput, {Tab}
-                CustomSleep(50)
-                IsWaiting := false
-                Exit
-            }
-        }
-
-
 
         ;저주 -> 헬파 -> 공증(마나 감지될 때까지 계속 시도) -> 자힐 3틱
         ;헬파쓰고 페이백 받으면 마나 오링(바닥)상태를 기존 마나량 이미지로 서치해서는 판별할 수가 없다.
@@ -1558,7 +1496,8 @@ InputWaiting() {
         ;헬파가 씹히는 경우가 생겨서 후딜을 늘리고 후딜 늘리는 걸로는 고장나는 경우가 생겨서 반복 재시전을 만들었다.
         
         ; -> 헬파가 씹히던 이유는 바람을 오래켜놔서 쿨타임 애드온 타이머가 고장나서 그랬던 거였고 반복 재시전을 만들었으나
-        ; 재부팅 하니까 고쳐졌다. 하지만 덕분에 반복 재시전을 만들어서 괜찮다고 생각한다.  
+        ; 재부팅 하니까 고쳐졌다. 하지만 덕분에 반복 재시전을 만들어서 괜찮다고 생각한다.
+  
 
         Loop ,20 { ;루프 횟수없으면 만약 말에서 내린 상태에서 s->d를 해버릴 때 말에 타버리면 말탄 상태에서 무한 공증시도를 하게 된다.
                    ; -> 말타고 시전하면 멈추는 로직 만들엇음.
@@ -1582,11 +1521,6 @@ InputWaiting() {
                 CustomSleep(20)
             }
 
-            ;풀마나 -> 공증하고 온 거면 힐 쓰고 마무리. 공증 안 하고 온 것 -> 헬파 안 썼음 -> 헬파 시전
-            ;마나 낮음 -> 마나 조금이라도 있으면 그냥 공증. 마나 바닥이면 동동주 마시고 공증
-            ;공증은 마나 낮음 체크 후 공력증강 or 동동주 마시고 공력증강 반복하고 풀마나이면 break걸면 되는데
-            ;루프 위쪽에 풀마나 검증하는 것이 있으므로 그냥 공증 실패해도 다시 공증으로 내려보낸다.
-
             if(isFullMana) { ; 풀마나 상태일 때 (공력증강 or 헬파 씹힘)
                 if(isRefreshed) { ;풀마나가 공증하고 온 것인지 헬파를 쓰지 않은 상태인지 판별. 공증하고 왔으면 자힐 후 말타고 break
                     SelfTapTapHeal(3)
@@ -1601,20 +1535,24 @@ InputWaiting() {
                     CustomSleep(30)
                     SendInput, {Enter}
                     CustomSleep(90) 
-                    isRefreshed := false                    
+                    CheckLowMana() ;헬파 시도하니까 이후를 위해 마나 확인
+                    isRefreshed := false
                 }                 
-            } else {  ;풀마나 아닐 때(헬파 사용된 것). 공증 -> 마나부족하면 -> 동동주 마시고 다시 공증
-               SendInput, {3} ;공증
-               CustomSleep(50)
-               CheckEnoughMana()
-               CustomSleep(50)
-               if(notEnoughMana) { ; 마나가 부족하다면 동동주 마시고 다시 공력증강 시전
-                   DrinkDongDongJu()
-                   CustomSleep(70)
-                   SendInput, {3}
-                   CustomSleep(50)
-               }           
-                ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용                
+            } else {  ;풀마나 아닐 때(헬파 사용된 것)
+                CheckLowMana() ; 헬파 사용시 페이백인지 아닌지 판별.isLowMana 변수에 상태 저장. LowMana면 
+                CustomSleep(30)
+                ;풀마나 아닐 때는 헬파가 나간 것이고 페이백인지 아닌지 판별해서 공력증강
+                if(isLowMana) { ;마나 0이면(페이백x) 동동주 마시고 공증.  여기는 헬파니까 checkEnoughtMana()로 확인 불필요
+                    DrinkDongDongJu()
+                    CustomSleep(70)
+                    SendInput, {3}
+                    CustomSleep(100)
+                } else { ;마나 있으면(페이백o) 그냥 공증
+                    SendInput, {3}
+                    CustomSleep(50)
+                    CustomSleep(100)
+                }               
+                ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용
                 isRefreshed := true
             }
             
@@ -1705,13 +1643,6 @@ return
 
 !F7::
 SafeRestoreMana()
-return
-
-+^F7::
-CheckTabTabOn()
-if(isTabTabOn) {
-    MsgBox, 탭탭창 열림
-}
 return
 
 
@@ -1907,27 +1838,7 @@ CheckEnoughMana() {
     return
 }
 
-;AutoHotkey 1.0에는 현재 창의 너비와 높이를 나타내는 내장 변수(예: A_WindowWidth, A_WindowHeight)가 없다
-;따라서 특정 창에서 이미지 검색을 하려면, 먼저 그 창의 위치와 크기를 얻어와야 합니다. 이를 위해 WinGetPos 명령을 사용할 수 있습니다.
-CheckTabTabOn() {
-    isTabTabOn := false ;초기화
 
-    ; 활성 창의 위치와 크기를 구합니다.
-    WinGetPos, winX, winY, winWidth, winHeight, A
-
-    ; 오른쪽 아래 좌표를 계산합니다.
-    windowX := winX + winWidth
-    windowY := winY + winHeight
-
-
-    tabtab := A_ScriptDir . "\img\joosool\tabtab4.png" ;탭탭4번 그림으로
-    
-    ImageSearch, FoundX1, FoundY1, winX, winY, windowX, windowY,*30 %tabtab% ;탭탭라인 검색
-    ImgResult1 := ErrorLevel ; 탭탭창 열려 있는지 확인하기 위함
-    if(ImgResult1 = 0) {        
-        isTabTabOn := true
-    } 
-}
 
 
 #If  ;IfWinActive 조건부 종료
