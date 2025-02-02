@@ -1,8 +1,9 @@
 ﻿;저주, 중독, 마비 돌리는 돌리기 마법횟수 변수 (단일 사용 OO돌리기들 시전횟수 통일할 때 사용)
 ;기본 카운트 20, 신극지방 갈 때는 깔끔하게 6정도
-global magicCount := 6
+global magicCount := 16
 ;참고로 북방, 신극지방 갈 때 말 죽이면 안 되니까 자힐첨첨,자힐 주석처리도 바꿔줘야 한다.(#IfWinActive 아래에 있음)
 
+;StopLoopCheck로 break면 끝날 때 초기화 해주면 되는데 StopLoopExit()라는 함수는 Exit 이므로 중간에 Exit시킨다면 끝에 반드시 초기화 시킬 건 해줘야됨(isHunting같은)
 
 ;PC와 NoteBook의 차이는 보무가 End(PC) vs NumpadEnd(Notebook) 정도의 차이이다.
 ;PC에서 복붙해서 보무만 바꾸면 노트북이 된다, Reload도 다르다.
@@ -94,8 +95,11 @@ global isLowMana := false
 ;시전시 마나가 부족한지 확인
 global notEnoughMana := false
 
-;공증 썼는지(헬파가 씹혀서 풀마나 상태가 공증 이후인지 헬파가 안 나가서 그런지 판별위함)
+;공증 썼는지(풀마나시 헬파 쿨이라서 공증 이후인지 헬파가 안 쿨이라서 그런지 판별위함)
 global isRefreshed := false
+
+;상태 대기 헬파 시전시 첫 루프인지 아닌지 판별할 때 사용할 변수
+global isFirstWaitingHellFire := 0
 
 ;걸리지 않는 대상에게 사용했는지 판별
 global isWrongTarget := false
@@ -124,6 +128,7 @@ StopLoopCheck() {
         {            
             SendInput, {Esc}
             CustomSleep(20)   
+            isHunting := false ;Exit라서 초기화 못 시켜주는 건 여기서 초기화
             Exit  
         }
 }
@@ -1286,8 +1291,12 @@ PoisonChumHunt() {
                         CustomSleep(20)  
                         StopLoopCheck()
                         CustomSleep(30)
-                        SendInput, 3 ; 공증(실패해도 됨)
-                        CustomSleep(30)               
+
+                        SafeRestoreMana()  ;원래 아래처럼 공증 한 번이었는데 보완해줌
+
+                        ;SendInput, {3}
+                        ;CustomSleep(30)  
+                  
                     }
                 ManaRefresh++     
                 }
@@ -1487,10 +1496,16 @@ InputWaiting() {
 
     StopLoop := false ;초기화
     isRefreshed := false
+    isFirstWaitingHellFire := 0
     isWrongTarget := false
     isRiding := false
     notEnoughMana := False
     isTabTabOn := false
+
+
+    ;-> 첫 헬파시 풀마나 아니어도 헬파 시전할 것인지 혹은 마나 부족시 공증 후 풀마나로 헬파 쓸 것인지 정하진 않았지만
+    ; 적어도 첫 루프에서 공증만 하고 자힐하는 것은 방지할 수 있다. 자힐 후 break 조건에 이 변수도 넣으면 풀마나로 시전
+    ; 현재 마나로 헬파 시전은 앞에 로직 추가해줌
 
     if(isHunting) { ;첨첨사냥 혹은 중독사냥 중이면 탭탭이 열려 있는지 확인 해두기
         CheckTabTabOn()
@@ -1588,22 +1603,38 @@ InputWaiting() {
             ;루프 위쪽에 풀마나 검증하는 것이 있으므로 그냥 공증 실패해도 다시 공증으로 내려보낸다.
 
             if(isFullMana) { ; 풀마나 상태일 때 (공력증강 or 헬파 씹힘)
-                if(isRefreshed) { ;풀마나가 공증하고 온 것인지 헬파를 쓰지 않은 상태인지 판별. 공증하고 왔으면 자힐 후 말타고 break
+                ;풀마나가 공증하고 온 것인지 헬파를 쓰지 않은 상태인지 판별. 공증하고 왔으면 자힐 후 말타고 break
+                ;첫 헬파이어 시도시 풀마나가 아닐 때 공증 후 자힐하고 빠져나가는 것을 방지하기 위해 isFirstWaitingHellFire 변수 조건 붙임
+                ;0부터 시작해서 헬파이어 시도할 때 +1씩 해준다. 공증 후 풀마나로 와서 헬파이어 시도 안 했으면 조건에 따라 헬파이어 시전
+                ;만약 현재 마나로 헬파이어 바로 시전하고 싶다면 if(isFullMana)조건 위에 if(isFirstWaitingHellFire==0) 조건으로 헬파 시전
+                if(isRefreshed && isFirstWaitingHellFire > 0) { 
                     SelfTapTapHeal(3)
                     CustomSleep(20)
                     ;이때 말 타고 있었으면 말에 다시 타게 r키 탑승
                     SendInput, {Blind}r
-                    ;MsgBox, 풀마나
                     Break
-                } else { ;헬파 안 써서 풀마나라면 헬파 시전 후 공증시도로 내려감                    
-            
+                } else { ;풀마나인데 공증 거친 것이 아니면 헬파 시전 안 된 것이므로 다시 루프 반복되면서 자힐로 안 가고 헬파로 다시 온다.            
                     SendInput, {Blind}2 ; 헬파 
                     CustomSleep(30)
                     SendInput, {Enter}
                     CustomSleep(90) 
-                    isRefreshed := false                    
+                    isFirstWaitingHellFire++
+                    isRefreshed := false
                 }                 
-            } else {  ;풀마나 아닐 때(헬파 사용된 것). 공증 -> 마나부족하면 -> 동동주 마시고 다시 공증
+            } else {  ;풀마나 아닐 때(현재 로직으로는 헬파 썼는지 알 수 없음). 공증 -> 마나부족하면 -> 동동주 마시고 다시 공증
+                ;즉 현재 로직으로는 풀마나 아니면 내려와서 공증을 써버리고 풀마나 되면 자힐후 종료.
+                ;풀마나 아닐시 공증 후 헬파이어 쓸지 그냥 헬파 쏘고 공증할지 정하자.
+                
+                ;마나 부족으로 공증하고 헬파 날릴 때 헬파 날리 기 전 공증 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
+                if(isFirstWaitingHellFire==0) {
+                    loop, 3{
+                        SendInput, {6}}
+                        CustomSleep(30)
+                        SendInput, {Enter}
+                        CustomSleep(90)
+
+                    }
+                }
                SendInput, {3} ;공증
                CustomSleep(50)
                CheckEnoughMana()
@@ -1617,6 +1648,7 @@ InputWaiting() {
                 ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용                
                 isRefreshed := true
             }
+            
             
         }
     } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
