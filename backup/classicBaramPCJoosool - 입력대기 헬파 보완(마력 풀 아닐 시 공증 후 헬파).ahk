@@ -1,6 +1,6 @@
 ﻿;저주, 중독, 마비 돌리는 돌리기 마법횟수 변수 (단일 사용 OO돌리기들 시전횟수 통일할 때 사용)
 ;기본 카운트 20, 신극지방 갈 때는 깔끔하게 6정도
-global magicCount := 16
+global magicCount := 10
 ;참고로 북방, 신극지방 갈 때 말 죽이면 안 되니까 자힐첨첨,자힐 주석처리도 바꿔줘야 한다.(#IfWinActive 아래에 있음)
 
 ;StopLoopCheck로 break면 끝날 때 초기화 해주면 되는데 StopLoopExit()라는 함수는 Exit 이므로 중간에 Exit시킨다면 끝에 반드시 초기화 시킬 건 해줘야됨(isHunting같은)
@@ -162,7 +162,7 @@ return
 
 
 
-`:: ; (자힐 3틱x4 + 첨 ) 4~5틱 ;북방파망 or 극지방 사냥시 셀프힐첨대신 셀프탭탭힐 사용(주석 이용)
+`:: ; (자힐 3틱x4 + 첨 ) 4~5회 ;북방파망 or 극지방 사냥시 셀프힐첨대신 셀프탭탭힐 사용(주석 이용)
 SelfHealAndChum(20)
 ;SelfTapTapHeal(20)
 StopLoop := true
@@ -217,6 +217,7 @@ return
 
 
 +d::  ;중독 돌리기 + 첨
+CustomSleep(180) ; shift 조합 입력 방지용 딜레이
 SpreadPoisonAndChum(magicCount)
 StopLoop := true
 return
@@ -606,13 +607,12 @@ Despair() {  ;절망
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
-    CustomSleep(60)
+    CustomSleep(30)
     SendInput, { z }
-    CustomSleep(100)
+    CustomSleep(30)
     SendInput, {shift up}
-    CustomSleep(100)
+    CustomSleep(30)
     SendInput, q ;  q -> 절망
-    CustomSleep(40)
     return
  }
 
@@ -638,8 +638,10 @@ SpreadVitality(count) { ;활력 돌리기
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -664,8 +666,10 @@ SpreadParalysis(count) {
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -694,8 +698,10 @@ SpreadParalysisAndChum(count) { ;마비 돌리기 + 첨
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {5 Up} ; 눌린 5 키 해제
     CustomSleep(20)
@@ -723,8 +729,10 @@ SpreadPoison(count) ;중독만 돌리기
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -756,8 +764,10 @@ SpreadPoisonAndChum(count) ;중독 돌리기 + 첨
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {5 Up} ; 눌린 5 키 해제
     CustomSleep(20)
@@ -805,8 +815,10 @@ SpreadCurse(count) { ;저주만 돌리기
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -833,8 +845,10 @@ SpreadCurseAndChum(count) { ;저주 돌리기 + 첨
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {5 Up} 
     CustomSleep(20)
@@ -871,8 +885,10 @@ FourWayCurseAndParalysis() { ;캐릭 4방위 저주 후 마비
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
         }
 
     SendInput, 4
@@ -894,8 +910,10 @@ FourWayCurseAndParalysis() { ;캐릭 4방위 저주 후 마비
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
         }
     SendInput, 4
     CustomSleep(30)
@@ -915,8 +933,10 @@ FourWayCurseAndParalysis() { ;캐릭 4방위 저주 후 마비
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
         }
     SendInput, 4
     CustomSleep(30)
@@ -936,8 +956,10 @@ FourWayCurseAndParalysis() { ;캐릭 4방위 저주 후 마비
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
         }
         SendInput, {Esc}
     CustomSleep(20)
@@ -965,8 +987,10 @@ FourWayParalysis() { ; 4방향 마비
                 CustomSleep(30)
                 SendInput, {Left}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 3
@@ -982,8 +1006,10 @@ FourWayParalysis() { ; 4방향 마비
                 CustomSleep(30)
                 SendInput, {Right}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 3
@@ -999,8 +1025,10 @@ FourWayParalysis() { ; 4방향 마비
                 CustomSleep(30)
                 SendInput, {Up}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 3
@@ -1016,8 +1044,10 @@ FourWayParalysis() { ; 4방향 마비
                 CustomSleep(30)
                 SendInput, {Down}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
             SendInput, {Esc}
     CustomSleep(20)
@@ -1043,8 +1073,10 @@ FourWayVitality() { ; 4방향 활력
                 CustomSleep(30)
                 SendInput, {Left}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 1
@@ -1060,8 +1092,10 @@ FourWayVitality() { ; 4방향 활력
                 CustomSleep(30)
                 SendInput, {Right}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 1
@@ -1077,8 +1111,10 @@ FourWayVitality() { ; 4방향 활력
                 CustomSleep(30)
                 SendInput, {Up}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 1
@@ -1094,8 +1130,10 @@ FourWayVitality() { ; 4방향 활력
                 CustomSleep(30)
                 SendInput, {Down}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
             SendInput, {Esc}
     CustomSleep(20)
@@ -1225,13 +1263,13 @@ PoisonChumHunt() {
                 Loop,2 ;중독첨 돌리는 횟수
                     {
                     StopLoopCheck()            
-                    SpreadPoisonAndChum(20) ; 중독첨2
+                    SpreadPoisonAndChum(20) ; 중독첨
                     CustomSleep(30)
                     }
                 Loop,2 ;저주첨 돌리는 횟수
                     {
                     StopLoopCheck()
-                    SpreadCurseAndChum(20) ; 저주첨2
+                    SpreadCurseAndChum(20) ; 저주첨
                     CustomSleep(30)
                     }
 
