@@ -99,7 +99,7 @@ global notEnoughMana := false
 global isRefreshed := false
 
 ;상태 대기 헬파 시전시 첫 루프인지 아닌지 판별할 때 사용할 변수
-global isFirstWaitingHellFire := 0
+global waitingHellFireCount := 0
 
 ;걸리지 않는 대상에게 사용했는지 판별
 global isWrongTarget := false
@@ -1292,10 +1292,16 @@ PoisonChumHunt() {
                         StopLoopCheck()
                         CustomSleep(30)
 
-                        SafeRestoreMana()  ;원래 아래처럼 공증 한 번이었는데 보완해줌
+                        Loop, 10 {
+                            CheckHalfHealth()  ;원래 공증 한 번이었는데 보완해줌
+                            CustomSleep(30)
+                            if(isHalfHealth) {
+                                SendInput, {3}
+                                CustomSleep(50)  
+                            }
+                        }
 
-                        ;SendInput, {3}
-                        ;CustomSleep(30)  
+                        
                   
                     }
                 ManaRefresh++     
@@ -1496,7 +1502,7 @@ InputWaiting() {
 
     StopLoop := false ;초기화
     isRefreshed := false
-    isFirstWaitingHellFire := 0
+    waitingHellFireCount := 0
     isWrongTarget := false
     isRiding := false
     notEnoughMana := False
@@ -1524,9 +1530,11 @@ InputWaiting() {
     ; Enter와 d 키 입력 대기 (10초 타임아웃)
     Input, UserInput, V L1 T10, {o}{ESC}
     CustomSleep(20)    
-    if (ErrorLevel = "EndKey:o") { ; 입력대기중 d키 눌렀을 때 헬파이어 -> d를 입력대기중에는 o가 입력되게 해서 연동. 마우스클릭도 o
+    ;입력대기중 헬파이어.
+    if (ErrorLevel = "EndKey:o") { ; 입력대기중 d키 눌렀을 때 헬파이어 -> 입력대기중에는 isWaiting 변수를 활용하여 d키 입력시 o가 입력되게 해서 연동. 마우스클릭도 o가 입력되게.
         ;MsgBox, Enter was pressed!
         ; Enter를 눌렀을 때 실행할 로직 추가
+
 
         if(isHunting) { ;첨첨 사냥중에는 단순 저주 + 헬파이어 시전만(탭탭창 열려 있는 상태면 탭탭창 복구)
             SendInput, {Esc}
@@ -1604,10 +1612,10 @@ InputWaiting() {
 
             if(isFullMana) { ; 풀마나 상태일 때 (공력증강 or 헬파 씹힘)
                 ;풀마나가 공증하고 온 것인지 헬파를 쓰지 않은 상태인지 판별. 공증하고 왔으면 자힐 후 말타고 break
-                ;첫 헬파이어 시도시 풀마나가 아닐 때 공증 후 자힐하고 빠져나가는 것을 방지하기 위해 isFirstWaitingHellFire 변수 조건 붙임
+                ;첫 헬파이어 시도시 풀마나가 아닐 때 공증 후 자힐하고 빠져나가는 것을 방지하기 위해 waitingHellFireCount 변수 조건 붙임
                 ;0부터 시작해서 헬파이어 시도할 때 +1씩 해준다. 공증 후 풀마나로 와서 헬파이어 시도 안 했으면 조건에 따라 헬파이어 시전
-                ;만약 현재 마나로 헬파이어 바로 시전하고 싶다면 if(isFullMana)조건 위에 if(isFirstWaitingHellFire==0) 조건으로 헬파 시전
-                if(isRefreshed && isFirstWaitingHellFire > 0) { 
+                ;만약 현재 마나로 헬파이어 바로 시전하고 싶다면 if(isFullMana)조건 위에 if(waitingHellFireCount==0) 조건으로 헬파 시전
+                if(isRefreshed && waitingHellFireCount > 0) { 
                     SelfTapTapHeal(3)
                     CustomSleep(20)
                     ;이때 말 타고 있었으면 말에 다시 타게 r키 탑승
@@ -1618,21 +1626,23 @@ InputWaiting() {
                     CustomSleep(30)
                     SendInput, {Enter}
                     CustomSleep(90) 
-                    isFirstWaitingHellFire++
+                    waitingHellFireCount++
                     isRefreshed := false
                 }                 
             } else {  ;풀마나 아닐 때(현재 로직으로는 헬파 썼는지 알 수 없음). 공증 -> 마나부족하면 -> 동동주 마시고 다시 공증
                 ;즉 현재 로직으로는 풀마나 아니면 내려와서 공증을 써버리고 풀마나 되면 자힐후 종료.
                 ;풀마나 아닐시 공증 후 헬파이어 쓸지 그냥 헬파 쏘고 공증할지 정하자.
+                ; 헬파 썼는지 알 수 있게  waitingHellFireCount 변수 만들고 0부터 시작해서 헬파 시전시 1씩 카운팅 올라가게 했다. 0이면 아직 시전 안 됨.
+                ; 1이상부터 한 번 시도 했음(1이상부터는 쿨탐이었다는 의미). 즉 카운트가 0이면 공증하고 왔어도 풀마나 아니라서 공증이 된 것.
+                ; 풀마나 아닐 시 헬파 카운트 0이면 공증 할 것이므로 안전상 마비 넣어줬다(혼돈으로 바꿔도 굳)
                 
-                ;마나 부족으로 공증하고 헬파 날릴 때 헬파 날리 기 전 공증 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
-                if(isFirstWaitingHellFire==0) {
-                    loop, 3{
+                ;풀마나 아니라서 공증하고 헬파 날릴 때 공증 하기 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
+                if(waitingHellFireCount==0) {
+                    loop, 2{
                         SendInput, {6}}
                         CustomSleep(30)
                         SendInput, {Enter}
                         CustomSleep(90)
-
                     }
                 }
                SendInput, {3} ;공증
@@ -1806,7 +1816,7 @@ SafeRestoreMana() { ; 체력 절반쯤 이상이면 공력증강(안전한 공�
     if (ImgResult1 = 1 && ImgResult2 = 1) ;마나 거의 없고 피 절반쯤 이상일 때
                         ; -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용하자
         {            
-            Loop {
+            Loop, 30 { ;혹시 몰라서 횟수제한 걸어둠
                 ; 공력증강
                 SendInput, {3}
                 CustomSleep(100)
@@ -1836,7 +1846,7 @@ RestoreMana() {
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
     if (ImgResult1 = 1) { ;마나 거의 없을 때(체력 상관x)
     ;   -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용        
-            Loop {
+            Loop, 30 { ;혹시 몰라서 횟수제한 걸어둠
                 ; 공력증강
                 SendInput, {3}
                 CustomSleep(100)
@@ -1881,10 +1891,12 @@ CheckFullMana() {
     isFullMana := false ;초기화
 
     FullManaImgPath := A_ScriptDir . "\img\joosool\fullmana.png"
+    ;이미지검색 *n을 *한 *120쯤으로 하면 힐 3틱정도만 허용.
     ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다.
-    ;한 120쯤으로 하면 힐 3틱정도만 허용.
-    ;숫자를 더 올리면 허용 범위가 넓어진다.
-    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, *160 %FullManaImgPath% ; 마나존재 이미지
+    ;*180으로 한 것은 10프로쯤 소모된 것도 풀마나라고 해준다.
+    
+    ;숫자를 더 올리면 허용 범위가 넓어진다. 헬파 사냥시 한 방 컷 혹은 페이백 마나를 고려해서 수치 조정 해주자
+    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, *180 %FullManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
     if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
         isFullMana = true
