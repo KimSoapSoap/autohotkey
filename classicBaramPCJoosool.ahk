@@ -8,6 +8,28 @@ global magicCount := 12
 global isForest := false 
 
 
+
+
+;PC 혹은 Notebook 에 따른 좌표 설정. -> 보통 pc에서 만들면 이미지는 물론 새로 캡쳐해야되고 notebook은 복붙해서 핫키를 바꿔줬는데 이미지 서칭할 때는 좌표와 이미지 경로도 바꿔줘야 한다.
+;이미지는 물론 notebook에서 사용할 이미지 새로 캡쳐해서 따줘야 한다.
+;이미지 경로는 boolean 변수에 따라 if로 경로를 나눠줄까 생각해봤지만 그냥 전역변수로 설정해주기로 했다.
+;그냥 모두바꾸기로      \img\joosool  ->   \img\joosool\notebook    이렇게 바꿔주면 되겠고
+;좌표는 시전창, 체력, 마나에 따라 좌표 설정값만 바꿔주면 될 것 같다.(마력, 체력은 조금 다르게 했었는데 그냥 통합시킴. 즉 현재는 시전바와 상태바 2개만 다르다. 탭탭추적은 0,0시작이었는데 창크기만큼 -> pc와 노트북 공통)
+global startCastBarX := 1200
+global startCastBarY := 500
+;pc는 1200, 500 노트북은 1700, 850
+
+global startStatusBarX := 1300
+global startStatusBarY := 700
+;pc는 1300, 700 노트북은 1900, 1150
+
+
+global imgFolder := A_ScriptDir . "\img\joosool\"
+;global imgFolder : = A_ScriptDir . "\img\joosool\notebook\"
+;pc는 "\img\joosool\""   이고   notebook은   "\img\joosool\notebook\"
+;A_ScriptDir은 현재 스크립트의 폴더경로이고 점(.)은 오토핫키에서 문자열을 더하는(+) 부호이다. 시작부분을 그냥 가져왔으므로 A_ScriptDir는 맨 앞에 붙여놓고 . 으로 이어 놓으면 된다.
+
+
 ;StopLoopCheck로 break면 끝날 때 초기화 해주면 되는데 StopLoopExit()라는 함수는 Exit 이므로 중간에 Exit시킨다면 끝에 반드시 초기화 시킬 건 해줘야됨(isHunting같은)
 
 ;PC와 NoteBook의 차이는 보무가 End(PC) vs NumpadEnd(Notebook) 정도의 차이이다.
@@ -77,13 +99,10 @@ global StopLoop := false
 
 global ManaRefresh := 0
 global FourWayMabi := 0
-
 global JjulCount := 0
 
 ; 지도 상태를 관리하는 변수 (처음엔 닫힌 상태로 초기화)
 global isMapOpen := false
-
-
 
 ;입력대기를 사용할 때 활용할 변수
 global isWaiting := false
@@ -1859,16 +1878,18 @@ InputWaiting() {
 
 
 F6:: ;이미지 서칭 테스트
-HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
 
-ImageSearch, FoundX2, FoundY2, 1300, 700, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
+;imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\joosool"
+HalfHealthImgPath := imgFolder . "halfhealth.png"
+
+ImageSearch, FoundX2, FoundY2, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
 ImgResult2 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것 -> 공력증강 상용시 위험
 if(ImgResult2 = 0) {
-    SendInput, {Blind}0
+    MsgBox, 체력 절반 이하
 } else if(ImgResult2 = 1) {
-    SendInput, {Blind}1
+    MsgBox, 체력 절반 이상
 } else {
-    SendInput, 2
+    MsgBox, 기타 오류
 }
 return
 
@@ -1927,6 +1948,7 @@ return
 ;**이미지 서칭**
     ; 화면의 특정 영역에서 이미지 검색    
     ; ImageSearch, OutputX, OutputY, X1, Y1, X2, Y2, ImageFile(변수사용은 %%로 감싸서 %ImagePath%)
+    ; 이미지 경로는 ImagePath := A_ScriptDir . "\img\joosool\image.png"  이런식인데  A_ScriptDir는 스크립트 현재 폴더이고 오토핫키에서 문자열 더하기는 점(.) 으로 이어준다 ( + 아님)
     ; 이미지를 검색하고 나서 결과는 ErrorLevel에 저장되는데 이를 다른 이름의 변수에 넣어서 활용해도 된다.( ImageResult1 := ErrorLevel 이런식으로)
     ; ErrorLevel = 0은 이미지가 발견o, 1은 발견x, 2는 이미지 경로를 찾을 수 없음
     ; 만약 이미지 일치정도를 조절하려면
@@ -1934,6 +1956,8 @@ return
     ;-> 이미지파일 앞에 *숫자는 일치허용범위 조절 가능 0~255까지 가능하며 기본0(완전 동일한 것을 검색) 높을 수록 유사도가 낮아도 매칭됨
     ; 0~150정도로 ㄱㄱ
     ; *숫자 말고 *TransColor: 특정 색상을 무시 ( 예: *Trans0xFFFFFF  -> 흰색 배경 무시)
+
+    ; imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\joosool"    
 
 
 ;아래 RestoreMana는 마나가 조금 남아 있는 이미지를 검색해서 못 찾을 경우(마나가 거의 바닥)공력증강을 사용하는 것이다.
@@ -1954,8 +1978,9 @@ return
 CheckHalfHealth() { ;체력 절반쯤인지 확인. -> 체력 절반 까진 이미지 검색해서 검색되면 절반 이하, 검색 안 되면 절반 이상인 것
     isHalfHealth := false ; 초기화
 
-    HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
-    ImageSearch, FoundX1, FoundY1, 1300, 700, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
+    ; imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\joosool"
+    HalfHealthImgPath := imgFolder . "halfhealth.png"
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
     ImgResult1 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것. 검색 안 되면 절반 이상
     if (ImgResult1 = 1) { ; 발견 안 되면 체력 절반 이상
         isHalfHealth := true 
@@ -1969,15 +1994,16 @@ CheckHalfHealth() { ;체력 절반쯤인지 확인. -> 체력 절반 까진 이�
 
 SafeRestoreManaAtLow() { ; 체력 절반쯤 이상(안전한 공력증강) + 마나가 거의 바닥이면 공력증강
       ; 이미지 경로 설정 (실행한 스크립트의 상대경로)
-      ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
-      HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
+      ManaImgPath := imgFolder . "mana.png"
+      HalfHealthImgPath := imgFolder . "halfhealth.png"
 
 
-    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+    ;원래 마나는 1400, 800으로 했지만 그냥 1300, 700으로 체력이랑 통일 시켰다. 오류가 생기면 그냥 이전에 쓰던 1400, 800으로 롤백
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
     CustomSleep(10)
 
-    ImageSearch, FoundX2, FoundY2, 1300, 700, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지.     
+    ImageSearch, FoundX2, FoundY2, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지.     
     ImgResult2 := ErrorLevel ; ;체력 절반쯤 깎인 이미지 이므로 검색되면 절반쯤 이하, 검색 안 되면 절반쯤 이상인 것. 즉, 검색 안 될 때 안전한 공증 ㄱㄱ
 
 
@@ -2011,8 +2037,8 @@ SafeRestoreManaAtLow() { ; 체력 절반쯤 이상(안전한 공력증강) + 마
 
 
 RestoreManaAtLow() {    
-    ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
-    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+    ManaImgPath := imgFolder . "mana.png"
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
     if (ImgResult1 = 1) { ;마나 거의 없을 때(체력 상관x)
     ;   -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용        
@@ -2044,10 +2070,10 @@ RestoreManaAtLow() {
 
 
 SafeRestoreMana() { ; 체력 절반쯤 이상(안전한 공력증강)일 때 남은 마나 상관없이 공력증강
-    HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
+    HalfHealthImgPath := imgFolder . "halfhealth.png"
 
 
-    ImageSearch, FoundX1, FoundY1, 1300, 700, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
     ImgResult1 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것 -> 공력증강 상용시 위험
 
 
@@ -2112,8 +2138,9 @@ RestoreMana() {
 CheckLowMana() {
     isLowMana := false ;초기화    
 
-    ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
-    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+    
+    ManaImgPath := imgFolder . "mana.png"
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나존재 -> 헬파 이후 페이백 받은 것, 안 되면 페이백 못 받고 마나 0
     if (ImgResult1 = 0) { ;마나 발견 -> 페이백 혹은 어느정도 마나가 존재하는 것
         isLowMana := false
@@ -2127,13 +2154,13 @@ CheckLowMana() {
 CheckFullMana() {
     isFullMana := false ;초기화
 
-    FullManaImgPath := A_ScriptDir . "\img\joosool\fullmana.png"
+    FullManaImgPath := imgFolder . "fullmana.png"
     ;이미지검색 *n을 *한 *120쯤으로 하면 힐 3틱정도만 허용.
     ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다.
     ;*180으로 한 것은 10프로쯤 소모된 것도 풀마나라고 해준다.
     
     ;숫자를 더 올리면 허용 범위가 넓어진다. 헬파 사냥시 한 방 컷 혹은 페이백 마나를 고려해서 수치 조정 해주자
-    ImageSearch, FoundX1, FoundY1, 1400, 800, A_ScreenWidth, A_ScreenHeight, *180 %FullManaImgPath% ; 마나존재 이미지
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, *180 %FullManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
     if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
         isFullMana = true
@@ -2146,9 +2173,9 @@ CheckFullMana() {
 CheckWrongTarget() {
     isWrongTarget := false ;초기화
 
-    WrongTargetImgPath := A_ScriptDir . "\img\joosool\wrongtarget.png"
+    WrongTargetImgPath := imgFolder . "wrongtarget.png"
     
-    ImageSearch, FoundX1, FoundY1, 1200, 500, A_ScreenWidth, A_ScreenHeight, %WrongTargetImgPath% ; 잘못된대상 이미지
+    ImageSearch, FoundX1, FoundY1, startCastBarX, startCastBarY, A_ScreenWidth, A_ScreenHeight, %WrongTargetImgPath% ; 잘못된대상 이미지
     ImgResult1 := ErrorLevel  
     if (ImgResult1 = 0) { ;이미지가 검색되면 잘못된 대상에게 마법 사용
         isWrongTarget = true
@@ -2161,9 +2188,9 @@ CheckWrongTarget() {
 CheckCastOnHorse() {
     isRiding := false ;초기화
 
-    CastOnHorseImgPath := A_ScriptDir . "\img\joosool\castonhorse.png"
+    CastOnHorseImgPath := imgFolder . "castonhorse.png"
     
-    ImageSearch, FoundX1, FoundY1, 1200, 500, A_ScreenWidth, A_ScreenHeight, %CastOnHorseImgPath% ; 말에 타서 스킬 시전
+    ImageSearch, FoundX1, FoundY1, startCastBarX, startCastBarY, A_ScreenWidth, A_ScreenHeight, %CastOnHorseImgPath% ; 말에 타서 스킬 시전
     ImgResult1 := ErrorLevel  
     if (ImgResult1 = 0) { ;이미지가 검색되면 말에 탄 상태에서 스킬 시전한 것
         isRiding = true
@@ -2178,9 +2205,9 @@ CheckCastOnHorse() {
 CheckEnoughMana() {
     notEnoughMana := false ;초기화.
 
-    NotEnoughManaImgPath := A_ScriptDir . "\img\joosool\notEnoughMana.png"
+    NotEnoughManaImgPath := imgFolder . "notEnoughMana.png"
     
-    ImageSearch, FoundX1, FoundY1, 1200, 500, A_ScreenWidth, A_ScreenHeight, %NotEnoughManaImgPath% ; 시전시 마나 충분한지 확인
+    ImageSearch, FoundX1, FoundY1, startCastBarX, startCastBarY, A_ScreenWidth, A_ScreenHeight, %NotEnoughManaImgPath% ; 시전시 마나 충분한지 확인
     ImgResult1 := ErrorLevel  
     if (ImgResult1 = 0) { ;이미지가 검색되면 시전시 필요한 마나 부족한 것
         notEnoughMana = true  ;마나량 부족        
@@ -2201,7 +2228,7 @@ CheckTabTabOn() {
     windowY := winY + winHeight
 
 
-    tabtab := A_ScriptDir . "\img\joosool\tabtab4.png" ;탭탭4번 그림으로
+    tabtab :=imgFolder . "tabtab4.png" ;탭탭4번 그림으로
     
     ImageSearch, FoundX1, FoundY1, winX, winY, windowX, windowY,*30 %tabtab% ;탭탭라인 검색
     ImgResult1 := ErrorLevel ; 탭탭창 열려 있는지 확인하기 위함

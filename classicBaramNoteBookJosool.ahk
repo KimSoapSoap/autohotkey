@@ -1826,6 +1826,7 @@ Loop {
         MsgBox, Image found at X: %FoundX%, Y: %FoundY% with scale: %Scale%
         Break
     }
+}
 
 return
 
