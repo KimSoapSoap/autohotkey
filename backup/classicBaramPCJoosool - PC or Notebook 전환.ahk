@@ -1808,10 +1808,20 @@ InputWaiting() {
                     SendInput, {Blind}r
                     Break
                 } else { ;풀마나인데 공증 거친 것이 아니면 헬파 시전 안 된 것이므로 다시 루프 반복되면서 자힐로 안 가고 헬파로 다시 온다.            
+
+                    if(waitingHellFireCount >0) { ;첫 헬파쐈는데 공증 없이 다시 풀마나로 왔다는 것은 쿨타임이라는 것이다. 쿨일시 마비(혹은 절망) 쏘고 헬파
+                        ;어차피 마비나 절망 돌려놓고 할 가능성이 높은데 일단 써보고 별로면 이 if문은 빼자.
+                        loop, 2{
+                            SendInput, {6}
+                            CustomSleep(30)
+                            SendInput, {Enter}
+                            CustomSleep(90)
+                        }
+                    }
                     SendInput, {Blind}2 ; 헬파 
                     CustomSleep(30)
                     SendInput, {Enter}
-                    CustomSleep(90) 
+                    CustomSleep(150)  ; 원래 후딜 90 -> 150으로 늘림. 헬파를 사용하고 마나를 소모했어도 루프 돌아가서 위에 CheckFullMana()에서 아직 풀마나로 인지해서 다시 헬파로 들어와서 후딜 150으로 늘림
                     waitingHellFireCount++
                     isRefreshed := false
                 }                 
@@ -1825,7 +1835,7 @@ InputWaiting() {
                 ;풀마나 아니라서 공증하고 헬파 날릴 때 공증 하기 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
                 if(waitingHellFireCount==0) {
                     loop, 2{
-                        SendInput, {6}}
+                        SendInput, {6}
                         CustomSleep(30)
                         SendInput, {Enter}
                         CustomSleep(90)
@@ -1843,6 +1853,7 @@ InputWaiting() {
                }           
                 ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용                
                 isRefreshed := true
+                
             }
             
             

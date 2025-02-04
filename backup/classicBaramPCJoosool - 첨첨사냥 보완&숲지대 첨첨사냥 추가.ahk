@@ -1792,7 +1792,7 @@ InputWaiting() {
                     SendInput, {Blind}2 ; 헬파 
                     CustomSleep(30)
                     SendInput, {Enter}
-                    CustomSleep(90) 
+                    CustomSleep(150) 
                     waitingHellFireCount++
                     isRefreshed := false
                 }                 
@@ -1806,7 +1806,7 @@ InputWaiting() {
                 ;풀마나 아니라서 공증하고 헬파 날릴 때 공증 하기 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
                 if(waitingHellFireCount==0) {
                     loop, 2{
-                        SendInput, {6}}
+                        SendInput, {6}
                         CustomSleep(30)
                         SendInput, {Enter}
                         CustomSleep(90)
