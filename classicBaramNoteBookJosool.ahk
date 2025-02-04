@@ -1,8 +1,41 @@
 ﻿;저주, 중독, 마비 돌리는 돌리기 마법횟수 변수 (단일 사용 OO돌리기들 시전횟수 통일할 때 사용)
 ;기본 카운트 20, 신극지방 갈 때는 깔끔하게 6정도
-global magicCount := 6
+global magicCount := 12
 ;참고로 북방, 신극지방 갈 때 말 죽이면 안 되니까 자힐첨첨,자힐 주석처리도 바꿔줘야 한다.(#IfWinActive 아래에 있음)
 
+;숲지대 갈 때 true로 바꿔주면 g:: 핫키에 ForestPoisonChumHunt() 실행. false면 그냥 흉가용 자동사냥 PoisonChumHunt()
+;global isForest := true
+global isForest := false 
+
+
+
+
+;PC 혹은 Notebook 에 따른 좌표 설정. -> 보통 pc에서 만들면 이미지는 물론 새로 캡쳐해야되고 notebook은 복붙해서 핫키를 바꿔줬는데 이미지 서칭할 때는 좌표와 이미지 경로도 바꿔줘야 한다.
+;이미지는 물론 notebook에서 사용할 이미지 새로 캡쳐해서 따줘야 한다. (단, 1920x1200 125%로 pc와 거의 비슷한 해상도 사용시 그대로 사용)
+;이미지 거의 그대로 사용하는데 살짝 편집한 부분은 체력 왼쪽에 쿨타임 애드온을 놔둬서 캐스팅바 아래쪽을 살짝 잘라냈다.
+
+; 좌표와 경로를 변수로 설정
+; 경로는 PC가     \img\joosool    노트북이이   \img\joosool\notebook     (앞에 현재 경로 설정인 A_ScriptDir . 붙여 준다. 점(.)은 문자열 덧셈)
+; 좌표는 시전창, 상태창(체력, 마나)에 따라 좌표 설정값만 바꿔주면 될 것 같다.
+; 노트북 현재 배율을 1920 x 1200에 125% 해서 PC와 엇비슷하긴 하다. 아래 노트북 설정값은 2560 x 1600에 150% 배율일 때이므로
+; 노트북 배율을 1920 x 1200에 125%로 사용할 것 같으면 PC좌표로 설정해줘도 된다.(단 세로는 살짝 조정)
+
+global startCastBarX := 1200
+global startCastBarY := 500
+;pc는 1200, 500  노트북은 1700, 850 (1920x1200 125% 사용시 PC좌표 그대로 사용) 
+
+global startStatusBarX := 1300
+global startStatusBarY := 700
+;pc는 1300, 700 노트북은 1900, 1150 (1920x1200 125% 사용시 PC좌표 그대로 사용) 
+
+
+global imgFolder := A_ScriptDir . "\img\joosool\notebook\"
+;global imgFolder : = A_ScriptDir . "\img\joosool\notebook\"
+;pc는 "\img\joosool\""   이고   notebook은   "\img\joosool\notebook\"
+;A_ScriptDir은 현재 스크립트의 폴더경로이고 점(.)은 오토핫키에서 문자열을 더하는(+) 부호이다. 시작부분을 그냥 가져왔으므로 A_ScriptDir는 맨 앞에 붙여놓고 . 으로 이어 놓으면 된다.
+
+
+;StopLoopCheck로 break면 끝날 때 초기화 해주면 되는데 StopLoopExit()라는 함수는 Exit 이므로 중간에 Exit시킨다면 끝에 반드시 초기화 시킬 건 해줘야됨(isHunting같은)
 
 ;PC와 NoteBook의 차이는 보무가 End(PC) vs NumpadEnd(Notebook) 정도의 차이이다.
 ;PC에서 복붙해서 보무만 바꾸면 노트북이 된다, Reload도 다르다.
@@ -23,16 +56,21 @@ global magicCount := 6
 ; -> 중독첨도 잘 안 쓰기 때문에 shift + d로 빼는 것도 괜찮을 듯. 헬파 써야되므로 중독이나 저주 따로 돌리고 자힐첨으로 주로 피채움
 ; -> v 중독자동사냥도 이제 거의 안 쓰는 편. 첨첨자동사냥에 shift 붙여서 뺴는 것도 괜찮겠다. 중독 쩔도 바꾸던가 하자
 
-;자동사냥 b로 바꿈 -> 중독자동사냥 shift + b,  중독쩔은 alt + b로 해뒀다. 필요할 때 b와 잠깐 핫키 교체하면 될 듯
-;그리고 d중독돌리기도 잘 안 쓴다. 숲지대하면 좀 쓰려나? 중독을 g로 바꾸려고 했는데 일단 보류
-;s 중독첨을 shift + 중독키(현재는 d)로 바꿨으므로   s키, g키, v키가 남는다.
+;중독첨첨 자동사냥 g, 중독자동사냥 shift + g,  중독쩔은 alt + g로 변경했다.. 필요할 때 b와 잠깐 핫키 교체하면 될 듯
+;그리고 s중독첨 돌리기도 잘 안 쓴다. -> shift + d로 변경. 
+
+
+; s 입력대기 -> 입력대기중  d  :저주+헬파(말에서 내리고 쏘고 말타기) 공증 자힐. 첨첨사냥이나 중독사냥중 입력대기 + d는 단순 헬파만
+
+
 
 ;일단 s키에 헬파 입력대기를 만들어서 사용해보자.
 ;s 누르고 입력대기 할 때 원하는 키 누르면 저주 + 헬파 + 공증 + 자힐 몇번 쓰는 걸로
 ;취소키 & 타임아웃도 넣어서 취소키 누르거나 일정시간 안 쏘면 취소되게
-;말타고 다니는 상황이라 가정하고 키 누르면 말에서 내기도록 하고 가능하다면 첫 4방향 마비 빠르게 돌리고 말 마비시켜둔 채로
-;헬파 쏘고 나면 다시 말 타는 걸로?
-;일단 
+;말타고 다니는 상황이라 가정하고 헬파 쏠 때 말에서 내리고 쏘고 다시 탐
+
+;첨첨 사냥이나 중독사냥시에는 입력대기 후 헬파를 쏘면 단순 헬파만 쏘기
+
 
 
 ;주술용 wasd 이동은 신극지방 해보고 만들자. wasd이동 + 마우스 선택헬파같은 기능 추가해서.
@@ -66,16 +104,16 @@ global StopLoop := false
 
 global ManaRefresh := 0
 global FourWayMabi := 0
-
 global JjulCount := 0
 
 ; 지도 상태를 관리하는 변수 (처음엔 닫힌 상태로 초기화)
 global isMapOpen := false
 
-
-
 ;입력대기를 사용할 때 활용할 변수
 global isWaiting := false
+
+;공력증강할 때 체력 절반정도 이상일 때 사용하게 하기 위함 -> 체력 절반쯤 까진 상태의 이미지 검색후 발견되면 절반 이하, 발견 안 되면 절반 이상
+global isHalfHealth := false
 
 ;공력증강 성공여부 판별에 활용할 변수
 global isFullMana := false
@@ -86,14 +124,23 @@ global isLowMana := false
 ;시전시 마나가 부족한지 확인
 global notEnoughMana := false
 
-;공증 썼는지(헬파가 씹혀서 풀마나 상태가 공증 이후인지 헬파가 안 나가서 그런지 판별위함)
+;공증 썼는지(풀마나시 헬파 쿨이라서 공증 이후인지 헬파가 안 쿨이라서 그런지 판별위함)
 global isRefreshed := false
+
+;상태 대기 헬파 시전시 첫 루프인지 아닌지 판별할 때 사용할 변수
+global waitingHellFireCount := 0
 
 ;걸리지 않는 대상에게 사용했는지 판별
 global isWrongTarget := false
 
 ;말에 탄 상태 확인
 global isRiding := false
+
+;탭탭창 열려 있는지 확인
+global isTabTabOn := false
+
+;중독첨첨 혹은 중독사냥 중인지 확인
+global isHunting := false
 
 
 
@@ -110,13 +157,13 @@ StopLoopCheck() {
         {            
             SendInput, {Esc}
             CustomSleep(20)   
+            isHunting := false ;Exit라서 초기화 못 시켜주는 건 여기서 초기화
             Exit  
         }
 }
 
 
-;노트북에서는 pause키 대신 넘패드 *키가 리로드
-NumpadMult::
+Pause::
 Suspend Off       ; Suspend 상태에서 동작하도록 강제로 해제
 StopLoop := true
 Reload
@@ -144,7 +191,7 @@ return
 
 
 
-`:: ; (자힐 3틱x4 + 첨 ) 4~5틱 ;북방파망 or 극지방 사냥시 셀프힐첨대신 셀프탭탭힐 사용(주석 이용)
+`:: ; (자힐 3틱x4 + 첨 ) 4~5회 ;북방파망 or 극지방 사냥시 셀프힐첨대신 셀프탭탭힐 사용(주석 이용)
 SelfHealAndChum(20)
 ;SelfTapTapHeal(20)
 StopLoop := true
@@ -199,6 +246,7 @@ return
 
 
 +d::  ;중독 돌리기 + 첨
+CustomSleep(180) ; shift 조합 입력 방지용 딜레이
 SpreadPoisonAndChum(magicCount)
 StopLoop := true
 return
@@ -254,9 +302,12 @@ return
 
 
 
-b:: ;중독첨첨 사냥 종합합
+g:: ;중독첨첨 사냥 종합합
 ; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (공증, 중독첨2+자힐첨1)x4
 ;여기 중독 저주 등 x1 회수는 20이다.
+if(isForest) {
+    ForestPoisonChumHunt()
+}
 PoisonChumHunt()
 StopLoop := true
 return
@@ -267,7 +318,7 @@ return
 ; 중독사냥 종합(마지막에 첨첨 마무리). 원래 v였는데 자주 안 쓰므로 첨첨사냥인 g에서 shift 붙여서 shift + g로 변경
 ;보무, (4방향 마비저주주 + 중독 돌리기 4번) x4 이후 중독첨2 저주첨2 자힐첨2
 ;이것도 맨 처음 한 번은 중독2에 저주2 어떨까 싶음
-+b::
++g::
 CustomSleep(190) ; 쉬프트 + g 누르고 키 떼는 딜레이
 PoisonHunt()
 StopLoop := true
@@ -276,7 +327,7 @@ return
 
 
 
-!b:: ;쩔용 중독 저주 마비 돌리기
+!g:: ;쩔용 중독 저주 마비 돌리기
 PoisonJJul()
 StopLoop := true
 return
@@ -588,13 +639,12 @@ Despair() {  ;절망
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {shift down}
-    CustomSleep(60)
+    CustomSleep(30)
     SendInput, { z }
-    CustomSleep(100)
+    CustomSleep(30)
     SendInput, {shift up}
-    CustomSleep(100)
+    CustomSleep(30)
     SendInput, q ;  q -> 절망
-    CustomSleep(40)
     return
  }
 
@@ -620,8 +670,10 @@ SpreadVitality(count) { ;활력 돌리기
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -646,8 +698,10 @@ SpreadParalysis(count) {
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -676,8 +730,10 @@ SpreadParalysisAndChum(count) { ;마비 돌리기 + 첨
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {5 Up} ; 눌린 5 키 해제
     CustomSleep(20)
@@ -705,8 +761,10 @@ SpreadPoison(count) ;중독만 돌리기
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -738,8 +796,10 @@ SpreadPoisonAndChum(count) ;중독 돌리기 + 첨
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {5 Up} ; 눌린 5 키 해제
     CustomSleep(20)
@@ -787,8 +847,10 @@ SpreadCurse(count) { ;저주만 돌리기
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
@@ -815,8 +877,10 @@ SpreadCurseAndChum(count) { ;저주 돌리기 + 첨
         CustomSleep(30)
         SendInput, { left }
         CustomSleep(30)
-        SendInput, { enter }
-        CustomSleep(90)
+        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+        CustomSleep(60)
+        SendInput, {esc}
+        CustomSleep(30)
     }
     SendInput, {5 Up} 
     CustomSleep(20)
@@ -853,8 +917,10 @@ FourWayCurseAndParalysis() { ;캐릭 4방위 저주 후 마비
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
         }
 
     SendInput, 4
@@ -876,8 +942,10 @@ FourWayCurseAndParalysis() { ;캐릭 4방위 저주 후 마비
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
         }
     SendInput, 4
     CustomSleep(30)
@@ -897,8 +965,10 @@ FourWayCurseAndParalysis() { ;캐릭 4방위 저주 후 마비
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
         }
     SendInput, 4
     CustomSleep(30)
@@ -918,8 +988,10 @@ FourWayCurseAndParalysis() { ;캐릭 4방위 저주 후 마비
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, {Enter}
-            CustomSleep(90)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
         }
         SendInput, {Esc}
     CustomSleep(20)
@@ -947,8 +1019,10 @@ FourWayParalysis() { ; 4방향 마비
                 CustomSleep(30)
                 SendInput, {Left}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 3
@@ -964,8 +1038,10 @@ FourWayParalysis() { ; 4방향 마비
                 CustomSleep(30)
                 SendInput, {Right}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 3
@@ -981,8 +1057,10 @@ FourWayParalysis() { ; 4방향 마비
                 CustomSleep(30)
                 SendInput, {Up}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 3
@@ -998,8 +1076,10 @@ FourWayParalysis() { ; 4방향 마비
                 CustomSleep(30)
                 SendInput, {Down}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
             SendInput, {Esc}
     CustomSleep(20)
@@ -1025,8 +1105,10 @@ FourWayVitality() { ; 4방향 활력
                 CustomSleep(30)
                 SendInput, {Left}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 1
@@ -1042,8 +1124,10 @@ FourWayVitality() { ; 4방향 활력
                 CustomSleep(30)
                 SendInput, {Right}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 1
@@ -1059,8 +1143,10 @@ FourWayVitality() { ; 4방향 활력
                 CustomSleep(30)
                 SendInput, {Up}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
         
         loop, 1
@@ -1076,8 +1162,95 @@ FourWayVitality() { ; 4방향 활력
                 CustomSleep(30)
                 SendInput, {Down}
                 CustomSleep(30)
-                SendInput, {Enter}
-                CustomSleep(90)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+            SendInput, {Esc}
+    CustomSleep(20)
+    return
+}
+
+
+FourWayCurse() { ; 4방향 저주
+    SendInput, {Esc}
+    CustomSleep(40)
+    StopLoop := false
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 4
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Left}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 4
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Right}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 4
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Up}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 4
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Down}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+                CustomSleep(60)
+                SendInput, {esc}
+                CustomSleep(30)
             }
             SendInput, {Esc}
     CustomSleep(20)
@@ -1086,10 +1259,13 @@ FourWayVitality() { ; 4방향 활력
 
 
 
+
+
 PoisonHunt() {
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
+    isHunting := true
     Loop,1 ;일단 한 번
         
         {
@@ -1166,152 +1342,199 @@ PoisonHunt() {
                 }
         }
     CustomSleep(30)
+    isHunting := false
     return
     }
 
 
 
 PoisonChumHunt() {
-
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
+    isHunting := true
     ManaRefresh := 0
     FourWayMabi := 0
 
     CustomSleep(30)
-    Loop,1 ;일단 한 번
-        
-        {
+ 
         StopLoopCheck()   
         SelfBoMu() ; 자신 보무
         CustomSleep(30),
 
-        Loop, 1 ; 일단 처음에는 저주 돌려야 하니까 4방향 마비&저주 걸고 중독2, 저주2
-                ; -> 중첨첨 사냥은 첫 시작을 중독첨2, 저주첨2
-                ; 초반 첫 4방향 저주마비 이후 중독첨2, 저주첨2로 딸피되기 때문에 다음턴 마비 없이 진행
-                ; 0으로 시작하는 FourWayMabi 변수가 중독첨2+자힐첨1 반복마다 1씩 올라가는데
-                ; 홀수일 때 마비 건다. 0이 시작이고 이때는 첫 4방향 마비저주 걸린 상태므로 패스.
-            {       
-                StopLoopCheck()
-                Loop, 1 ;
-                    { 
-                    StopLoopCheck()         
-                    FourWayCurseAndParalysis() ;4방향 마비저주 
-                    SelfHealAndChum(4) ;셀프힐&첨 3틱
-                    CustomSleep(30)
-                    }            
-                Loop,2 ;중독첨 돌리는 횟수
-                    {
-                    StopLoopCheck()            
-                    SpreadPoisonAndChum(20) ; 중독첨2
-                    CustomSleep(30)
-                    }
-                Loop,2 ;저주첨 돌리는 횟수
-                    {
-                    StopLoopCheck()
-                    SpreadCurseAndChum(20) ; 저주첨2
-                    CustomSleep(30)
-                    }
+        ;일단 처음에는 저주 돌려야 하니까 4방향 마비&저주 걸고 중독2, 저주2 ; -> 중첨첨 사냥은 첫 시작을 중독첨2, 저주첨2        
+        ; 초반 첫 4방향 저주마비 이후 중독첨2, 저주첨2로 딸피되기 때문에 다음턴 마비 없이 진행
+        
+            
+        StopLoopCheck()
+    
+        FourWayCurseAndParalysis() ;4방향 마비저주 
+        SelfHealAndChum(4) ;셀프힐&첨 3틱
+        CustomSleep(30)
+                       
+        
+        StopLoopCheck()            
+        SpreadPoisonAndChum(40) ; 중독첨 x2.  기본 20회로 사용했으므로 x2는 40
+        CustomSleep(30)
+          
+        
+        StopLoopCheck()
+        SpreadCurseAndChum(40) ; 저주첨 x2   기본 20회로 사용했으므로 x2는 40
+        CustomSleep(30)
+        
 
-                CustomSleep(100) ;원래 오토감지 방지용으로 1100 했는데 걍 100
-            }
+        CustomSleep(100) ;원래 오토감지 방지용으로 1100 했는데 걍 100
+            
         
 
 
-        Loop , 4  ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독첨2 저주첨1 자힐첨1) x4
+        Loop , 4  { 
+            ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독첨2 저주첨1 자힐첨1) x4
+            ; 0으로 시작하는 FourWayMabi 변수가 중독첨2+저주첨+자힐첨1 반복마다 1씩 올라가는데 홀수일 때 마비 걸었는데(0이 시작이고 이땐 4방향 저주마비 걸기 때문에 패스) 뺐다. 첫 저주마비 이후 마비x
             ;맨 처음 4방향 마비저주 이후에는 그냥 마비 뺐다.
         ;   힐량증가 마력비례 1% 패치로 첫 4방향 마비저주 외에는 마비 없이 간다.
             ;그냥 중독사냥이 아니라 중독첨첨이라 빨리 잡는 것이 목적이므로 
             ;마비 딜레이 신경 안 써도 되니 첫 마비이후 중독첨2 자힐첨1로 딜레이 맞췄는데 이제는 중독첨2 저주첨1 자힐첨1 하면 될듯
-        {       
+              
             StopLoopCheck()
-            SafeRestoreMana() ; 마나 부족시 공증
-            Loop, 1 ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
-                { 
-                StopLoopCheck()         
-                SelfHealAndChum(4)
-                CustomSleep(50)         
-                ;if (Mod(FourWayMabi, 2) == 1) ;홀수 일 때만 마비 진행.
-                    ;{  
-                    ;FourWayCurseAndParalysis() ;4방향 마비
-                    ;}
-                CustomSleep(100)
-            }          
-            ;원래 SafeRestoreMana()를 이자리처럼 OO첨 시작전에 넣었었는데 그냥 루프 안으로 넣어줬다
-            Loop,2 ;중독첨
-                {
-                    StopLoopCheck()
-                    SpreadPoisonAndChum(20) ;중독첨 돌리기
-                    CustomSleep(30)
-                    SafeRestoreMana()    
-                }
-            Loop,1 ;저주첨 
-                {
-                    StopLoopCheck()
-                    SpreadCurseAndChum(20) ; 저주첨 돌리기
-                    CustomSleep(30)
-                    SafeRestoreMana()    
-            }
-            Loop,1 ; 자힐첨
-                {            
-                    StopLoopCheck()
-                    SelfHealAndChum(20) 
-                    CustomSleep(30)
-                    SafeRestoreMana()
-            }
-            Loop, 1 ; 공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
+            SafeRestoreManaAtLow() ; 마나 부족시 공증
+            ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
+          
+            StopLoopCheck()         
+            SelfHealAndChum(3)
+            CustomSleep(50)         
+            ;if (Mod(FourWayMabi, 2) == 1) { ;홀수 일 때만 마비 진행.                 
+                ;FourWayCurseAndParalysis() ;4방향 마비
+                ;CustomSleep(30)
+            ;}                    
+          
+            StopLoopCheck()
+            SpreadPoisonAndChum(40) ;중독첨x2 돌리기
+            CustomSleep(30)
+            SafeRestoreManaAtLow()    
+        
+        
+            StopLoopCheck()
+            SpreadCurseAndChum(20) ; 저주첨x1 돌리기
+            CustomSleep(30)
+            SafeRestoreManaAtLow()    
+        
+                    
+            StopLoopCheck()
+            SelfHealAndChum(20) ; 자힐첨x1
+            CustomSleep(30)
+            SafeRestoreManaAtLow()
+            
+            공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
             ;공증 실패하면 마나 부족 이슈
             ;원래는 자힐첨 앞에서 홀수마다 한 번씩 공증했는데 자힐첨 뒤에 짝수마다(첫 번째에도 공증 시도)로 잠시 바꿔봄
-                {
-                if (Mod(ManaRefresh, 2) == 0)
-                    {            
-                        SendInput, {Esc}
-                        CustomSleep(20)  
-                        StopLoopCheck()
-                        CustomSleep(30)
-                        SendInput, 3 ; 공증(실패해도 됨)
-                        CustomSleep(30)               
-                    }
-                ManaRefresh++     
-                }
+              
+            if (Mod(ManaRefresh, 2) == 0)
+                {            
+                    SendInput, {Esc}
+                    CustomSleep(20)  
+                    StopLoopCheck()
+                    CustomSleep(30)
 
+                    ;원래 성공여부 상관없이 단순 공증 한 번이었는데 체 절반쯤 이상&성공시까지 n번 반복으로 보완해줌
+                    RestoreMana()
+                }
+            
+              
+            ManaRefresh++     
             FourWayMabi++
-            CustomSleep(100) ; 매크로 체크방지 1초 -> 걍 100으로
-            } ; (중독첨2 저주첨1 자힐첨1) x4 반복 루프 종료
+            CustomSleep(50) ; 매크로 체크방지 1초 -> 걍 100으로
 
+        } ; (중독첨2 저주첨1 자힐첨1) x4 반복 루프 종료
 
-            Loop, 1 ; (공증 + 중독&첨 x4  + 자힐첨x2) 1번
-                {
-                StopLoopCheck()
-                CustomSleep(30)
-                SafeRestoreMana()
-                SelfHealAndChum(4) ; 자힐첨 3틱
-                CustomSleep(50)
+        ;사실상 여기까지만 해도 어느정도 다 정리 됐음          
 
-                Loop,4 ; 중독첨. 풀피상태여서 자힐첨 2번보다 중독첨2 + 자힐첨1 이렇게 가자.
-                {
-                    StopLoopCheck()
-                    SpreadPoisonAndChum(20) 
-                    CustomSleep(30)
-                    SafeRestoreMana()
-                }
+    
+        StopLoopCheck()
+        SpreadPoisonAndChum(20) ;중독첨x1 돌리기
+        CustomSleep(30)
+        SafeRestoreManaAtLow()
+    
+        StopLoopCheck()
+        SpreadCurseAndChum(20) ; 저주첨x1 돌리기
+        CustomSleep(30)
+        SafeRestoreManaAtLow()            
 
-                Loop,2 ; 셀프힐 + 첨 횟수 조정(일단 1) -> 딸피 마무리
-                    {            
-                    StopLoopCheck()
-                    SelfHealAndChum(20) 
-                    CustomSleep(30)
-                    SafeRestoreMana()
-                    }
-                }
-        }
+                    
+        StopLoopCheck()
+        SelfHealAndChum(20)  ; 자힐첨x1
+        CustomSleep(30)
+        SafeRestoreManaAtLow()
+            
+                
+       
     CustomSleep(30)
     StopLoop := true
+    isHunting := false
     ManaRefresh := 0
     FourWayMabi := 0
     return
 }
+
+
+
+ForestPoisonChumHunt() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+    isHunting := true
+    ManaRefresh := 0
+    FourWayMabi := 0
+
+    CustomSleep(30)
+    StopLoopCheck()   
+    SelfBoMu() ; 자신 보무
+    CustomSleep(30)
+
+  
+    StopLoopCheck()         
+    FourWayCurse() ;4방향 저주 
+    SelfHealAndChum(6) ;셀프힐&첨 3틱
+    CustomSleep(30)
+
+    Loop, 10 {
+        StopLoopCheck() 
+        SafeRestoreMana() ; 안전공증(체력상관x)
+
+        StopLoopCheck()            
+        SpreadPoisonAndChum(20) ; 중독첨
+        CustomSleep(30)
+        SafeRestoreMana() ; 안전공증(체력상관x)
+        
+        
+        StopLoopCheck()
+        SpreadCurseAndChum(20) ; 저주첨
+        CustomSleep(50)
+        SafeRestoreMana() ; 안전공증(체력상관x) 
+        
+        
+        StopLoopCheck()
+        SelfHealAndChum(20)  ; 자힐첨
+        CustomSleep(30)
+
+        StopLoopCheck()
+        SafeRestoreMana() ; 안전공증(체력상관x)
+        CustomSleep(30)
+
+        StopLoopCheck()
+        SafeRestoreMana() ; 안전공증(체력상관x)
+     
+    }
+    
+
+    CustomSleep(30)
+    StopLoop := true
+    isHunting := false
+    ManaRefresh := 0
+    FourWayMabi := 0
+    return
+}
+
 
 
 PoisonJJul() {
@@ -1415,6 +1638,20 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
 }
 
 
+CastHellFire() { ; 다른 동작중 저주 + 헬파이어 시전하기. 탭탭인지 아닌지에 따라서 헬파이어 시전 후 탭탭 원상복구
+    SendInput, {4} ; 저주
+    CustomSleep(30)
+    SendInput, {Enter}
+    CustomSleep(100)
+    SendInput, {Blind}2 ; 헬파 
+    CustomSleep(30)
+    SendInput, {Enter}
+    CustomSleep(90) 
+
+}
+
+
+
 
 s::  ;입력대기.
 InputWaiting()
@@ -1453,25 +1690,67 @@ return
 ;s : 입력대기 // c, esc: 취소 // d, 좌클릭 : 저주 헬파 공증 자힐
 InputWaiting() {    
     IsWaiting := true    ;대기 상태 true
-    
+
     StopLoop := false ;초기화
     isRefreshed := false
+    waitingHellFireCount := 0
     isWrongTarget := false
     isRiding := false
+    notEnoughMana := False
+    isTabTabOn := false
+
+
+    ;-> 첫 헬파시 풀마나 아니어도 헬파 시전할 것인지 혹은 마나 부족시 공증 후 풀마나로 헬파 쓸 것인지 정하진 않았지만
+    ; 적어도 첫 루프에서 공증만 하고 자힐하는 것은 방지할 수 있다. 자힐 후 break 조건에 이 변수도 넣으면 풀마나로 시전
+    ; 현재 마나로 헬파 시전은 앞에 로직 추가해줌
+
+    if(isHunting) { ;첨첨사냥 혹은 중독사냥 중이면 탭탭이 열려 있는지 확인 해두기
+        CheckTabTabOn()
+        CustomSleep(30)
+    }
 
     ;입력대기시 미리 내려서 타겟 지정후 마법시전보다 말탄 상태에서 타겟 선택하고(저주로 대상 정하는 것)
     ;마법을 시전할 때 내려서 지정했던 타겟에 마법을 시전한다면 타겟박스가 말을 가로질러가며 한 번 더 누르는 것을 방지 가능
     ;훨씬 편할 것이다.
-   
+
+    SendInput, {esc} 
+    CustomSleep(30)   
     SendInput, {4} ;저주 타겟박스 띄워서 타겟 선택하는 용도.
     CustomSleep(30)
 
-    ; Enter와 d 키 입력 대기 (5초 타임아웃)
+    ; Enter와 d 키 입력 대기 (10초 타임아웃)
     Input, UserInput, V L1 T10, {o}{ESC}
     CustomSleep(20)    
-    if (ErrorLevel = "EndKey:o") {
+    ;입력대기중 헬파이어.
+    if (ErrorLevel = "EndKey:o") { ; 입력대기중 d키 눌렀을 때 헬파이어 -> 입력대기중에는 isWaiting 변수를 활용하여 d키 입력시 o가 입력되게 해서 연동. 마우스클릭도 o가 입력되게.
         ;MsgBox, Enter was pressed!
         ; Enter를 눌렀을 때 실행할 로직 추가
+
+
+        if(isHunting) { ;첨첨 사냥중에는 단순 저주 + 헬파이어 시전만(탭탭창 열려 있는 상태면 탭탭창 복구)
+            SendInput, {Esc}
+            CustomSleep(30)
+            SendInput, {4} ;저주
+            CustomSleep(50)
+            SendInput, {Enter} 
+            CustomSleep(100)
+            SendInput, {Blind}2 ; 헬파 
+            CustomSleep(30)
+            SendInput, {Enter}
+            CustomSleep(90) 
+            if(isTabTabOn) { ; 탭탭 상태였다면 탭탭으로 원상복구
+                SendInput, {Esc}
+                CustomSleep(30)
+                SendInput, {Tab}
+                CustomSleep(50)
+                SendInput, {Tab}
+                CustomSleep(50)
+                IsWaiting := false
+                Exit
+            }
+        }
+
+
 
         ;저주 -> 헬파 -> 공증(마나 감지될 때까지 계속 시도) -> 자힐 3틱
         ;헬파쓰고 페이백 받으면 마나 오링(바닥)상태를 기존 마나량 이미지로 서치해서는 판별할 수가 없다.
@@ -1483,34 +1762,27 @@ InputWaiting() {
         SendInput, {Esc}
         CustomSleep(50)         
 
-        SendInput, {Blind}r ;말에서 타고 있으면 말에서 내리기. 다음에 내리고 나서 말에 마비거는 건 어떨까 싶음
+        SendInput, {Blind}r ;말에서 타고 있으면 말에서 내리기. 내리고 나서 말에 마비거는 건 어떨까 싶음(방향 확인 로직 필요)
         CustomSleep(150) ; 이 딜레이를 짧게하면 말을 타고 있다고 하므로 이 문구 뜨면 늘리자. 귀찮으면 말타기를 입력대기쪽 저주 앞으로 이동
 
         SendInput, {4} ;저주
         CustomSleep(50)
         SendInput, {Enter} ; 
         CustomSleep(100)
-        ;헬파가 씹히는 경우가 생기더라. 저주시전 enter 후딜 더 넣고 헬파를 SendInput말고 Send, 2로 바꿔봤다
-        ;그래도 씹히면 후딜 좀 더 올리고 보완으로 Send, {2} 를 두 번 누르게 했다.
-        ;후딜 340에서도 한 번씩 씹히길래 그냥 일반적인 저주 후딜 90으로 하고
-        ;헬파누르고 esc 눌러서 취소하는 반복루프 몇개 넣어두자. 총 후딜 50에 반복루프 5에 아직 씹히는 거 못 봄
-        ;그래도 씹히면 다른 방법을 또 생각해보자.
+        ;헬파가 씹히는 경우가 생겨서 후딜을 늘리고 후딜 늘리는 걸로는 고장나는 경우가 생겨서 반복 재시전을 만들었다.
         
-        ;결론은 헬파 쿨타임 타이머가 좀 고장나서 그랬던 거였고 반복 재시전으로 해결.
-       
-        ;SendInput, {Blind}2 ; 헬파 
-        ;CustomSleep(30)
-        ;SendInput, {Enter}
-        ;CustomSleep(90)    
+        ; -> 헬파가 씹히던 이유는 바람을 오래켜놔서 쿨타임 애드온 타이머가 고장나서 그랬던 거였고 반복 재시전을 만들었으나
+        ; 재부팅 하니까 고쳐졌다. 하지만 덕분에 반복 재시전을 만들어서 괜찮다고 생각한다.  
 
-        Loop ,20 { ;루프 회수없으면 만약 말에서 내린 상태에서 s->d를 해버릴 때 말에 타버리면 말탄 상태에서 무한 공증시도를 하게 된다.
+        Loop ,20 { ;루프 횟수없으면 만약 말에서 내린 상태에서 s->d를 해버릴 때 말에 타버리면 말탄 상태에서 무한 공증시도를 하게 된다.
+                   ; -> 말타고 시전하면 멈추는 로직 만들엇음.
             StopLoopCheck()
             CustomSleep(20)
             CheckFullMana() ; 풀마나 확인
             CustomSleep(20)
-            CheckWrongTarget() ; 시전대상확인. 쿨 안 돼서 재시전 하다가 방향키로 타겟 바껴버렸는데 잘못된 대상이면 중단하기 위해 루프 내부로
+            CheckWrongTarget() ; 걸리지 않는 잘못된 대상이면 중단
             CustomSleep(20) 
-            CheckCastOnHorse() ; 말에 탄 상태에서 시전을 루프에 내부에서 한 번 더 체크하는 이유는 타겟체크와 같다. 시저 반복하다가 말타기 대비
+            CheckCastOnHorse() ; 말에 탄 상태에서 시전하면 중단
             CustomSleep(20)
             ;원래는 잘못된 대상과 말탄상태 둘 다 or 조건으로 묶어서 break 걸었는데
             ;말 탄 상태에서 자기 자신에게 시전할 때 말에서 내려서 저주를 거는데 잘못된 대상이면 다시 말에 타야되므로 r 넣어줬다.
@@ -1524,42 +1796,71 @@ InputWaiting() {
                 CustomSleep(20)
             }
 
+            ;풀마나 -> 공증하고 온 거면 힐 쓰고 마무리. 공증 안 하고 온 것 -> 헬파 안 썼음 -> 헬파 시전
+            ;마나 낮음 -> 마나 조금이라도 있으면 그냥 공증. 마나 바닥이면 동동주 마시고 공증
+            ;공증은 마나 낮음 체크 후 공력증강 or 동동주 마시고 공력증강 반복하고 풀마나이면 break걸면 되는데
+            ;루프 위쪽에 풀마나 검증하는 것이 있으므로 그냥 공증 실패해도 다시 공증으로 내려보낸다.
+
             if(isFullMana) { ; 풀마나 상태일 때 (공력증강 or 헬파 씹힘)
-                if(isRefreshed) { ;풀마나가 공증하고 온 것인지 헬파가 안 나가서인지 판별. 공증하고 왔으면 자힐 후 말타고 break
+                ;풀마나가 공증하고 온 것인지 헬파를 쓰지 않은 상태인지 판별. 공증하고 왔으면 자힐 후 말타고 break
+                ;첫 헬파이어 시도시 풀마나가 아닐 때 공증 후 자힐하고 빠져나가는 것을 방지하기 위해 waitingHellFireCount 변수 조건 붙임
+                ;0부터 시작해서 헬파이어 시도할 때 +1씩 해준다. 공증 후 풀마나로 와서 헬파이어 시도 안 했으면 조건에 따라 헬파이어 시전
+                ;만약 현재 마나로 헬파이어 바로 시전하고 싶다면 if(isFullMana)조건 위에 if(waitingHellFireCount==0) 조건으로 헬파 시전
+                if(isRefreshed && waitingHellFireCount > 0) { 
                     SelfTapTapHeal(3)
                     CustomSleep(20)
                     ;이때 말 타고 있었으면 말에 다시 타게 r키 탑승
                     SendInput, {Blind}r
-                    ;MsgBox, 풀마나
                     Break
-                } else { ;헬파가 안 나가서 공증없이 온 거면 break 안 걸리고 헬파 한 번 더 시도하고 다시 공증시도로 내려감
-                     ;공증 안 하고 풀마나 상태면 헬파 한 번 더 써봄
+                } else { ;풀마나인데 공증 거친 것이 아니면 헬파 시전 안 된 것이므로 다시 루프 반복되면서 자힐로 안 가고 헬파로 다시 온다.            
 
-                     ; 주의할 점이 헬파가 씹히는 상태가 랜덤으로 고정이라면 헬파 안 나가고 무한 뺑뺑이 걸릴 수 있음
+                    if(waitingHellFireCount >0) { ;첫 헬파쐈는데 공증 없이 다시 풀마나로 왔다는 것은 쿨타임이라는 것이다. 쿨일시 마비(혹은 절망) 쏘고 헬파
+                        ;어차피 마비나 절망 돌려놓고 할 가능성이 높은데 일단 써보고 별로면 이 if문은 빼자.
+                        loop, 2{
+                            SendInput, {6}
+                            CustomSleep(30)
+                            SendInput, {Enter}
+                            CustomSleep(90)
+                        }
+                    }
                     SendInput, {Blind}2 ; 헬파 
                     CustomSleep(30)
                     SendInput, {Enter}
-                    CustomSleep(90) 
-                    CheckLowMana() ;헬파 시도하니까 이후를 위해 마나 확인
+                    CustomSleep(150)  ; 원래 후딜 90 -> 150으로 늘림. 헬파를 사용하고 마나를 소모했어도 루프 돌아가서 위에 CheckFullMana()에서 아직 풀마나로 인지해서 다시 헬파로 들어와서 후딜 150으로 늘림
+                    waitingHellFireCount++
                     isRefreshed := false
                 }                 
-            } else {  ;풀마나 아닐 때(헬파 사용된 것)
-                CheckLowMana() ; isLowMana 변수에 상태 저장.(헬파 사용시 페이백인지 아닌지 판별)
-                CustomSleep(30)
-                ;풀마나 아닐 때는 헬파가 나간 것이고 페이백인지 아닌지 판별해서 공력증강
-                if(isLowMana) { ;마나 0이면(페이백x) 동동주 마시고 공증.  여기는 헬파니까 checkEnoughtMana()로 확인 불필요
-                    DrinkDongDongJu()
-                    CustomSleep(70)
-                    SendInput, {3}
-                    CustomSleep(100)
-                } else { ;마나 있으면(페이백o) 그냥 공증
-                    SendInput, {3}
-                    CustomSleep(50)
-                    CustomSleep(100)
-                }               
-                ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용
+            } else {  ;풀마나 아닐 때(현재 로직으로는 헬파 썼는지 알 수 없음). 공증 -> 마나부족하면 -> 동동주 마시고 다시 공증
+                ;즉 현재 로직으로는 풀마나 아니면 내려와서 공증을 써버리고 풀마나 되면 자힐후 종료.
+                ;풀마나 아닐시 공증 후 헬파이어 쓸지 그냥 헬파 쏘고 공증할지 정하자.
+                ; 헬파 썼는지 알 수 있게  waitingHellFireCount 변수 만들고 0부터 시작해서 헬파 시전시 1씩 카운팅 올라가게 했다. 0이면 아직 시전 안 됨.
+                ; 1이상부터 한 번 시도 했음(1이상부터는 쿨탐이었다는 의미). 즉 카운트가 0이면 공증하고 왔어도 풀마나 아니라서 공증이 된 것.
+                ; 풀마나 아닐 시 헬파 카운트 0이면 공증 할 것이므로 안전상 마비 넣어줬다(혼돈으로 바꿔도 굳)
+                
+                ;풀마나 아니라서 공증하고 헬파 날릴 때 공증 하기 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
+                if(waitingHellFireCount==0) {
+                    loop, 2{
+                        SendInput, {6}
+                        CustomSleep(30)
+                        SendInput, {Enter}
+                        CustomSleep(90)
+                    }
+                }
+               SendInput, {3} ;공증
+               CustomSleep(50)
+               CheckEnoughMana()
+               CustomSleep(50)
+               if(notEnoughMana) { ; 마나가 부족하다면 동동주 마시고 다시 공력증강 시전
+                   DrinkDongDongJu()
+                   CustomSleep(70)
+                   SendInput, {3}
+                   CustomSleep(50)
+               }           
+                ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용                
                 isRefreshed := true
+                
             }
+            
             
         }
     } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
@@ -1593,16 +1894,18 @@ InputWaiting() {
 
 
 F6:: ;이미지 서칭 테스트
-HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
 
-ImageSearch, FoundX2, FoundY2, 1900, 1150, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
+;imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\joosool"
+HalfHealthImgPath := imgFolder . "halfhealth.png"
+
+ImageSearch, FoundX2, FoundY2, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
 ImgResult2 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것 -> 공력증강 상용시 위험
 if(ImgResult2 = 0) {
-    SendInput, {Blind}0
+    MsgBox, 체력 절반 이하
 } else if(ImgResult2 = 1) {
-    SendInput, {Blind}1
+    MsgBox, 체력 절반 이상
 } else {
-    SendInput, 2
+    MsgBox, 기타 오류
 }
 return
 
@@ -1634,6 +1937,44 @@ if(notEnoughMana) {
 }
 return
 
++F7::
+CheckHalfHealth()
+if(isHalfHealth) {
+    MsgBox, 체력 절반 이상
+}
+return
+
+
+^F7::
+RestoreManaAtLow()
+return
+
+!F7::
+SafeRestoreManaAtLow()
+return
+
++^F7::
+CheckTabTabOn()
+if(isTabTabOn) {
+    MsgBox, 탭탭창 열림
+}
+return
+
+
+;**이미지 서칭**
+    ; 화면의 특정 영역에서 이미지 검색    
+    ; ImageSearch, OutputX, OutputY, X1, Y1, X2, Y2, ImageFile(변수사용은 %%로 감싸서 %ImagePath%)
+    ; 이미지 경로는 ImagePath := A_ScriptDir . "\img\joosool\image.png"  이런식인데  A_ScriptDir는 스크립트 현재 폴더이고 오토핫키에서 문자열 더하기는 점(.) 으로 이어준다 ( + 아님)
+    ; 이미지를 검색하고 나서 결과는 ErrorLevel에 저장되는데 이를 다른 이름의 변수에 넣어서 활용해도 된다.( ImageResult1 := ErrorLevel 이런식으로)
+    ; ErrorLevel = 0은 이미지가 발견o, 1은 발견x, 2는 이미지 경로를 찾을 수 없음
+    ; 만약 이미지 일치정도를 조절하려면
+    ; ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, *100 %ImagePath% 
+    ;-> 이미지파일 앞에 *숫자는 일치허용범위 조절 가능 0~255까지 가능하며 기본0(완전 동일한 것을 검색) 높을 수록 유사도가 낮아도 매칭됨
+    ; 0~150정도로 ㄱㄱ
+    ; *숫자 말고 *TransColor: 특정 색상을 무시 ( 예: *Trans0xFFFFFF  -> 흰색 배경 무시)
+
+    ; imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\joosool"    
+
 
 ;아래 RestoreMana는 마나가 조금 남아 있는 이미지를 검색해서 못 찾을 경우(마나가 거의 바닥)공력증강을 사용하는 것이다.
 ;(Safe는 체력이 절반쯤 이상일 때)
@@ -1647,61 +1988,177 @@ return
 ;각각의 경우에 따라 isLowMana를 변경해주고 동동주 마시고 공증할지 그냥 공증할지 정하면 될 것이다.
 ;isLowMana로 판별하지만 미세하게 마나가 남아 있을 수도 있다. 이때는 CheckEnoughMana로 시전시 마나량 충분여부를 판별
 
-SafeRestoreMana() { ; 체력 절반쯤 이상이면 공력증강(안전한 공력증강)
-      ; 이미지 경로 설정 (실행한 스크립트의 상대경로)
-      ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
-      HalfHealthImgPath := A_ScriptDir . "\img\joosool\halfhealth.png"
 
-    ; 화면의 특정 영역에서 이미지 검색    
-    ; ImageSearch, OutputX, OutputY, X1, Y1, X2, Y2, ImageFile(변수사용은 %%로 감싸서 %ImagePath%)
-    ; 이미지를 검색하고 나서 결과는 ErrorLevel에 저장되는데 이를 다른 이름의 변수에 넣어서 활용해도 된다.( ImageResult1 := ErrorLevel 이런식으로)
-    ; ErrorLevel = 0은 이미지가 발견o, 1은 발견x, 2는 이미지 경로를 찾을 수 없음
-    ; 만약 이미지 일치정도를 조절하려면
-    ; ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, *100 %ImagePath% 
-    ;-> 이미지파일 앞에 *숫자는 일치허용범위 조절 가능 0~255까지 가능하며 기본0(완전 동일한 것을 검색) 높을 수록 유사도가 낮아도 매칭됨
-    ; 0~150정도로 ㄱㄱ
-    ; *숫자 말고 *TransColor: 특정 색상을 무시 ( 예: *Trans0xFFFFFF  -> 흰색 배경 무시)
-    ImageSearch, FoundX1, FoundY1, 1900, 1150, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+
+
+CheckHalfHealth() { ;체력 절반쯤인지 확인. -> 체력 절반 까진 이미지 검색해서 검색되면 절반 이하, 검색 안 되면 절반 이상인 것
+    isHalfHealth := false ; 초기화
+
+    ; imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\joosool"
+    HalfHealthImgPath := imgFolder . "halfhealth.png"
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
+    ImgResult1 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것. 검색 안 되면 절반 이상
+    if (ImgResult1 = 1) { ; 발견 안 되면 체력 절반 이상
+        isHalfHealth := true 
+    }
+
+}
+
+
+
+;SafeRestoreManaAtLow() 만든 이후에 CheckHalfHealth()를 만든 것이다. SafeRestoreManaAtLow()는 이미지 서칭2개 예제로 그냥 남겨둠
+
+SafeRestoreManaAtLow() { ; 체력 절반쯤 이상(안전한 공력증강) + 마나가 거의 바닥이면 공력증강
+      ; 이미지 경로 설정 (실행한 스크립트의 상대경로)
+      ManaImgPath := imgFolder . "mana.png"
+      HalfHealthImgPath := imgFolder . "halfhealth.png"
+
+
+    ;원래 마나는 1400, 800으로 했지만 그냥 1300, 700으로 체력이랑 통일 시켰다. 오류가 생기면 그냥 이전에 쓰던 1400, 800으로 롤백
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
     CustomSleep(10)
-    ImageSearch, FoundX2, FoundY2, 1900, 1150, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
-    ImgResult2 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것 -> 공력증강 상용시 위험
+
+    ImageSearch, FoundX2, FoundY2, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지.     
+    ImgResult2 := ErrorLevel ; ;체력 절반쯤 깎인 이미지 이므로 검색되면 절반쯤 이하, 검색 안 되면 절반쯤 이상인 것. 즉, 검색 안 될 때 안전한 공증 ㄱㄱ
 
 
     if (ImgResult1 = 1 && ImgResult2 = 1) ;마나 거의 없고 피 절반쯤 이상일 때
                         ; -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용하자
         {            
-            ; 공력증강
-            SendInput, {3}
-            CustomSleep(30)
+            Loop, 30 { ;혹시 몰라서 횟수제한 걸어둠
+                ; 공력증강
+                SendInput, {3}
+                CustomSleep(100)
+
+                CheckEnoughMana()
+                CustomSleep(50)
+                if(notEnoughMana) {
+                    DrinkDongDongJu()
+                    CustomSleep(100)
+                    SendInput, {3}
+                    CustomSleep(100)                    
+                }
+                CheckFullMana()
+                CustomSleep(50)
+                if(isFullMana) {
+                    break
+                    CustomSleep(30)
+                }
+            }
+            
         }
     return
 }
 
 
-RestoreMana() {
-    
-    ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
-    ImageSearch, FoundX1, FoundY1, 1900, 1150, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+RestoreManaAtLow() {    
+    ManaImgPath := imgFolder . "mana.png"
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나가 존재하는 것이고 찾지 못 하면 거의 바닥이라 공력증강 필요
     if (ImgResult1 = 1) { ;마나 거의 없을 때(체력 상관x)
     ;   -> 내 이미지는 파란색 마나가 남아 있는 것으로 발견되지 않을 경우, 즉 1일 경우에 공력증강 사용        
-        ; 공력증강
-        SendInput, {3}
-        CustomSleep(30)
+            Loop, 30 { ;혹시 몰라서 횟수제한 걸어둠
+                ; 공력증강
+                SendInput, {3}
+                CustomSleep(100)
+                
+                CheckEnoughMana()
+                CustomSleep(50)
+                if(notEnoughMana) {
+                    DrinkDongDongJu()
+                    CustomSleep(100)
+                    SendInput, {3}
+                    CustomSleep(100)
+                }
+                CheckFullMana()
+                CustomSleep(50)
+                if(isFullMana) {
+                    break
+                    CustomSleep(30)
+                }
+            }
     }
     return
 }
 
 
-;마나가 바닥인지 확인 (헬파 이후 페이백 받았는지 아닌지 판별용도. 첨첨사냥시 마나부족도 이걸로 체크하므로 CheckEnoughMana()로 시전가능 판별 필요)
+
+
+SafeRestoreMana() { ; 체력 절반쯤 이상(안전한 공력증강)일 때 남은 마나 상관없이 공력증강
+    HalfHealthImgPath := imgFolder . "halfhealth.png"
+
+
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %HalfHealthImgPath% ;체력 거의 절반쯤 이미지
+    ImgResult1 := ErrorLevel ; 이미지가 검색되면 체력이 절반이 안 되는 것 -> 공력증강 상용시 위험
+
+
+    if (ImgResult1 = 1) ;체력 절반쯤 이상일 때.  체력 절반쯤 깎인 이미지 이므로 검색되면 절반쯤 이하, 검색 안 되면 절반쯤 이상인 것
+        {            
+            Loop, 30 { ;혹시 몰라서 횟수제한 걸어둠
+                ; 공력증강
+                SendInput, {3}
+                CustomSleep(100)
+
+                CheckEnoughMana()
+                CustomSleep(50)
+                if(notEnoughMana) {
+                    DrinkDongDongJu()
+                    CustomSleep(100)
+                    SendInput, {3}
+                    CustomSleep(100)                    
+                }
+                CheckFullMana()
+                CustomSleep(50)
+                if(isFullMana) {
+                    break
+                    CustomSleep(30)
+                }
+            }
+            
+        }
+    return
+}
+
+
+
+RestoreMana() {    
+    Loop, 30 { ;혹시 몰라서 횟수제한 걸어둠
+        ; 공력증강
+        SendInput, {3}
+        CustomSleep(100)
+        
+        CheckEnoughMana()
+        CustomSleep(50)
+        if(notEnoughMana) {
+            DrinkDongDongJu()
+            CustomSleep(100)
+            SendInput, {3}
+            CustomSleep(100)
+        }
+        CheckFullMana()
+        CustomSleep(50)
+        if(isFullMana) {
+            break
+            CustomSleep(30)
+        }
+    }
+    return
+}
+
+
+
+;마나가 조금이라도 있는지 확인. 마나가 조금 있는 이미지 검색 후 발견되면 조금이라도 있는 것(헬파 페이백 혹은 조금 마나리젠 된 것)
+;이미지가 발견 안 되면 마나가 아예 바닥인 것
+;(헬파 이후 페이백 받았는지 아닌지 판별용도로 유용 첨첨사냥시 CheckLowMana()체크하고 false면  CheckEnoughMana()로 시전가능 연계하면 굳)
 CheckLowMana() {
     isLowMana := false ;초기화    
 
-    ManaImgPath := A_ScriptDir . "\img\joosool\mana.png"
-    ImageSearch, FoundX1, FoundY1, 1900, 1150, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
+    
+    ManaImgPath := imgFolder . "mana.png"
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, %ManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나존재 -> 헬파 이후 페이백 받은 것, 안 되면 페이백 못 받고 마나 0
-    if (ImgResult1 = 0) { ;마나 발견 -> 페이백
+    if (ImgResult1 = 0) { ;마나 발견 -> 페이백 혹은 어느정도 마나가 존재하는 것
         isLowMana := false
     } else { ;발견 안 됨 -> 마나 바닥 -> 시전시 마나량 충분한지 확인은 필요시 해당 로직에서 checkEnoughtMana로 처리
        isLowMana := true       
@@ -1713,11 +2170,13 @@ CheckLowMana() {
 CheckFullMana() {
     isFullMana := false ;초기화
 
-    FullManaImgPath := A_ScriptDir . "\img\joosool\notebook\fullmana.png"
+    FullManaImgPath := imgFolder . "fullmana.png"
+    ;이미지검색 *n을 *한 *120쯤으로 하면 힐 3틱정도만 허용.
     ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다.
-    ;한 120쯤으로 하면 힐 3틱정도만 허용.
-    ;숫자를 더 올리면 허용 범위가 넓어진다.
-    ImageSearch, FoundX1, FoundY1, 1900, 1150, A_ScreenWidth, A_ScreenHeight, *160 %FullManaImgPath% ; 마나존재 이미지
+    ;*180으로 한 것은 10프로쯤 소모된 것도 풀마나라고 해준다.
+    
+    ;숫자를 더 올리면 허용 범위가 넓어진다. 헬파 사냥시 한 방 컷 혹은 페이백 마나를 고려해서 수치 조정 해주자
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, *180 %FullManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
     if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
         isFullMana = true
@@ -1730,9 +2189,9 @@ CheckFullMana() {
 CheckWrongTarget() {
     isWrongTarget := false ;초기화
 
-    WrongTargetImgPath := A_ScriptDir . "\img\joosool\wrongtarget.png"
+    WrongTargetImgPath := imgFolder . "wrongtarget.png"
     
-    ImageSearch, FoundX1, FoundY1, 1700, 850, A_ScreenWidth, A_ScreenHeight, %WrongTargetImgPath% ; 잘못된대상 이미지
+    ImageSearch, FoundX1, FoundY1, startCastBarX, startCastBarY, A_ScreenWidth, A_ScreenHeight, %WrongTargetImgPath% ; 잘못된대상 이미지
     ImgResult1 := ErrorLevel  
     if (ImgResult1 = 0) { ;이미지가 검색되면 잘못된 대상에게 마법 사용
         isWrongTarget = true
@@ -1745,9 +2204,9 @@ CheckWrongTarget() {
 CheckCastOnHorse() {
     isRiding := false ;초기화
 
-    CastOnHorseImgPath := A_ScriptDir . "\img\joosool\castonhorse.png"
+    CastOnHorseImgPath := imgFolder . "castonhorse.png"
     
-    ImageSearch, FoundX1, FoundY1, 1700, 850, A_ScreenWidth, A_ScreenHeight, %CastOnHorseImgPath% ; 말에 타서 스킬 시전
+    ImageSearch, FoundX1, FoundY1, startCastBarX, startCastBarY, A_ScreenWidth, A_ScreenHeight, %CastOnHorseImgPath% ; 말에 타서 스킬 시전
     ImgResult1 := ErrorLevel  
     if (ImgResult1 = 0) { ;이미지가 검색되면 말에 탄 상태에서 스킬 시전한 것
         isRiding = true
@@ -1758,77 +2217,41 @@ CheckCastOnHorse() {
 
 
 
-;시전에 필요한 마나가 충분한지 판별
+;시전에 필요한 마나가 충분한지 판별. 마력이 부족합니다에서 마 라는 메시지 스캔
 CheckEnoughMana() {
     notEnoughMana := false ;초기화.
 
-    NotEnoughtManaImgPath := A_ScriptDir . "\img\joosool\notEnoughMana.png"
+    NotEnoughManaImgPath := imgFolder . "notEnoughMana.png"
     
-    ImageSearch, FoundX1, FoundY1, 1700, 850, A_ScreenWidth, A_ScreenHeight, %NotEnoughManaImgPath% ; 시전시 마나 충분한지 확인
+    ImageSearch, FoundX1, FoundY1, startCastBarX, startCastBarY, A_ScreenWidth, A_ScreenHeight, %NotEnoughManaImgPath% ; 시전시 마나 충분한지 확인
     ImgResult1 := ErrorLevel  
     if (ImgResult1 = 0) { ;이미지가 검색되면 시전시 필요한 마나 부족한 것
-        notEnoughMana = true  ;마나량 부족
-        
+        notEnoughMana = true  ;마나량 부족        
     }
     return
 }
 
+;AutoHotkey 1.0에는 현재 창의 너비와 높이를 나타내는 내장 변수(예: A_WindowWidth, A_WindowHeight)가 없다
+;따라서 특정 창에서 이미지 검색을 하려면, 먼저 그 창의 위치와 크기를 얻어와야 합니다. 이를 위해 WinGetPos 명령을 사용할 수 있습니다.
+CheckTabTabOn() {
+    isTabTabOn := false ;초기화
+
+    ; 활성 창의 위치와 크기를 구합니다.
+    WinGetPos, winX, winY, winWidth, winHeight, A
+
+    ; 오른쪽 아래 좌표를 계산합니다.
+    windowX := winX + winWidth
+    windowY := winY + winHeight
 
 
-;풀마나 확인(공력증강 성공)
-cfmn() {
-    isFullMana := false ;초기화
-
-    FullManaImgPath := A_ScriptDir . "\img\joosool\fullmana.png"
-    ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다.
-    ;한 120쯤으로 하면 힐 3틱정도만 허용.
-    ;숫자를 더 올리면 허용 범위가 넓어진다.
-    ImageSearch, FoundX1, FoundY1, 1900, 1150, A_ScreenWidth, A_ScreenHeight, *0.67 %FullManaImgPath% ; 마나존재 이미지
-    ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
-    if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
-        isFullMana = true
-        ;MsgBox, 풀마나
-    }
-    return
-}
-
-F8::
-cfmn()
-return
-
-F10::
-FullManaImgPath := A_ScriptDir . "\img\joosool\fullmana.png"
-
-; 배율 범위 설정 (1.0에서 2.0까지 0.1씩 증가)
-StartScale := 1.0
-EndScale := 2.0
-Step := 0.1
-
-; 허용 오차 설정
-AllowedVariance := 120
-
-; 화면에서 이미지 검색
-Found := false
-Loop {
-    ; 현재 배율 계산
-    Scale := StartScale + (A_Index - 1) * Step
+    tabtab :=imgFolder . "tabtab4.png" ;탭탭4번 그림으로
     
-    ; 배율이 EndScale을 초과하면 루프 종료
-    If (Scale > EndScale)
-        Break
-
-    ; ImageSearch 실행
-    ImageSearch, FoundX, FoundY, 0, 0, A_ScreenWidth, A_ScreenHeight, *%AllowedVariance% *%Scale% %FullManaImgPath%
-    
-    ; 이미지가 발견되었으면 루프 종료
-    If !ErrorLevel {
-        Found := true
-        MsgBox, Image found at X: %FoundX%, Y: %FoundY% with scale: %Scale%
-        Break
-    }
+    ImageSearch, FoundX1, FoundY1, winX, winY, windowX, windowY,*30 %tabtab% ;탭탭라인 검색
+    ImgResult1 := ErrorLevel ; 탭탭창 열려 있는지 확인하기 위함
+    if(ImgResult1 = 0) {        
+        isTabTabOn := true
+    } 
 }
-
-return
 
 
 #If  ;IfWinActive 조건부 종료
