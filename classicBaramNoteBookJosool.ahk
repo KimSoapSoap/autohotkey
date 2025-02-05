@@ -29,7 +29,7 @@ global startStatusBarY := 700
 ;pc는 1300, 700 노트북은 1900, 1150 (1920x1200 125% 사용시 PC좌표 그대로 사용) 
 
 
-global imgFolder := A_ScriptDir . "\img\joosool\notebook\"
+global imgFolder := A_ScriptDir . "\img\joosool\"
 ;global imgFolder : = A_ScriptDir . "\img\joosool\notebook\"
 ;pc는 "\img\joosool\""   이고   notebook은   "\img\joosool\notebook\"
 ;A_ScriptDir은 현재 스크립트의 폴더경로이고 점(.)은 오토핫키에서 문자열을 더하는(+) 부호이다. 시작부분을 그냥 가져왔으므로 A_ScriptDir는 맨 앞에 붙여놓고 . 으로 이어 놓으면 된다.

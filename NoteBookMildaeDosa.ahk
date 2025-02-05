@@ -1128,6 +1128,15 @@ TabTabChase()
 return
 
 TabTabChase() {
+
+    ; 활성 창의 위치와 크기를 구합니다.
+    ;WinGetPos, winX, winY, winWidth, winHeight, A
+
+    ; 오른쪽 아래 좌표를 계산합니다.
+    ;windowX := winX + winWidth
+    ;windowY := winY + winHeight
+
+
     ;Click, Right up ;우클 해제. 어차피 계속 따라다닐 거면 중지할 때만 해제해주면 되지 않나?. 여기서 우클 해제는 이걸 빼보자.
     ;우선 x좌표는 딱 중간쯤이라 좌우로는 캐릭이 중간에 잘 선다. y좌표만 길통과할 때 편의를 위해서 랜덤으로 박스 조금 위, 아래에도 위치할 수 있게 했다.
     ;보통 좌측하단이 검색돼서 상단으로 80만큼, 하단으로 50만큼 해서 캐릭터 탭탭박스 살짝 위 아래로를 벗어나는 데까지 범위가 들어가게 해줬다. 위아래로 이동을 위해
@@ -1146,7 +1155,10 @@ TabTabChase() {
 
     tabtab := A_ScriptDir . "\img\dosa\tabtab4.png" ;탭탭4번 그림으로
 
-    ImageSearch, FoundX1, FoundY1, 0, 0, A_ScreenWidth, A_ScreenHeight,*30 %tabtab% ;탭탭라인 검색
+    ;일단 창 크기 계산은 세로는 280쯤 빼주자(해상도에 따라 더 조절 필요할 수도도). 외치기 색에 탭탭색이 검색된다
+    ImageSearch, FoundX1, FoundY1, winX, winY, 1430, 850,*30 %tabtab% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만. 외치기에 검색되더라
+    ;ImageSearch, FoundX1, FoundY1, winX, winY, WindowX, WindowY,*30 %tabtab% ;탭탭라인 검색  ;바람창 내부에서만 검색
+    ;ImageSearch, FoundX1, FoundY1, 0, 0, A_ScreenWidth, A_ScreenHeight,*30 %tabtab% ;탭탭라인 검색 오리지널(바람 창 최대화 혹은 뒤에 다른 창x)
     ImgResult1 := ErrorLevel ; 탭탭된 캐릭터 따라가기 위함
     if(ImgResult1 = 0) {
         ;SendInput, {Blind}1 ;확인용 코드
