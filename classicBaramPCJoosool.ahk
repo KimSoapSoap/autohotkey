@@ -141,6 +141,10 @@ global isTabTabOn := false
 ;중독첨첨 혹은 중독사냥 중인지 확인
 global isHunting := false
 
+;마나 0인지 확인
+;원래 이미지 검색 한 번에 하나의 변수만 바꾸줬는데 마나 관련해서는 마나가 조금이라도 존재하는(풀마나 혹은 마나존재) 것이 확인되면 isManaZero는 false로 초기화를 해주도록 하자
+global isManaZero := false
+
 
 
 
@@ -1777,7 +1781,7 @@ InputWaiting() {
                    ; -> 말타고 시전하면 멈추는 로직 만들엇음.
             StopLoopCheck()
             CustomSleep(20)
-            CheckFullMana() ; 풀마나 확인
+            CheckFullMana() ; 풀마나 확인             
             CustomSleep(20)
             CheckWrongTarget() ; 걸리지 않는 잘못된 대상이면 중단
             CustomSleep(20) 
@@ -1819,13 +1823,16 @@ InputWaiting() {
                             SendInput, {6}
                             CustomSleep(30)
                             SendInput, {Enter}
-                            CustomSleep(90)
+                            CustomSleep(90)                          
                         }
                     }
                     SendInput, {Blind}2 ; 헬파 
                     CustomSleep(30)
-                    SendInput, {Enter}
-                    CustomSleep(150)  ; 원래 후딜 90 -> 150으로 늘림. 헬파를 사용하고 마나를 소모했어도 루프 돌아가서 위에 CheckFullMana()에서 아직 풀마나로 인지해서 다시 헬파로 들어와서 후딜 150으로 늘림
+                    SendInput, {Enter}                                        
+                    CustomSleep(150)  ; 원래 후딜 90 -> 150으로 늘림. 헬파를 사용하고 마나를 소모했어도 루프 돌아가서 위에 CheckFullMana()에서 아직 풀마나로 인지해서 다시 헬파로 들어와서 후딜 150(아래 CheckManaZero()도 마찬가지)
+                    CheckManaZero() ; 마나 0 확인(페이백x인지 확인) 원래 헬파 뒤에 두는 게 맞는데 한 번 페이백 없이 isManaZero가 true가 되면 공증 성공 이후에도 true로 남아서 아래 동동주 공증 더하게 됨.                    
+                    CustomSleep(20)
+                    
                     waitingHellFireCount++
                     isRefreshed := false
                 }                 
@@ -1846,14 +1853,14 @@ InputWaiting() {
                     }
                 }
                SendInput, {3} ;공증
-               CustomSleep(50)
+               CustomSleep(150) ; 공증 이후에 그냥 30 이정도 후딜만 줬었는데 마나량 확인할 때는 공증 성공시 마나 회복한 것을 인지할 후딜을 150은 줘야한다(헬파 사용시에도 마찬가지)
                CheckEnoughMana()
-               CustomSleep(50)
-               if(notEnoughMana) { ; 마나가 부족하다면 동동주 마시고 다시 공력증강 시전
+               CustomSleep(20)               
+               if(notEnoughMana || isManaZero) { ; 마나가 부족하다면 혹은 마나가 0이라면(헬파 페이백x)동동주 마시고 다시 공력증강 시전
                    DrinkDongDongJu()
                    CustomSleep(70)
                    SendInput, {3}
-                   CustomSleep(50)
+                   CustomSleep(150) ; 공증 이후 루프 반복될 때 풀마나인지 확인하는 함수가 있는데 공증 성공시 회복된 마나 인지할 정도의 후딜을 줬다. 기존 50 -> 100
                }           
                 ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용                
                 isRefreshed := true
@@ -1956,6 +1963,13 @@ return
 CheckTabTabOn()
 if(isTabTabOn) {
     MsgBox, 탭탭창 열림
+}
+return
+
+F8::
+CheckManaZero()
+if(isManaZero) {
+    MsgBox, 마나 0
 }
 return
 
@@ -2150,6 +2164,7 @@ RestoreMana() {
 ;마나가 조금이라도 있는지 확인. 마나가 조금 있는 이미지 검색 후 발견되면 조금이라도 있는 것(헬파 페이백 혹은 조금 마나리젠 된 것)
 ;이미지가 발견 안 되면 마나가 아예 바닥인 것
 ;(헬파 이후 페이백 받았는지 아닌지 판별용도로 유용 첨첨사냥시 CheckLowMana()체크하고 false면  CheckEnoughMana()로 시전가능 연계하면 굳)
+;마나량 확인시에는 스킬 사용이후 후딜 150은 줘야 삑 안 나고 확인 가능하다
 CheckLowMana() {
     isLowMana := false ;초기화    
 
@@ -2159,6 +2174,9 @@ CheckLowMana() {
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 마나존재 -> 헬파 이후 페이백 받은 것, 안 되면 페이백 못 받고 마나 0
     if (ImgResult1 = 0) { ;마나 발견 -> 페이백 혹은 어느정도 마나가 존재하는 것
         isLowMana := false
+
+        ;원래 이미지 검색 한 번에 하나의 변수만 바꾸줬는데 마나 관련해서는 마나가 조금이라도 존재하는(풀마나 혹은 마나존재) 것이 확인되면 isManaZero는 false로 초기화를 해주도록 하자
+        isManaZero := false
     } else { ;발견 안 됨 -> 마나 바닥 -> 시전시 마나량 충분한지 확인은 필요시 해당 로직에서 checkEnoughtMana로 처리
        isLowMana := true       
     }
@@ -2166,6 +2184,7 @@ CheckLowMana() {
 }
 
 ;풀마나 확인(공력증강 성공)
+;마나량 확인시에는 스킬 사용이후 후딜 150은 줘야 삑 안 나고 확인 가능하다
 CheckFullMana() {
     isFullMana := false ;초기화
 
@@ -2180,6 +2199,9 @@ CheckFullMana() {
     if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
         isFullMana = true
         ;MsgBox, 풀마나
+
+        ;원래 이미지 검색 한 번에 하나의 변수만 바꾸줬는데 마나 관련해서는 마나가 조금이라도 존재하는(풀마나 혹은 마나존재) 것이 확인되면 isManaZero는 false로 초기화를 해주도록 하자
+        isManaZero := false 
     }
     return
 }
@@ -2217,6 +2239,7 @@ CheckCastOnHorse() {
 
 
 ;시전에 필요한 마나가 충분한지 판별. 마력이 부족합니다에서 마 라는 메시지 스캔
+;마나량 확인시에는 스킬 사용이후 후딜 150은 줘야 삑 안 나고 확인 가능하다
 CheckEnoughMana() {
     notEnoughMana := false ;초기화.
 
@@ -2229,6 +2252,23 @@ CheckEnoughMana() {
     }
     return
 }
+
+
+;마나가 0인지 판별. 주술의 경우 헬파시전 이후 페이백 없을 때(도사에 사용한다면 공력주입 이후)
+;마나량 확인시에는 스킬 사용이후 후딜 150은 줘야 삑 안 나고 확인 가능하다
+CheckManaZero() {
+    isManaZero := false ;초기화.
+
+    ManaZeroImgPath := imgFolder . "manazero.png"
+    
+    ImageSearch, FoundX1, FoundY1, startCastBarX, startCastBarY, A_ScreenWidth, A_ScreenHeight, %ManaZeroImgPath% ; 마나 0인지 확인
+    ImgResult1 := ErrorLevel  
+    if (ImgResult1 = 0) { ;이미지가 검색되면 마나 0인 것
+        isManaZero = true  ;마나량 0       
+    }
+    return
+}
+
 
 ;AutoHotkey 1.0에는 현재 창의 너비와 높이를 나타내는 내장 변수(예: A_WindowWidth, A_WindowHeight)가 없다
 ;따라서 특정 창에서 이미지 검색을 하려면, 먼저 그 창의 위치와 크기를 얻어와야 합니다. 이를 위해 WinGetPos 명령을 사용할 수 있습니다.
