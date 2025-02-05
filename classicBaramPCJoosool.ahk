@@ -426,7 +426,12 @@ return
 q::6 ;마비
 w::7 ;중독 ; 2차 달면 삼매진화로 바꾸고(겜 시스템상 없는 키 -> h,n 등 해야 안 꼬임 w했을 때 꼬였음) 중독은 shift + w로 변경
 e::8 ;활력
-r::9 ;혼돈
+
+r:: ;혼돈 ;주로 길 뚫는데 사용하므로 자동 home 누르는 걸로 하고 필요시 home 제거
+SendInput, {9}
+CustomSleep(30)
+SendInput, {Home}
+return
 
 t:: ; 극진화열참주, 종합사냥중 어그로 끌 때 사용하기 위해 StopLoop 뺐다
 UltimateBlazingSlash()
@@ -2190,11 +2195,11 @@ CheckFullMana() {
 
     FullManaImgPath := imgFolder . "fullmana.png"
     ;이미지검색 *n을 *한 *120쯤으로 하면 힐 3틱정도만 허용.
-    ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다.
-    ;*180으로 한 것은 10프로쯤 소모된 것도 풀마나라고 해준다.
+    ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다. -> 안정적
+    ;*180으로 한 것은 10프로쯤 소모된 것도 풀마나라고 해주는데 가끔 절반 소모해도 풀마나로 인지해서 불안정적이다. 160 추천
     
     ;숫자를 더 올리면 허용 범위가 넓어진다. 헬파 사냥시 한 방 컷 혹은 페이백 마나를 고려해서 수치 조정 해주자
-    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, *180 %FullManaImgPath% ; 마나존재 이미지
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, *160 %FullManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
     if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
         isFullMana = true
