@@ -221,7 +221,7 @@ d::  ;중독만 돌리기.
 ;입력대기 키로 사용할 것이므로 if로 조건 걸어줌 -> 입력대기중일 때는 또다른 동작 수행. 입력대기가 아닐 때는 원래 d키 동작 수행
 if (IsWaiting) {
     ; 대기 상태일 때 동작. 이때 d를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용해야됨
-    Send, {d}
+    Send, {o}
     return
 }
 ; 일반적인 d 핫키 동작
@@ -236,8 +236,8 @@ LButton::
 ;입력대기 키로 사용할 것이므로 if로 조건 걸어줌 -> 입력대기중일 때는 또다른 동작 수행. 입력대기가 아닐 때는 원래 d키 동작 수행
 if (IsWaiting) {
     ; 대기 상태일 때 동작. 이때 d를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용해야됨
+    Send, {o}
     Send, {LButton}
-    Send, {d}
     return
 }
 
@@ -1374,11 +1374,6 @@ PoisonChumHunt() {
 
         ;일단 처음에는 저주 돌려야 하니까 4방향 마비&저주 걸고 중독2, 저주2 ; -> 중첨첨 사냥은 첫 시작을 중독첨2, 저주첨2        
         ; 초반 첫 4방향 저주마비 이후 중독첨2, 저주첨2로 딸피되기 때문에 다음턴 마비 없이 진행
-
-        ;초반에도 헬파 쓰고 마력 부족할 수 있으므로 안전 공증 추가.
-        ;중독첨이나 저주첨 기본 1회를 20번으로 해줬고 2회는 20 x2 루프돌리다가 매개변수 넣고 40으로 해줬는데
-        ;중간에 마나량 확인을 위해 10으로 나눠서 하자.
-        ;그리고 중간 헬파를 위해 체력이 부족하면 공증 넘어가는 게 아니라 체력좀 회복하고 공증 시도로?
         
             
         StopLoopCheck()
@@ -1388,22 +1383,14 @@ PoisonChumHunt() {
         CustomSleep(30)
                        
         
-        ;중독첨 x2.  기본 20회로 사용했으므로 x2는 40.  이를 나눠서 중간에 마나 부족시 안전한 공증
-        Loop, 2 {
-            StopLoopCheck()            
-            SpreadPoisonAndChum(20)  
-            CustomSleep(30)
-            SafeRestoreManaAtLow()            
-        }
+        StopLoopCheck()            
+        SpreadPoisonAndChum(40) ; 중독첨 x2.  기본 20회로 사용했으므로 x2는 40
+        CustomSleep(30)
           
         
-        ;저주첨 x2.  기본 20회로 사용했으므로 x2는 40.  이를 나눠서 중간에 마나부족시 안전한 공증
-        Loop,2 {
-            StopLoopCheck()
-            SpreadCurseAndChum(20) ; 저주첨 x2   기본 20회로 사용했으므로 x2는 40
-            CustomSleep(30)
-            SafeRestoreManaAtLow()
-        }
+        StopLoopCheck()
+        SpreadCurseAndChum(40) ; 저주첨 x2   기본 20회로 사용했으므로 x2는 40
+        CustomSleep(30)
         
 
         CustomSleep(100) ;원래 오토감지 방지용으로 1100 했는데 걍 100
@@ -1424,49 +1411,43 @@ PoisonChumHunt() {
             ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
           
             StopLoopCheck()         
-            SelfHealAndChum(4)
+            SelfHealAndChum(3)
             CustomSleep(50)         
             ;if (Mod(FourWayMabi, 2) == 1) { ;홀수 일 때만 마비 진행.                 
                 ;FourWayCurseAndParalysis() ;4방향 마비
                 ;CustomSleep(30)
             ;}                    
           
-            ;중독첨x2 돌리기. 기본 20 x2라서  40으로 했는데 20으로 나눠서 마나확인
-            Loop, 2 {
-                StopLoopCheck()
-                SpreadPoisonAndChum(20) 
-                CustomSleep(30)
-                SafeRestoreManaAtLow()   
-            }
-        
-        
-            ;저주첨x1 돌리기.(1회는  20회 )
             StopLoopCheck()
-            SpreadCurseAndChum(20) 
+            SpreadPoisonAndChum(40) ;중독첨x2 돌리기
             CustomSleep(30)
-            SafeRestoreManaAtLow()
-                                   
+            SafeRestoreManaAtLow()    
+        
+        
+            StopLoopCheck()
+            SpreadCurseAndChum(20) ; 저주첨x1 돌리기
+            CustomSleep(30)
+            SafeRestoreManaAtLow()    
+        
                     
             StopLoopCheck()
             SelfHealAndChum(20) ; 자힐첨x1
-            CustomSleep(30)            
+            CustomSleep(30)
             SafeRestoreManaAtLow()
-            CustomSleep(30)               
             
-            
-            ;공증 (루프 짝수마다 한 번씩 -> 체 절반 이상이면 성공시까지 공증 시도 해봄)
-            ;자힐첨 2번 vs 공증 감소체력 + 피격체력  해서 자힐첨 2번으로 생존 가능해야 한다.
-            ;만약 마력이 많이 높아지거나 하면 마력 부족할 때만 공증을 하거나
-            ;루프 4번 중 공증을 3번 간격 혹은 4번 간격(mod 3  mod 4)으로 하거나 전체 한 번만 하거나 몇 번에 한 번 시도하는 공증을 없애거나 한다.
+            공증 (짝수마다 하려고 했는데 마나 부족해서 그냥 매번 하다가 마비 홀수만 해서 공증도 홀수만 맞춤)
+            ;공증 실패하면 마나 부족 이슈
+            ;원래는 자힐첨 앞에서 홀수마다 한 번씩 공증했는데 자힐첨 뒤에 짝수마다(첫 번째에도 공증 시도)로 잠시 바꿔봄
+              
             if (Mod(ManaRefresh, 2) == 0)
                 {            
                     SendInput, {Esc}
-                   CustomSleep(20)  
+                    CustomSleep(20)  
                     StopLoopCheck()
-                   CustomSleep(30)
+                    CustomSleep(30)
 
                     ;원래 성공여부 상관없이 단순 공증 한 번이었는데 체 절반쯤 이상&성공시까지 n번 반복으로 보완해줌
-                    SafeRestoreMana()
+                    RestoreMana()
                 }
             
               
@@ -1487,7 +1468,7 @@ PoisonChumHunt() {
         StopLoopCheck()
         SpreadCurseAndChum(20) ; 저주첨x1 돌리기
         CustomSleep(30)
-        SafeRestoreManaAtLow()      
+        SafeRestoreManaAtLow()            
 
                     
         StopLoopCheck()
@@ -1703,10 +1684,6 @@ return
 ;Enter키는 특이하게도 입력감지에는 인식이 되는데 Enter키 감지시 내부 로직에 Enter키 입력이 있으면 안 먹히더라
 ;입력감지를 O키로 바꿔서 d를 누르면 o를 누르는 걸로 하고 해당 로직에 Enter키를 넣어서 시전을 해준다.
 
-;isWaiting := true일 때, 즉 입력대기 상태일 때 d키를 누르면 d:: 에서 아무 연관없는 o키 입력하고 입력대기중 o키 누르면 헬파 나가게 했는데
-;그냥 Send, {d} 하니까 d키 입력도 인식이 돼서 o키 연계 말고 d키 인식으로 했다.
-;c키는 취소인데 ESC 누를 때도 취소돼야 하고 c키 누를 때도 취소돼야 하기 때문에 입력대기시 c 누르면 ESC키를 send하게 유지.
-
 ;즉 정리하자면 s를 누르면 말타기(타고 있으면 내리기)-저주 타겟창 등 로직 수행 뒤 입력대기상태에 걸리는데(isWaiting 변수활용)
 ;입력대기상태에서 ;d를 누르면 해당 타겟에 저주 - 헬파 - 공증 -자힐 - 말타기 로직을 수행하고
 ;esc(대기상태에서 c를 누르면 esc입력됨)감지되면 취소로직 -> esc눌러서 말타기 로직 수행
@@ -1752,10 +1729,10 @@ InputWaiting() {
     CustomSleep(30)
 
     ; Enter와 d 키 입력 대기 (10초 타임아웃)
-    Input, UserInput, V L1 T10, {d}{ESC}
+    Input, UserInput, V L1 T10, {o}{ESC}
     CustomSleep(20)    
     ;입력대기중 헬파이어.
-    if (ErrorLevel = "EndKey:d") { ; 입력대기중 d키 눌렀을 때 헬파이어 -> 입력대기중에는 isWaiting 변수를 활용하여 d키 입력시 o가 입력되게 해서 연동. 마우스클릭도 o가 입력되게.
+    if (ErrorLevel = "EndKey:o") { ; 입력대기중 d키 눌렀을 때 헬파이어 -> 입력대기중에는 isWaiting 변수를 활용하여 d키 입력시 o가 입력되게 해서 연동. 마우스클릭도 o가 입력되게.
         ;MsgBox, Enter was pressed!
         ; Enter를 눌렀을 때 실행할 로직 추가
 
@@ -2165,7 +2142,7 @@ SafeRestoreMana() { ; 체력 절반쯤 이상(안전한 공력증강)일 때 남
 
 
 
-RestoreMana() {    ;체력 상관없는 공력증강 시도
+RestoreMana() {    
     Loop, 30 { ;혹시 몰라서 횟수제한 걸어둠
         ; 공력증강
         SendInput, {3}
@@ -2222,11 +2199,9 @@ CheckFullMana() {
     ;이미지검색 *n을 *한 *120쯤으로 하면 힐 3틱정도만 허용.
     ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다. -> 안정적
     ;*180으로 한 것은 10프로쯤 소모된 것도 풀마나라고 해주는데 가끔 절반 소모해도 풀마나로 인지해서 불안정적이다. 160 추천
-
-    ; -> 알고봤더니 불안정한 것은 검색 범위가 스크린인데 창 바깥에 바닷가 푸른색 배경화면 때문에 오작동한 것이었다.
     
     ;숫자를 더 올리면 허용 범위가 넓어진다. 헬파 사냥시 한 방 컷 혹은 페이백 마나를 고려해서 수치 조정 해주자
-    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, *180 %FullManaImgPath% ; 마나존재 이미지
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, *160 %FullManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
     if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
         isFullMana = true

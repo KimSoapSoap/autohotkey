@@ -221,7 +221,7 @@ d::  ;중독만 돌리기.
 ;입력대기 키로 사용할 것이므로 if로 조건 걸어줌 -> 입력대기중일 때는 또다른 동작 수행. 입력대기가 아닐 때는 원래 d키 동작 수행
 if (IsWaiting) {
     ; 대기 상태일 때 동작. 이때 d를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용해야됨
-    Send, {d}
+    Send, {o}
     return
 }
 ; 일반적인 d 핫키 동작
@@ -236,8 +236,8 @@ LButton::
 ;입력대기 키로 사용할 것이므로 if로 조건 걸어줌 -> 입력대기중일 때는 또다른 동작 수행. 입력대기가 아닐 때는 원래 d키 동작 수행
 if (IsWaiting) {
     ; 대기 상태일 때 동작. 이때 d를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용해야됨
+    Send, {o}
     Send, {LButton}
-    Send, {d}
     return
 }
 
@@ -1703,10 +1703,6 @@ return
 ;Enter키는 특이하게도 입력감지에는 인식이 되는데 Enter키 감지시 내부 로직에 Enter키 입력이 있으면 안 먹히더라
 ;입력감지를 O키로 바꿔서 d를 누르면 o를 누르는 걸로 하고 해당 로직에 Enter키를 넣어서 시전을 해준다.
 
-;isWaiting := true일 때, 즉 입력대기 상태일 때 d키를 누르면 d:: 에서 아무 연관없는 o키 입력하고 입력대기중 o키 누르면 헬파 나가게 했는데
-;그냥 Send, {d} 하니까 d키 입력도 인식이 돼서 o키 연계 말고 d키 인식으로 했다.
-;c키는 취소인데 ESC 누를 때도 취소돼야 하고 c키 누를 때도 취소돼야 하기 때문에 입력대기시 c 누르면 ESC키를 send하게 유지.
-
 ;즉 정리하자면 s를 누르면 말타기(타고 있으면 내리기)-저주 타겟창 등 로직 수행 뒤 입력대기상태에 걸리는데(isWaiting 변수활용)
 ;입력대기상태에서 ;d를 누르면 해당 타겟에 저주 - 헬파 - 공증 -자힐 - 말타기 로직을 수행하고
 ;esc(대기상태에서 c를 누르면 esc입력됨)감지되면 취소로직 -> esc눌러서 말타기 로직 수행
@@ -1752,10 +1748,10 @@ InputWaiting() {
     CustomSleep(30)
 
     ; Enter와 d 키 입력 대기 (10초 타임아웃)
-    Input, UserInput, V L1 T10, {d}{ESC}
+    Input, UserInput, V L1 T10, {o}{ESC}
     CustomSleep(20)    
     ;입력대기중 헬파이어.
-    if (ErrorLevel = "EndKey:d") { ; 입력대기중 d키 눌렀을 때 헬파이어 -> 입력대기중에는 isWaiting 변수를 활용하여 d키 입력시 o가 입력되게 해서 연동. 마우스클릭도 o가 입력되게.
+    if (ErrorLevel = "EndKey:o") { ; 입력대기중 d키 눌렀을 때 헬파이어 -> 입력대기중에는 isWaiting 변수를 활용하여 d키 입력시 o가 입력되게 해서 연동. 마우스클릭도 o가 입력되게.
         ;MsgBox, Enter was pressed!
         ; Enter를 눌렀을 때 실행할 로직 추가
 
@@ -2222,11 +2218,9 @@ CheckFullMana() {
     ;이미지검색 *n을 *한 *120쯤으로 하면 힐 3틱정도만 허용.
     ;*160으로 한 것은 힐3틱하고 마비같은 거 돌렸을 때 마나 3프로쯤 소모된 것도 풀마나라고 해준다. -> 안정적
     ;*180으로 한 것은 10프로쯤 소모된 것도 풀마나라고 해주는데 가끔 절반 소모해도 풀마나로 인지해서 불안정적이다. 160 추천
-
-    ; -> 알고봤더니 불안정한 것은 검색 범위가 스크린인데 창 바깥에 바닷가 푸른색 배경화면 때문에 오작동한 것이었다.
     
     ;숫자를 더 올리면 허용 범위가 넓어진다. 헬파 사냥시 한 방 컷 혹은 페이백 마나를 고려해서 수치 조정 해주자
-    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, *180 %FullManaImgPath% ; 마나존재 이미지
+    ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, A_ScreenWidth, A_ScreenHeight, *160 %FullManaImgPath% ; 마나존재 이미지
     ImgResult1 := ErrorLevel  ;이미지가 검색되면 풀마나
     if (ImgResult1 = 0) { ; 이미지 검색됐으므로 풀마나. 즉 공력증강 성공           
         isFullMana = true
