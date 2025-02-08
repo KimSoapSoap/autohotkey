@@ -626,16 +626,16 @@ SelfTapTapHeal(count) {
 
 
 
-
+;극진신수마법. 원래 딜 30씩 해줬는데 빨리 시전을 위해 20으로 해봄. 씹히면 30으로 롤백
  UltimateBlazingSlash() {
     SendInput, {Esc}
-    CustomSleep(30)
+    CustomSleep(20)
     SendInput, {shift down}
-    CustomSleep(30)
+    CustomSleep(20)
     SendInput, { z }
-    CustomSleep(30)
+    CustomSleep(20)
     SendInput, {shift up}
-    CustomSleep(30)
+    CustomSleep(20)
     SendInput, {y} ;  y -> 극진화열참주, w로 했었는데 w키가 템착용 단축키라서 꼬일 때가 있어서 없는 키로
     return
  }
