@@ -1865,7 +1865,11 @@ DeathCheck() {
     ImgResult1 := ErrorLevel ; 
     if(ImgResult1 = 0) {
         isDead := true
-    } 
+        ;도사는 Rev 함수를 써준다.
+        Rev()
+    } else {
+        MsgBox, 발견안됨
+    }
     return
 }
 
