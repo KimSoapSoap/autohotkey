@@ -1477,7 +1477,7 @@ CheckHalfHealth() { ;체력 절반쯤인지 확인. -> 체력 절반 까진 이�
 ;SafeRestoreManaAtLow() 만든 이후에 CheckHalfHealth()를 만든 것이다. SafeRestoreManaAtLow()는 이미지 서칭2개 예제로 그냥 남겨둠
 
 SafeRestoreManaAtLow() { ; 체력 절반쯤 이상(안전한 공력증강) + 마나가 거의 바닥이면 공력증강
-
+    StopLoop := false ;초기화
     CalPos() ;현재 활성창 우측하단 좌표 계산
 
       ; 이미지 경로 설정 (실행한 스크립트의 상대경로)
@@ -1528,7 +1528,7 @@ SafeRestoreManaAtLow() { ; 체력 절반쯤 이상(안전한 공력증강) + 마
 
 
 RestoreManaAtLow() {    
-
+    StopLoop := false ;초기화
     CalPos() ;현재 활성창 우측하단 좌표 계산
 
     ManaImgPath := imgFolder . "mana.png"
@@ -1568,7 +1568,7 @@ RestoreManaAtLow() {
 
 
 SafeRestoreMana() { ; 체력 절반쯤 이상(안전한 공력증강)일 때 남은 마나 상관없이 공력증강
-
+    StopLoop := false ;초기화
     CalPos() ;현재 활성창 우측하단 좌표 계산
 
 
@@ -1614,6 +1614,7 @@ SafeRestoreMana() { ; 체력 절반쯤 이상(안전한 공력증강)일 때 남
 
 
 RestoreMana() {    ;체력 상관없는 공력증강 시도
+    StopLoop := false ;초기화
     Loop, 30 { ;혹시 몰라서 횟수제한 걸어둠
         if (StopLoop) {            
             Break
