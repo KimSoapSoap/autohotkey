@@ -1290,10 +1290,15 @@ CalPos() {
 
     ;현재 활성화된 창의 우측하단 좌표를 계산해서 winEndX, winEndY에 저장.(글로벌 변수로 선언해둠)
     ;winStartX와 winStartY 그리고 winEndX, winEndY를 활용하면 현재 활성화된 창의 시작좌표, 끝좌표(우측하단) 알 수 있음
-    winEndX := winStartX + windowWidth -1
-    winEndY := winStartY + windowHeight -1
+    ;아래 winWidth쪽 설명대로 잠시 windowWidth와 height를 대입하고 이상하면 롤백
+    ;winEndX := winStartX + windowWidth -1
+    ;winEndY := winStartY + windowHeight -1
 
-    ;윈도우 가로길이 세로길이 저장
+    winEndX := windowWidth
+    winEndY := windowHeight
+
+    ;윈도우 가로길이 세로길이 저장 -> 이게 현재 윈도우 우측하단 x,y 좌표를 찾아주더라.
+    ;현재 활성화된 윈도우에서 길이 구하니 당연히 끝 좌표가 나오는 건가? 아무튼 이걸 winEndX, winEndY에 넣고 오작동하면 롤백
     winWidth := windowWidth
     winHeight := windowHeight
     return
