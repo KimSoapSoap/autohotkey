@@ -1,4 +1,4 @@
-﻿;오토 노획 on/off를 위한 변수
+﻿;오토 노획 on/off를 위한 변수. NoWheak() 에서 true면 노획사용
 global AutoNoWheak := true
 
 
@@ -121,7 +121,7 @@ AtPilGum() {
 AtBaekGum() {
     StopLoop := false
     CustomSleep(30)
-    Loop {
+    Loop, 18000{ ;하다가 기절할 수 있으므로 카운트 걸어놓자. 초당 10회. 30분 생각하자
         if (StopLoop)
             {            
                 Break
@@ -377,7 +377,7 @@ t::0 ;뢰진주
 NoWheak() { ; 노획 바로 뒤(후딜 앞에)에 붙여준다.
     if(AutoNoWheak) {     
         CustomSleep(10)   
-        SendInput, {7}        
+        SendInput, {7}
     }
 }
 
