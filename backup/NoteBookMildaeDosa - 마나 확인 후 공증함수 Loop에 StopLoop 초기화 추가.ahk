@@ -86,8 +86,6 @@ global FourWayMabi := 0
 global MildaeHeal := false
 ;혼힐할 때 밀대힐 중이면 힐 틱당 힐 마무리 하고 혼 돌리기, 밀대힐 아니면 바로 혼 돌리기 하려고
 
-
-;따라가기에 사용하는 변수.
 global TabTabX := 0
 global TabTabY := 0
 
@@ -1778,8 +1776,9 @@ CheckTabTabOn() {
 
     tabtab :=imgFolder . "tabtab4.png" ;탭탭4번 그림으로
     
+    ;ImageSearch, FoundX1, FoundY1, winStartX, winStartY, winEndX, winEndY,*30 %tabtab% ;탭탭라인 검색
 
-    ;CalPos()로 winEndX, winEndY에 현재 활성화된 창의 우측하단 끝 좌표를 구해서 활성창의 시작과 끝을 구해서
+    ;원래 위에 주석처리 해둔 걸로 했다. CalPos()로 winEndX, winEndY에 현재 활성화된 창의 우측하단 끝 좌표를 구해서 활성창의 시작과 끝을 구해서
     ;활성화된 창 내에서만 검색하려고 했다. 실제로 예를들어 활성화된 창의 가로 길이가 1896이라고 한다면 이 창이 가운데 있고 최대가 아니기에
     ;화면 좌측에서 살짝 떨어져 있었고(예를들어 50만큼) 실제로 활성화된 창 x좌표는 떨어진 50 + 가로길이 1896 해서 1946이라고 할 수 있다.
     ;그러면 가로 검색범위는 스크린의 50 ~ 1946 범위에서 검색한다면 현재 활성화된 창의 가로 길이 내에서만 이미지 서칭을 한다.
@@ -1788,7 +1787,7 @@ CheckTabTabOn() {
     ;뭔가 이미지 서치가 스크린 전체라지만 잘 안 먹히는 것 같다. 일단 다음에 스케일링 조정 해주고 일단은 탭탭체크만
     ;CalPos()에서 창의 가로길이 세로 길이를 변수에 저장해서 tabtabOn() 여기서만 범위를 가로세로 길이까지만.
 
-    ImageSearch, FoundX1, FoundY1, winStartX, winStartY, winEndX, winEndY,*30 %tabtab% ;탭탭라인 검색
+    ImageSearch, FoundX1, FoundY1, winStartX, winStartY, winWidth, winHeight,*30 %tabtab% ;탭탭라인 검색
     ImgResult1 := ErrorLevel ; 탭탭창 열려 있는지 확인하기 위함
     if(ImgResult1 = 0) {        
         isTabTabOn := true
