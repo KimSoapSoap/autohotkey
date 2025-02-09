@@ -231,7 +231,7 @@ HonHeal(HonCount, LoopCount) {
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
-        CustomSleep(10) ; 뒤에 사망확인 있으므로 후딜 40에서 10으로. 나머지 후딜 30은 유령확인이 담당해줌줌
+        CustomSleep(40)
 
         DeathCheck() ; 탭탭하고 나서 도사 유령확인 넣어봄 힐틱 밀리면 이거 뺀다
         Loop, 1 {
@@ -249,7 +249,7 @@ HonHeal(HonCount, LoopCount) {
             ;CustomSleep(50)
         }
         SendInput, {3} ;
-        CustomSleep(10) ; 뒤에 아무것도 없으므로 후딜 10으로 바꿈꿈
+        CustomSleep(20)
         ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
         ;CustomSleep(20)
 
@@ -970,13 +970,13 @@ ChaseHonHeal() {  ;추적 혼힐
             SendInput, {Esc}
             CustomSleep(20) ; 후딜 30인데 금강이랑 나눠서 20, 10으로
             SendInput, {6} ;금강불체
-            ;CustomSleep(10) ; 후딜 빼봄1
+            ;CustomSleep(10) ; 후딜 잠시 빼봄
         }
         MouseMove, TabTabX, TabTabY, 1 ; 마우스 이동(우클 누른상태태). 탭탭추적은 탭탭 이후에만 가능했는데 이전 검색 좌표+@를 전달해서 마우스이동해서 긴 텀 보완
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
-        ;CustomSleep(10) ; 후딜 40인데 뒤에 추적있어서 후딜 10으로 낮춰봄. 후딜 빼봄2
+        ;CustomSleep(10) ; 후딜 40인데 뒤에 추적있어서 후딜 10으로 낮춰봄. 후딜 빼봄
 
         TabTabChase()
         Loop, 1 {
@@ -989,11 +989,11 @@ ChaseHonHeal() {  ;추적 혼힐
             SendInput, {Blind}2 ;백호
             CustomSleep(50) 
             SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고 넣음. 후딜50으로는 생명4번 넣어야 기원 힐틱 3번 가능. 백호 쿨 있으면 생명2백호1, 없으면 생명3
-            ;CustomSleep(10) ; 후딜 50인데 뒤에 추적있어서 후딜 10으로 낮춰봄; -> 후딜3개 뺸 이후에 힐 뒤에 추적있어서 후딜 빼봄4
+            CustomSleep(10) ; 후딜 50인데 뒤에 추적있어서 후딜 10으로 낮춰봄
             TabTabChase()
         }
         SendInput, {3} ;
-        ;CustomSleep(10) ;공증 후딜 20이었는데 루프 순서상 다음에 뭐 있어서 걍 10 ;위에 후딜 2개 빼고 잘 됐다. 여기도 후딜 빼봄3. 안 되면 다시 롤백
+        ;CustomSleep(10) ;공증 후딜 20이었는데 루프 순서상 다음에 뭐 있어서 걍 10 ;위에 후딜 2개 빼고 잘 됐다. 여기도 빼보고 안 되면 다시 롤백
         ;백호 뒤에 혼힐을 여기에 둬도 될 듯 한데 딜레이상 큰 차이는 없다.
         
 
