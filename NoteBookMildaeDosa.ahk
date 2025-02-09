@@ -1857,7 +1857,7 @@ return
 DeathCheck() {
     isDead := false
     CalPos() ;현재 활성창 우측하단 좌표 계산
-
+    
     SendInput, {Blind}0 ; 도사 본인 유령 체크하는 것이라서 격수는 알 수 없기에 일단 부활 시전 한 번 하고(탭탭상황) 도사 유령확인. 꼬이면 뺸다
     death := imgFolder . "healthzero.png"
 
@@ -1867,8 +1867,6 @@ DeathCheck() {
         isDead := true
         ;도사는 Rev 함수를 써준다.
         Rev()
-    } else {
-        MsgBox, 발견안됨
     }
     return
 }
