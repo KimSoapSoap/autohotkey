@@ -1977,7 +1977,7 @@ CalPos() {
 
 ImageSearchTest() {
 
-    ;imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\joosool"
+    ;imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\dosa\"
 
     CalPos() ;현재 활성창 우측하단 좌표 계산
 
