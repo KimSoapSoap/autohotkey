@@ -1,4 +1,8 @@
-﻿;자객 전까진 2 필살, 3비필(비영승보 + 필)
+﻿;오토 노획 on/off를 위한 변수
+global AutoNoWheak := true
+
+
+;자객 전까진 2 필살, 3비필(비영승보 + 필)
 ;자객부터는 2백호 3비백  4필살  e비필      5투명 6뢰진주(어그로용) 7노획   0 천공(솔플용)
 ;혹은 2백호 3필살 w비백,  e비필
 
@@ -124,6 +128,7 @@ AtBaekGum() {
                 CustomSleep(20)
             }
         SendInput, {Blind}2
+        NoWheak()
         ;CustomSleep(30)
         ;SendInput, {Ctrl Down}
         ;CustomSleep(20)
@@ -134,7 +139,8 @@ AtBaekGum() {
         ;SendInput,{Ctrl Up}
         ;CustomSleep(20)
 
-        CustomSleep(1180) ;동동주 마실 땐 800, 안 마실 땐 1180
+        CustomSleep(50) ;동동주 마실 땐 800, 안 마실 땐 1180
+        
     }
     return
 }
@@ -232,6 +238,7 @@ return
 End:: ;백호검무
 Critical
 SendInput, {Blind}2
+NoWheak()
 ;CustomSleep(20)
 ;Loop, 1 {
 ;SendInput, {Ctrl Down}
@@ -306,6 +313,7 @@ return
 Critical
 ;PilDongDong()  ;필살검무
 SendInput, {Blind}2  ;백호검무
+NoWheak()
 ;CustomSleep(30)
 ;DrinkDongDongJuTwoShot()
 StopLoop := true
@@ -359,14 +367,21 @@ t::0 ;뢰진주
  return
 
 
-
-
-
-
  +q:: ;바다의빛
  CustomSleep(120)
  VisionRecovery()
  return
+
+
+
+NoWheak() { ; 노획 바로 뒤(후딜 앞에)에 붙여준다.
+    if(AutoNoWheak) {     
+        CustomSleep(10)   
+        SendInput, {7}        
+    }
+}
+
+
 
 VisionRecovery() {  ;바다의빛
     SendInput, {Esc}
