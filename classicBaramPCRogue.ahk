@@ -1,5 +1,5 @@
 ﻿;오토 노획 on/off를 위한 변수. NoWheak() 에서 true면 노획사용
-global AutoNoWheak := true
+global AutoNoWheak := false
 
 
 ;자객 전까진 2 필살, 3비필(비영승보 + 필)

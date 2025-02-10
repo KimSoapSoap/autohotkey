@@ -190,6 +190,13 @@ CustomSleep(SleepTime) {
     Sleep, SleepTime + RandomValue
 }
 
+; 랜덤 좌표값을 위함
+GetRandomValue(x, minRange, maxRange) {
+    Random, offset, minRange, maxRange ;  x값에 minRange, maxRange 설정해서  x값에 더해주는 것 (음수 가능)
+    return x + offset
+}
+
+
 
 StopLoopCheck() {
     if (StopLoop)
@@ -2503,7 +2510,6 @@ CheckTabTabOn() {
 
 
 TabTabChase() {
-
     ; 활성 창의 위치와 크기를 구합니다.
     ;WinGetPos, winStartX, winStartY, winWidth, winHeight, A
 
