@@ -83,8 +83,10 @@ global StopHonHeal := false
 
 global ManaRefresh := 0
 global FourWayMabi := 0
-global MildaeHeal := false
+
+
 ;혼힐할 때 밀대힐 중이면 힐 틱당 힐 마무리 하고 혼 돌리기, 밀대힐 아니면 바로 혼 돌리기 하려고
+global MildaeHeal := false
 
 
 ;따라가기에 사용하는 변수.
@@ -138,6 +140,13 @@ global isManaZero := false
 
 ;죽었는지 확인
 global isDead := false
+
+
+;추적상태인지 확인. 예를들면 추적혼힐 때 공력주입을 쓰고 RestoreMana()를 쓸 때
+;공증이 계속 실패하면 이전에 추적된 좌표에 마우스 우클이동 고정이라서 엉뚱한 곳으로 갈 수 있기 때문.
+;RestoreMana()에 추적중이면 TabTabChase() 하나 넣어줬다.
+global isChasing := false
+
 
 
 
@@ -577,6 +586,7 @@ return
 
 ;공력주입
 ManaInjection() {
+    CustomSleep(20)
     ;탭탭상태인지 확인 후 탭탭이면 바로 공력주입, 아니면 esc 눌러서(꼬임방지지) 탭탭 후 공력주입하고 다시 esc
     CheckTabTabOn()
     CustomSleep(20)
@@ -1018,6 +1028,7 @@ SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
 
 ChaseMildae() {
     MildaeHeal := true
+    isChasing := true
     LButtonClicked := false  ; 상태 초기화
     WheelUpDetected := false
     WheelDownDetected := false
@@ -1056,7 +1067,8 @@ ChaseMildae() {
             SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고 넣음. 후딜50으로는 생명4번 넣어야 기원 힐틱 3번 가능. 백호 쿨 있으면 생명2백호1, 없으면 생명3
             CustomSleep(10) ; 후딜 50인데 뒤에 추적있어서 후딜 10으로 낮춰봄
         }
-        TabTabChase()
+        ;TabTabChase()  ;탭탭추적 힐 전 후로 하나씩 있었는데 만약 조금 더 활동적인 움직임을 원한다면 힐 뒤에는 마우스 무브 넣어주자(주석해둠)
+        MouseMove, TabTabX, TabTabY, 1     ;탭탭추적 대신 마우스무브는 탭탭추적시 발견한 좌표에 상하 랜덤값을 더해줘서 좀 더 활동적인 움직임
         ListenMouseEvent()
         Send, {3} ;공력증강
         CustomSleep(20)
@@ -1064,6 +1076,7 @@ ChaseMildae() {
         CustomSleep(20)
     }
     MildaeHeal := false
+    isChasing := false
     SendInput, {Esc}
     CustomSleep(30)
     Click, Right up  ;추적 우클릭 해제 방지2
@@ -1074,6 +1087,7 @@ ChaseMildae() {
 
 ChaseHonHeal() {  ;추적 혼힐
     MildaeHeal := true
+    isChasing := true
     LButtonClicked := false  ; 상태 초기화
     WheelUpDetected := false
     WheelDownDetected := false
@@ -1118,9 +1132,17 @@ ChaseHonHeal() {  ;추적 혼힐
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
-        ;CustomSleep(10) ; 후딜 40인데 뒤에 추적있어서 후딜 10으로 낮춰봄. 후딜 빼봄2
+        ;CustomSleep(10) ; 후딜 40인데 뒤에 추적있어서 후딜 10으로 낮춰봄. 후딜 빼봄2 -> 탭탭 하고 인식되기까지 후딜 70은 필요하다.
+        ;conditionalChase() 의 예로 탭탭 뒤에 후딜 10주고 추적하니 안 되고 50도 안 되고 70하니까 되길래 여기에 잠시 후딜 70을 넣어본다.
 
-        TabTabChase()
+        ;후딜 70넣으니까 TabTabChase()가 제대로 작동하면서 힐틱이 조금 밀리는 느낌이 든다. 이전까지는 탭탭 뒤에 후딜이 부족해서 인식을 못해서
+        ;tabtabChase()가 동작을 안 했던 것 것이고 탭탭추적은 하나만 사용하고 있었던 것이다.(거기에 이전 좌표에 마우스 이동 1개개)
+        ;만약 중간 추적이 필요하다면 어떻게 힐틱이 안 밀릴지 고민좀 해보자.
+        ;일단은  혼마와 힐 중간의 탭탭추적은 넣어놨지만 후딜부족으로 동작 안 하는 상태로 잘 써왔으니 이대로 가자.
+        ;단 탭탭 뒤에 후딜 안 넣어줘도 미리 입력?(지연 시전?) 개념으로 힐은 잘 들어가는 것 같다. (필요하면 후딜 살짝 추가)
+        ;이를 기반으로 다른 추적들도 손봐주자.(단순 추적과 혼 안 돌리는 추적밀대는 탭탭추적에 후딜 제대로 주고 사용하면 될 듯)
+        ;CustomSleep(70)  
+        ;TabTabChase()
         Loop, 1 {
             SendInput, {Blind}1
             CustomSleep(50)
@@ -1147,6 +1169,8 @@ ChaseHonHeal() {  ;추적 혼힐
         
 
     }
+    MildaeHeal := false
+    isChasing := false
     SendInput, {Esc} ; 정지 이전에 격수가 다음 맵으로 넘어갔을 때 내게 걸린 흰박스나 탭탭박스 닫기. 어차피 다시 쓸 때 탭탭하니까.
     CustomSleep(20)
     Click, Right up  ;추적 우클릭 해제 방지2       
@@ -1157,7 +1181,7 @@ ChaseHonHeal() {  ;추적 혼힐
 
 
 
-StandingHonHeal() { ;제자리 혼힐힐
+StandingHonHeal() { ;제자리 혼힐
     MildaeHeal := true
     LButtonClicked := false  ; 상태 초기화
     WheelUpDetected := false
@@ -1218,6 +1242,7 @@ StandingHonHeal() { ;제자리 혼힐힐
         CustomSleep(20)
 
     }
+    MildaeHeal := false
     CustomSleep(20)
     Click, Right up  ;추적 우클릭 해제 방지2
     return
@@ -1230,6 +1255,8 @@ StandingHonHeal() { ;제자리 혼힐힐
 
 
 ChaseOnly() {
+    isChasing := true
+
     LButtonClicked := false  ; 상태 초기화
     WheelUpDetected := false
     WheelDownDetected := false
@@ -1260,6 +1287,7 @@ ChaseOnly() {
         CustomSleep(500)
         MouseMove, TabTabX, TabTabY, 1
     }
+    isChasing := false
     SendInput, {Esc}
     CustomSleep(30)
     Click, Right up  ;추적 우클릭 해제 방지2
@@ -1268,6 +1296,29 @@ ChaseOnly() {
 
 
 
+;공력주입같은 것은 탭탭힐 중인지 혼마 돌리는 중인지 몰라서 이때 사용할 조건부추적 함수를 만들었다.
+;공력주입 후 공증을 반드시 해주는데(RestoreMana() 사용용) 공증 실패 후 공증을 반복하다 보면 추적혼힐 중이었을 경우 마우스 좌표 고정이다.
+; 이전에 찾았던 좌표에 우클릭 이동 고정상태이므로 엉뚱한 곳 가는 것 방지하려고 RestoreMana()공증 함수에 넣어줄 것. 추적중이면 조건부추적함수 사용
+;탭탭 상태면 그냥 추적, 탭탭이 아니라면 탭탭 켜고 추적 한 번 하고 esc
+ConditionalChase() {
+    if(isChasing) { ;추적상태라면 탭탭chase 한 번 해준다. 따라다니는 추적 함수에서 true 해주는 변수.                    
+        if(isTabTabOn) {
+        TabTabChase()
+        CustomSleep(20)
+        } else {
+            SendInput, {Tab}
+            CustomSleep(50)
+            SendInput, {Tab}
+            CustomSleep(70) ; 원래 후딜 40~50인데 탭탭추적 동작하면서 후딜 40정도를 대신하려고 후딜 10하니까 안 됨(너무 빨리 사라짐)
+                            ; 후딜 50으로 해도 안 됨. 호딜 70으로 하니까 잘 된다. 삑나면 조금 올려주자.
+                            ; 그렇다면 추적혼힐에 탭탭 뒤에 후딜 대신하려고 후딜10으로 한 곳 있는데 70으로 바꿔볼까?
+            TabTabChase()
+            CustomSleep(20)
+            SendInput, {Esc} ; 탭탭 아닐 때 탭탭하고 추적했으니 다시 탭탭 꺼줌줌
+            CustomSleep(20)
+        }
+    }
+}
 
 
 
@@ -1516,6 +1567,8 @@ SafeRestoreManaAtLow() { ; 체력 절반쯤 이상(안전한 공력증강) + 마
                     SendInput, {3}
                     CustomSleep(100)                    
                 }
+                ConditionalChase()
+                CustomSleep(20)
                 CheckFullMana()
                 CustomSleep(50)
                 if(isFullMana) {
@@ -1555,6 +1608,8 @@ RestoreManaAtLow() {
                     SendInput, {3}
                     CustomSleep(100)
                 }
+                ConditionalChase()
+                CustomSleep(20)
                 CheckFullMana()
                 CustomSleep(50)
                 if(isFullMana) {
@@ -1601,6 +1656,8 @@ SafeRestoreMana() { ; 체력 절반쯤 이상(안전한 공력증강)일 때 남
                     SendInput, {3}
                     CustomSleep(150) ;후딜 150정도는 해주고 나서 마나 관련 이미지 체크해야된다. 아니면 공증으로 마나 회복 전에 인식돼서 꼬일 수 있음                 
                 }
+                ConditionalChase()
+                CustomSleep(20)
                 CheckFullMana()
                 CustomSleep(50)
                 if(isFullMana) {
@@ -1634,6 +1691,8 @@ RestoreMana() {    ;체력 상관없는 공력증강 시도
             SendInput, {3}
             CustomSleep(150) ;후딜 150정도는 해주고 나서 마나 관련 이미지 체크해야된다. 아니면 공증으로 마나 회복 전에 인식돼서 꼬일 수 있음
         }
+        ConditionalChase()
+        CustomSleep(20)
         CheckFullMana()
         CustomSleep(50)
         if(isFullMana) {
