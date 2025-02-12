@@ -697,8 +697,11 @@ VisionRecovery() {  ;시력회복
 
 
 
+b:: ;원래 셀프 무력화가 b였는데 편의를 위해 잠시 b에 유령부활.
+GhostCheck()
+return
 
-b::
++b::
 SelfNeutralize()
 return
 
@@ -1481,7 +1484,8 @@ return
     ;-> 이미지파일 앞에 *숫자는 일치허용범위 조절 가능 0~255까지 가능하며 기본0(완전 동일한 것을 검색) 높을 수록 유사도가 낮아도 매칭됨
     ; 0~150정도로 ㄱㄱ
     ; *숫자 말고 *TransColor: 특정 색상을 무시 ( 예: *Trans0xFFFFFF  -> 흰색 배경 무시)
-    ; 아마 색상무시와 유사도 조정도 같이 사용 가능
+    ; 배경색 애매한 건 그냥 그림판에서 특정색깔로 다 칠해주고 배경무시 해주는 방법도 유용하다.
+    ; 색상무시와 유사도 조정도 같이 사용 가능
 
     ; imgFolder 는 pc와 notebook 구분을 위해서 변수로 경로설정을 해놨다. global imgFolder : = A_ScriptDir . "\img\joosool"    
 
@@ -1923,27 +1927,31 @@ return
 
 ;유령확인. 유령시 머리 위에 하얀 링 검색. -> 유령 머리에 링은 위가 두꺼운 것 아래가 두꺼운 것 2가지 종류가 있다.
 GhostCheck() {
-    Ghost1 := imgFolder . "ghost1.png"  ; 유령 머리위에 링 배경제거 한 것
-    Ghost2 := imgFolder . "ghost2.png"  ; 유령 머리위에 링 배경제거 한 것
+    Ghost1 := imgFolder . "ghost3.png"  ; 유령 머리위에 링 배경제거 한 것
+    Ghost2 := imgFolder . "ghost4.png"  ; 유령 머리위에 링 배경제거 한 것
 
     ;일단 창 크기 계산은 세로는 280쯤 빼주자(해상도에 따라 더 조절 필요할 수도). 
-    ImageSearch, FoundX1, FoundY1, winStartX, winStartY, 1430, 850, *130 %Ghost1% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
+    ;배경색 애매한 건 그냥 그림판에서 특정색깔로 다 칠해주고 배경무시 해줬다.
+    ImageSearch, FoundX1, FoundY1, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *130 %Ghost1% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
     ImgResult1 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
-    ImageSearch, FoundX2, FoundY2, winStartX, winStartY, 1430, 850, *130 %Ghost2% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
+    ImageSearch, FoundX2, FoundY2, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *130 %Ghost2% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
     ImgResult2 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
-    if(ImgResult1 = 0) {
+
+    CheckTabTabOn() ; 탭탭 상태인지 확인(탭탭힐 중이면 끝나고 탭탭 복구 해주기 위함)
+
+    if(ImgResult1 = 0) {        
         SendInput, {Esc}
         CustomSleep(20)
         SendInput, {0} ;부활
         CustomSleep(30)
         MouseClick, Left, FoundX1 +10, FoundY1 + 10, 1  ;y + 10해서 링 살짝 아래로 마우스 포인트 이동동
-        CustomSleep(20)        
+        CustomSleep(50)        
         SendInput, {Enter}
-        CustomSleep(20)
+        CustomSleep(50)
         SendInput, {Esc}
         CustomSleep(20)
     } else if(ImgResult2 = 0) {
-               SendInput, {Esc}
+        SendInput, {Esc}
         CustomSleep(20)
         SendInput, {0} ;부활
         CustomSleep(30)
@@ -1956,6 +1964,15 @@ GhostCheck() {
     } else {
         ;MsgBox, 못찾음
     }
+
+    if(isTabTabOn) { ;도사라 탭탭힐 중이었으면 다시 탭탭탭
+        CustomSleep(20)
+        SendInput, {Tab}
+        CustomSleep(50)
+        SendInput, {Tab}
+        CustomSleep(50)
+    }
+    return
 }
 
 
