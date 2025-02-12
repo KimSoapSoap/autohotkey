@@ -1932,9 +1932,10 @@ GhostCheck() {
 
     ;일단 창 크기 계산은 세로는 280쯤 빼주자(해상도에 따라 더 조절 필요할 수도). 
     ;배경색 애매한 건 그냥 그림판에서 특정색깔로 다 칠해주고 배경무시 해줬다.
-    ImageSearch, FoundX1, FoundY1, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *130 %Ghost1% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
+    ;130하면 가끔 다른 곳으로 튀더라. 100~110 해줬는데 안 먹힐 때도 제법 됨. 다음에 보완하자.
+    ImageSearch, FoundX1, FoundY1, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *110 %Ghost1% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
     ImgResult1 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
-    ImageSearch, FoundX2, FoundY2, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *130 %Ghost2% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
+    ImageSearch, FoundX2, FoundY2, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *110 %Ghost2% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
     ImgResult2 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
 
     CheckTabTabOn() ; 탭탭 상태인지 확인(탭탭힐 중이면 끝나고 탭탭 복구 해주기 위함)
