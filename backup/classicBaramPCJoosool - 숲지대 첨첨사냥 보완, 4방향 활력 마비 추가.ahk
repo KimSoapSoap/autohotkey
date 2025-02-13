@@ -105,10 +105,9 @@ global StopLoop := false
 ;StopLoop를 true로 해주는 건 함수 끝에 하면 종합 자동이 복잡하게 돼서 함수 실행하는 핫키에 넣어준다.(실행했을 때 이전 루프끝내려면)
 
 ; 즉 루프 시작부분에는 StopLoop가 true면 break
-; 함수 시작할 땐 StopLoop := false(루프있다면 -> 루프 내부에 if (StopLoop) 조건이 있을 때 )
-; 핫키에서는 동작 후 이전 핫키 루프를 중단하려면 끝날 땐 StopLoop := true
+; 핫키 시작할 땐 StopLoop := false(루프있다면 -> 루프 내부에 if (StopLoop) 조건이 있을 때 )
+; 핫키 끝날 땐 StopLoop := true (동작 후 이전 핫키 루프를 중단하려면)
 ; 예를들면 동동주 마시는 건 4방향 마비걸 때 마력 없으면 동동주 먹어주면서 마력 보충할 수 있기 때문에 굳이 loopStop을 끝에 넣지 않는다.
-
 
 
 global ManaRefresh := 0
@@ -217,7 +216,6 @@ StopLoopCheck() {
             isHunting := false ;Exit라서 초기화 못 시켜주는 건 여기서 초기화
             Exit  
         }
-    return
 }
 
 
@@ -472,7 +470,6 @@ return
 
 
 F3:: ;자신 선택 & StopLoop
-StopLoop := true
 SelfTargetAndStopLoop()
 return
 
@@ -1067,8 +1064,6 @@ FourWayCurseAndParalysis() {
             CustomSleep(30)
         }
 
-    StopLoopCheck()
-
     SendInput, 4
     CustomSleep(30)
     SendInput, {Home}
@@ -1093,9 +1088,6 @@ FourWayCurseAndParalysis() {
             SendInput, {esc}
             CustomSleep(30)
         }
-
-    StopLoopCheck()
-
     SendInput, 4
     CustomSleep(30)
     SendInput, {Home}
@@ -1119,9 +1111,6 @@ FourWayCurseAndParalysis() {
             SendInput, {esc}
             CustomSleep(30)
         }
-
-    StopLoopCheck()
-
     SendInput, 4
     CustomSleep(30)
     SendInput, {Home}
@@ -1177,8 +1166,6 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
                 CustomSleep(30)
             }
         
-        StopLoopCheck()
-
         loop, 2
             {
                 if (StopLoop)
@@ -1197,8 +1184,6 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
                 SendInput, {esc}
                 CustomSleep(30)
             }
-
-        StopLoopCheck()
         
         loop, 2
             {
@@ -1218,8 +1203,6 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
                 SendInput, {esc}
                 CustomSleep(30)
             }
-
-        StopLoopCheck()
         
         loop, 2
             {
@@ -1273,7 +1256,6 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
             SendInput, {esc}
             CustomSleep(30)
         }
-    StopLoopCheck()
 
     SendInput, 8 
     CustomSleep(30)
@@ -1299,9 +1281,6 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
             SendInput, {esc}
             CustomSleep(30)
         }
-
-    StopLoopCheck()
-    
     SendInput, 8
     CustomSleep(30)
     SendInput, {Home}
@@ -1325,9 +1304,6 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
             SendInput, {esc}
             CustomSleep(30)
         }
-
-    StopLoopCheck()
-
     SendInput, 8
     CustomSleep(30)
     SendInput, {Home}
@@ -1382,8 +1358,6 @@ FourWayVitality() {
                 SendInput, {esc}
                 CustomSleep(30)
             }
-
-        StopLoopCheck()
         
         loop, 1
             {
@@ -1404,8 +1378,6 @@ FourWayVitality() {
                 CustomSleep(30)
             }
         
-        StopLoopCheck()
-        
         loop, 1
             {
                 if (StopLoop)
@@ -1424,8 +1396,6 @@ FourWayVitality() {
                 SendInput, {esc}
                 CustomSleep(30)
             }
-
-        StopLoopCheck()
         
         loop, 1
             {
@@ -1474,8 +1444,6 @@ FourWayCurse() {
                 SendInput, {esc}
                 CustomSleep(30)
             }
-
-        StopLoopCheck()
         
         loop, 1
             {
@@ -1495,8 +1463,6 @@ FourWayCurse() {
                 SendInput, {esc}
                 CustomSleep(30)
             }
-
-        StopLoopCheck()
         
         loop, 1
             {
@@ -1516,8 +1482,6 @@ FourWayCurse() {
                 SendInput, {esc}
                 CustomSleep(30)
             }
-
-        StopLoopCheck()
         
         loop, 1
             {
@@ -1558,37 +1522,31 @@ PoisonHunt() {
         SelfBoMu() ; 자신 보무
         CustomSleep(30),
     
-        StopLoopCheck()
-
         Loop , 4  ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독 돌리기 4번)
     
         {       
             StopLoopCheck()
-
             Loop, 1 ; 자힐 + 4방향 마비&저주 
                 ;-> 4방향 마비저주 한 번만 해서 중독 애매하게 몇마리리 남은채로 다시 중독 돌리는 이슈
                 { 
+                StopLoopCheck()           
                 selfheal(8) ; 
-                StopLoopCheck()          
                 CustomSleep(50)                     
                 FourWayCurseAndParalysis() ;4방향 마비
                 CustomSleep(1500) ;위의 중독몹 몇마리 남은채로 다시 중독 돌리는 거 슬립시간으로 조정시도
-                StopLoopCheck()
             }
             
-            StopLoopCheck()
-
+    
             Loop,4 ;중독 돌리는 회수
                 {
+                StopLoopCheck()
                 SpreadPoison(20) ;중독만 돌리기
                 CustomSleep(30)
-                StopLoopCheck()
                 }
             CustomSleep(1000) ; 중독 좀 돌리고 다시 자힐하기 전 잠시 대기 ;원래 1200이었음
             }
     
         
-            StopLoopCheck()
     
             Loop, 1 ; (공증 + 중독첨 x2  + 저주첨x2, 공증) 1번 -> 중독첨2 저주첨2 중독첨1 자힐첨2로 변경경
                 {                 
@@ -1596,31 +1554,23 @@ PoisonHunt() {
     
                 Loop,2 ; 중독첨. 
                 {
+                    StopLoopCheck()
                     SpreadPoisonAndChum(20)
                     CustomSleep(30)
-                    StopLoopCheck()
                 }
-
-                StopLoopCheck()
-
                 Loop,2 ; 저주첨. 
                     {
+                        StopLoopCheck()
                         SpreadCurseAndChum(20)
                         CustomSleep(30)
-                        StopLoopCheck()
                     }
-                StopLoopCheck()
-
     
                 Loop,1 ; 중독첨. 
                     {
+                        StopLoopCheck()
                         SpreadPoisonAndChum(20)
                         CustomSleep(30)
                     }
-
-                StopLoopCheck()
-                
-
                 Loop, 1 ;공증
                     {
                         StopLoopCheck()
@@ -1630,18 +1580,13 @@ PoisonHunt() {
                         CustomSleep(30)
                         selfheal(4) ; 자힐 3틱
                         CustomSleep(50)
-                        StopLoopCheck()
-
                     }
-
-                StopLoopCheck()
-                
     
                 Loop,2 ; 자힐첨 -> 딸피 마무리
                     {            
-                        SelfHealAndChum(20) 
-                        CustomSleep(30)
-                        StopLoopCheck()
+                    StopLoopCheck()
+                    SelfHealAndChum(20) 
+                    CustomSleep(30)
                     }
                 }
         }
@@ -1652,10 +1597,6 @@ PoisonHunt() {
 
 
 ;중독첨첨 사냥
-;StopLoopCheck() 를 중간중간에 집어 넣은 것은 함수들을 종합적으로 모은 사냥이고
-;이때 하나의 함수라면 StopLoop := true가 되면 break 걸고 반복 루프를 빠녀나와서 마지막에 필요한 처리 해주고 return이 되지만
-;여기서는 중간중간 loop안에 함수들이 있기 때문에 해당 함수에서 빠져나와서 다음 함수로 간다.(종료가 아니라 하나씩 건너뜀)
-; 이때 StopLoopCheck() 를 통해서 StopLoop를 감지하고 true면 Exit를 해서 중독첨첨 함수를 끝낸다.
 PoisonChumHunt() {
     SendInput, {Esc}
     CustomSleep(30)
@@ -1664,156 +1605,139 @@ PoisonChumHunt() {
     ManaRefresh := 0
     FourWayMabi := 0
 
-    CustomSleep(30) 
-    StopLoopCheck()   
-    SelfBoMu() ; 자신 보무
     CustomSleep(30)
+ 
+        StopLoopCheck()   
+        SelfBoMu() ; 자신 보무
+        CustomSleep(30),
 
-    ;일단 처음에는 저주 돌려야 하니까 4방향 마비&저주 걸고 중독2, 저주2 ; -> 중첨첨 사냥은 첫 시작을 중독첨2, 저주첨2        
-    ; 초반 첫 4방향 저주마비 이후 중독첨2, 저주첨2로 딸피되기 때문에 다음턴 마비 없이 진행
+        ;일단 처음에는 저주 돌려야 하니까 4방향 마비&저주 걸고 중독2, 저주2 ; -> 중첨첨 사냥은 첫 시작을 중독첨2, 저주첨2        
+        ; 초반 첫 4방향 저주마비 이후 중독첨2, 저주첨2로 딸피되기 때문에 다음턴 마비 없이 진행
 
-    ;초반에도 헬파 쓰고 마력 부족할 수 있으므로 안전 공증 추가.
-    ;중독첨이나 저주첨 기본 1회를 20번으로 해줬고 2회는 20 x2 루프돌리다가 매개변수 넣고 40으로 해줬는데
-    ;중간에 마나량 확인을 위해 10으로 나눠서 하자.
-    ;그리고 중간 헬파를 위해 체력이 부족하면 공증 넘어가는 게 아니라 체력좀 회복하고 공증 시도로?
-    
+        ;초반에도 헬파 쓰고 마력 부족할 수 있으므로 안전 공증 추가.
+        ;중독첨이나 저주첨 기본 1회를 20번으로 해줬고 2회는 20 x2 루프돌리다가 매개변수 넣고 40으로 해줬는데
+        ;중간에 마나량 확인을 위해 10으로 나눠서 하자.
+        ;그리고 중간 헬파를 위해 체력이 부족하면 공증 넘어가는 게 아니라 체력좀 회복하고 공증 시도로?
         
-    StopLoopCheck()    
-    FourWayCurseAndParalysis() ;4방향 마비저주 
-    StopLoopCheck()
-    SelfHealAndChum(4) ;셀프힐&첨 3틱
-    CustomSleep(30)
-                    
-    
-    ;중독첨 x2.  기본 20회로 사용했으므로 x2는 40.  이를 나눠서 중간에 마나 부족시 안전한 공증
-    ;루프를 사용하니 F3 눌러서 종료해도 해당 함수만 종료되고 다시 루프 반복되더라.
-    ;해결 필요
-    StopLoopCheck()            
-    Loop, 2 {
-        SpreadPoisonAndChum(20)  
-        CustomSleep(30)
-        StopLoopCheck()
-        SafeRestoreManaAtLow()            
-        StopLoopCheck()
-    }
-    StopLoopCheck()
-    
-    ;저주첨 x2.  기본 20회로 사용했으므로 x2는 40.  이를 나눠서 중간에 마나부족시 안전한 공증
-    Loop,2 {
-        SpreadCurseAndChum(20) ; 저주첨 x2   기본 20회로 사용했으므로 x2는 40
-        CustomSleep(30)
-        StopLoopCheck()
-        SafeRestoreManaAtLow()
-        StopLoopCheck()
-    }
-    StopLoopCheck()
-        
-
-    CustomSleep(100) ;원래 오토감지 방지용으로 1100 했는데 걍 100
-        
-    
-
-
-    Loop , 4  { 
-        ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독첨2 저주첨1 자힐첨1) x4
-        ; 0으로 시작하는 FourWayMabi 변수가 중독첨2+저주첨+자힐첨1 반복마다 1씩 올라가는데 홀수일 때 마비 걸었는데(0이 시작이고 이땐 4방향 저주마비 걸기 때문에 패스) 뺐다. 첫 저주마비 이후 마비x
-        ;맨 처음 4방향 마비저주 이후에는 그냥 마비 뺐다.
-    ;   힐량증가 마력비례 1% 패치로 첫 4방향 마비저주 외에는 마비 없이 간다.
-        ;그냥 중독사냥이 아니라 중독첨첨이라 빨리 잡는 것이 목적이므로 
-        ;마비 딜레이 신경 안 써도 되니 첫 마비이후 중독첨2 자힐첨1로 딜레이 맞췄는데 이제는 중독첨2 저주첨1 자힐첨1 하면 될듯
             
         StopLoopCheck()
-        SafeRestoreManaAtLow() ; 마나 부족시 공증
-        ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
-        
-        StopLoopCheck()         
-        SelfHealAndChum(4)
-        CustomSleep(50)         
-        ;if (Mod(FourWayMabi, 2) == 1) { ;홀수 일 때만 마비 진행.                 
-            ;FourWayCurseAndParalysis() ;4방향 마비
-            ;CustomSleep(30)
-        ;}                    
-        
-        StopLoopCheck()
-
-
-        ;중독첨x2 돌리기. 기본 20 x2라서  40으로 했는데 20으로 나눠서 마나확인
-        Loop, 2 {
-            SpreadPoisonAndChum(20) 
-            CustomSleep(30)
-            StopLoopCheck()
-            SafeRestoreManaAtLow() 
-            StopLoopCheck()
-
-        }
     
-        StopLoopCheck()
-    
-
-        ;저주첨x1 돌리기.(1회는  20회 )
-        SpreadCurseAndChum(20) 
+        FourWayCurseAndParalysis() ;4방향 마비저주 
+        SelfHealAndChum(4) ;셀프힐&첨 3틱
         CustomSleep(30)
-        StopLoopCheck()
-        SafeRestoreManaAtLow()
-                                                
-        StopLoopCheck()
+                       
+        
+        ;중독첨 x2.  기본 20회로 사용했으므로 x2는 40.  이를 나눠서 중간에 마나 부족시 안전한 공증
+        Loop, 2 {
+            StopLoopCheck()            
+            SpreadPoisonAndChum(20)  
+            CustomSleep(30)
+            SafeRestoreManaAtLow()            
+        }
+          
+        
+        ;저주첨 x2.  기본 20회로 사용했으므로 x2는 40.  이를 나눠서 중간에 마나부족시 안전한 공증
+        Loop,2 {
+            StopLoopCheck()
+            SpreadCurseAndChum(20) ; 저주첨 x2   기본 20회로 사용했으므로 x2는 40
+            CustomSleep(30)
+            SafeRestoreManaAtLow()
+        }
+        
 
-        SelfHealAndChum(20) ; 자힐첨x1
-        CustomSleep(30)            
-        StopLoopCheck()
-        SafeRestoreManaAtLow()        
+        CustomSleep(100) ;원래 오토감지 방지용으로 1100 했는데 걍 100
+            
         
-        StopLoopCheck()
-        
-        
-        
-        ;공증 (루프 짝수마다 한 번씩 -> 체 절반 이상이면 성공시까지 공증 시도 해봄)
-        ;자힐첨 2번 vs 공증 감소체력 + 피격체력  해서 자힐첨 2번으로 생존 가능해야 한다.
-        ;만약 마력이 많이 높아지거나 하면 마력 부족할 때만 공증을 하거나
-        ;루프 4번 중 공증을 3번 간격 혹은 4번 간격(mod 3  mod 4)으로 하거나 전체 한 번만 하거나 몇 번에 한 번 시도하는 공증을 없애거나 한다.
-        if (Mod(ManaRefresh, 2) == 0)
-            {            
-                SendInput, {Esc}
-                CustomSleep(20)  
+
+
+        Loop , 4  { 
+            ; 다음 과정 4번 반복 ((자힐x2+ 마비) x1 + 중독첨2 저주첨1 자힐첨1) x4
+            ; 0으로 시작하는 FourWayMabi 변수가 중독첨2+저주첨+자힐첨1 반복마다 1씩 올라가는데 홀수일 때 마비 걸었는데(0이 시작이고 이땐 4방향 저주마비 걸기 때문에 패스) 뺐다. 첫 저주마비 이후 마비x
+            ;맨 처음 4방향 마비저주 이후에는 그냥 마비 뺐다.
+        ;   힐량증가 마력비례 1% 패치로 첫 4방향 마비저주 외에는 마비 없이 간다.
+            ;그냥 중독사냥이 아니라 중독첨첨이라 빨리 잡는 것이 목적이므로 
+            ;마비 딜레이 신경 안 써도 되니 첫 마비이후 중독첨2 자힐첨1로 딜레이 맞췄는데 이제는 중독첨2 저주첨1 자힐첨1 하면 될듯
+              
+            StopLoopCheck()
+            SafeRestoreManaAtLow() ; 마나 부족시 공증
+            ; 자힐 + 4방향 마비&저주 -> 마비 진행 일단 주석처리
+          
+            StopLoopCheck()         
+            SelfHealAndChum(4)
+            CustomSleep(50)         
+            ;if (Mod(FourWayMabi, 2) == 1) { ;홀수 일 때만 마비 진행.                 
+                ;FourWayCurseAndParalysis() ;4방향 마비
+                ;CustomSleep(30)
+            ;}                    
+          
+            ;중독첨x2 돌리기. 기본 20 x2라서  40으로 했는데 20으로 나눠서 마나확인
+            Loop, 2 {
                 StopLoopCheck()
+                SpreadPoisonAndChum(20) 
                 CustomSleep(30)
-
-                ;원래 성공여부 상관없이 단순 공증 한 번이었는데 체 절반쯤 이상&성공시까지 n번 반복으로 보완해줌
-                SafeRestoreMana()
+                SafeRestoreManaAtLow()   
             }
         
-            
-        ManaRefresh++     
-        FourWayMabi++
-        CustomSleep(50) ; 매크로 체크방지 1초 -> 걍 100으로
-
-    } ; (중독첨2 저주첨1 자힐첨1) x4 반복 루프 종료
-
-    ;사실상 여기까지만 해도 어느정도 다 정리 됐음          
-
-
-    StopLoopCheck()
-    SpreadPoisonAndChum(20) ;중독첨x1 돌리기
-    CustomSleep(30)
-    StopLoopCheck()
-    SafeRestoreManaAtLow()
-
-    StopLoopCheck()
-    SpreadCurseAndChum(20) ; 저주첨x1 돌리기
-    CustomSleep(30)
-    StopLoopCheck()
-    SafeRestoreManaAtLow()      
-
-                
-    StopLoopCheck()
-    SelfHealAndChum(20)  ; 자힐첨x1
-    CustomSleep(30)
-    StopLoopCheck()
-    SafeRestoreManaAtLow()
         
+            ;저주첨x1 돌리기.(1회는  20회 )
+            StopLoopCheck()
+            SpreadCurseAndChum(20) 
+            CustomSleep(30)
+            SafeRestoreManaAtLow()
+                                   
+                    
+            StopLoopCheck()
+            SelfHealAndChum(20) ; 자힐첨x1
+            CustomSleep(30)            
+            SafeRestoreManaAtLow()
+            CustomSleep(30)               
+            
+            
+            ;공증 (루프 짝수마다 한 번씩 -> 체 절반 이상이면 성공시까지 공증 시도 해봄)
+            ;자힐첨 2번 vs 공증 감소체력 + 피격체력  해서 자힐첨 2번으로 생존 가능해야 한다.
+            ;만약 마력이 많이 높아지거나 하면 마력 부족할 때만 공증을 하거나
+            ;루프 4번 중 공증을 3번 간격 혹은 4번 간격(mod 3  mod 4)으로 하거나 전체 한 번만 하거나 몇 번에 한 번 시도하는 공증을 없애거나 한다.
+            if (Mod(ManaRefresh, 2) == 0)
+                {            
+                    SendInput, {Esc}
+                   CustomSleep(20)  
+                    StopLoopCheck()
+                   CustomSleep(30)
+
+                    ;원래 성공여부 상관없이 단순 공증 한 번이었는데 체 절반쯤 이상&성공시까지 n번 반복으로 보완해줌
+                    SafeRestoreMana()
+                }
+            
+              
+            ManaRefresh++     
+            FourWayMabi++
+            CustomSleep(50) ; 매크로 체크방지 1초 -> 걍 100으로
+
+        } ; (중독첨2 저주첨1 자힐첨1) x4 반복 루프 종료
+
+        ;사실상 여기까지만 해도 어느정도 다 정리 됐음          
+
+    
+        StopLoopCheck()
+        SpreadPoisonAndChum(20) ;중독첨x1 돌리기
+        CustomSleep(30)
+        SafeRestoreManaAtLow()
+    
+        StopLoopCheck()
+        SpreadCurseAndChum(20) ; 저주첨x1 돌리기
+        CustomSleep(30)
+        SafeRestoreManaAtLow()      
+
+                    
+        StopLoopCheck()
+        SelfHealAndChum(20)  ; 자힐첨x1
+        CustomSleep(30)
+        SafeRestoreManaAtLow()
+            
                 
        
     CustomSleep(30)
+    StopLoop := true
     isHunting := false
     ManaRefresh := 0
     FourWayMabi := 0
@@ -1825,6 +1749,7 @@ PoisonChumHunt() {
 ForestPoisonChumHunt() {
     SendInput, {Esc}
     CustomSleep(30)
+    StopLoop := false
     isHunting := true
     ManaRefresh := 0
     FourWayMabi := 0
@@ -1870,6 +1795,7 @@ ForestPoisonChumHunt() {
     
 
     CustomSleep(30)
+    StopLoop := true
     isHunting := false
     ManaRefresh := 0
     FourWayMabi := 0
@@ -1936,6 +1862,7 @@ PoisonJJul() {
     }
     CustomSleep(30)
     JjulCount := 0
+    StopLoop := true
     return
 }
 
@@ -2116,8 +2043,7 @@ InputWaiting() {
         SendInput, {4} ;저주
         CustomSleep(30) ; 후딜 50에서 30으로 바꿔줌.
         SendInput, {Enter} ; 
-        CustomSleep(60) ;원래 100에서 60으로 줄임        
-
+        CustomSleep(60) ;원래 100에서 60으로 줄임
         ;헬파가 씹히는 경우가 생겨서 후딜을 늘리고 후딜 늘리는 걸로는 고장나는 경우가 생겨서 반복 재시전을 만들었다.
         
         ; -> 헬파가 씹히던 이유는 바람을 오래켜놔서 쿨타임 애드온 타이머가 고장나서 그랬던 거였고 반복 재시전을 만들었으나
@@ -2171,10 +2097,6 @@ InputWaiting() {
                             SendInput, {Enter}
                             CustomSleep(90)                          
                         }
-                    }
-                    ;헬파를 말에다가 쏠 경우 급하게 중단 눌렀을 때 헬파 직전에 멈추기 위함
-                    if(StopLoop) {
-                        break
                     }
                     SendInput, {Blind}2 ; 헬파 
                     CustomSleep(30)
@@ -2249,8 +2171,6 @@ InputWaiting() {
             RestoreMana()
             CustomSleep(30)
             SelfTapTapHeal(3)
-            CustomSleep(50)
-            SendInput, {Blind}r ; 승마사냥 중이면 다시 말에 타기 위함
         }    
     } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
         ;MsgBox, esc was pressed!
