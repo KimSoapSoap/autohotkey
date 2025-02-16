@@ -385,8 +385,9 @@ g:: ;중독첨첨 사냥 종합합
 ;여기 중독 저주 등 x1 회수는 20이다.
 if(isForest) {
     ForestPoisonChumHunt()
+} else {
+    PoisonChumHunt()
 }
-PoisonChumHunt()
 StopLoop := true
 return
 
@@ -1826,10 +1827,10 @@ ForestPoisonChumHunt() {
     SendInput, {Esc}
     CustomSleep(30)
     isHunting := true
+    StopLoop := false
     ManaRefresh := 0
     FourWayMabi := 0
 
-    CustomSleep(30)
     StopLoopCheck()   
     SelfBoMu() ; 자신 보무
     CustomSleep(30)
@@ -1838,24 +1839,28 @@ ForestPoisonChumHunt() {
     StopLoopCheck()         
     FourWayCurse() ;4방향 저주 
     CustomSleep(20)
+    StopLoopCheck()
     SpreadCurseAndChum(8) ; 저주첨 ; 4방향 저주 이후 애매한 몇놈들 저주걸기위함
     CustomSleep(20)
+    StopLoopCheck()
     SelfHealAndChum(6) ;셀프힐&첨 3틱
     CustomSleep(30)
 
-    Loop, 10 {
+    Loop, 4 {
         StopLoopCheck() 
         SafeRestoreMana() ; 안전공증
 
         StopLoopCheck()            
-        SpreadPoisonAndChum(20) ; 중독첨
+        SpreadPoisonAndChum(8) ; 중독첨
         CustomSleep(30)
+        StopLoopCheck()
         SafeRestoreMana() ; 안전공증
         
         
         StopLoopCheck()
-        SpreadCurseAndChum(20) ; 저주첨
+        SpreadCurseAndChum(8) ; 저주첨
         CustomSleep(50)
+        StopLoopCheck()
         SafeRestoreMana() ; 안전공증
         
         
@@ -1865,12 +1870,14 @@ ForestPoisonChumHunt() {
 
         StopLoopCheck()
         SafeRestoreMana() ; 안전공증
+        StopLoopCheck()
         CustomSleep(160)  ;루프 돌아갈 때 다시 공증이므로 후딜 160을 줘야 공증 후 떨어진 체력 인지 가능
     }
     
-
+    SendInput, {Esc}
     CustomSleep(30)
     isHunting := false
+
     ManaRefresh := 0
     FourWayMabi := 0
     return
@@ -2166,7 +2173,11 @@ InputWaiting() {
                     if(waitingHellFireCount >0) { ;첫 헬파쐈는데 공증 없이 다시 풀마나로 왔다는 것은 쿨타임이라는 것이다. 쿨일시 마비(혹은 절망) 쏘고 헬파
                         ;어차피 마비나 절망 돌려놓고 할 가능성이 높은데 일단 써보고 별로면 이 if문은 빼자.
                         loop, 2{
-                            SendInput, {6}
+                            if(isForest) {
+                                SendInput, {7} ;숲지대일시 절망
+                            } else {
+                                SendInput, {6} ;마비                                
+                            }
                             CustomSleep(30)
                             SendInput, {Enter}
                             CustomSleep(90)                          
@@ -2196,6 +2207,11 @@ InputWaiting() {
                 ;풀마나 아니라서 공증하고 헬파 날릴 때 공증 하기 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
                 if(waitingHellFireCount==0) {
                     loop, 2{
+                        if(isForest) {
+                            SendInput, {7} ;숲지대일시 절망
+                        } else {
+                            SendInput, {6} ;마비                                
+                        }
                         SendInput, {6}
                         CustomSleep(30)
                         SendInput, {Enter}
@@ -2234,7 +2250,8 @@ InputWaiting() {
             RestoreMana()
         } 
         SamMaeJinWha() ;원래 삼매진화 함수가 시전까지만이고 대상 확정은 엔터 눌러 줘야 한다. 여기서는 대상 선택했으니 확정을 위해 엔터
-        CustomSleep(60)
+        CustomSleep(60) 
+        StopLoopCheck() ;혹시 모를 급히 취소에 대비해 f3 눌렀을 경우 enter 직전 취소
         SendInput, {Enter} ;대상 확정하며 시전
         CustomSleep(100) ; 후딜 70이었는데 가끔 삼매하고 무반응이길래 후딜 100으로 늘려봤다.
 

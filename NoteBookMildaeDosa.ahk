@@ -139,6 +139,7 @@ global isTabTabOn := false
 ;중독첨첨 혹은 중독사냥 중인지 확인
 global isHunting := false
 
+
 ;마나 0인지 확인
 ;원래 이미지 검색 한 번에 하나의 변수만 바꾸줬는데 마나 관련해서는 마나가 조금이라도 존재하는(풀마나 혹은 마나존재) 것이 확인되면 isManaZero는 false로 초기화를 해주도록 하자
 global isManaZero := false
@@ -154,7 +155,8 @@ global isDead := false
 global isChasing := false
 
 
-
+;탱커모드 on/off에 사용할 변수
+global isTankerMode := false
 
 ;wingetPos를 CalPos() 라는 함수에서 사용해서 윈도우창의 시작 좌표를 구하는데 이를 전달해줄 변수
 global winStartX := 0
@@ -375,41 +377,17 @@ HonHeal(HonCount, LoopCount) {
 
 
 
-
-
-
-
 ~x:: ;줍기
-CustomSleep(30)
-SendInput, {ShiftDown}
-CustomSleep(30)
-SendInput, {,}
-CustomSleep(30)
-SendInput, {ShiftUp}
-CustomSleep(30)
+getget()
 return
-
-
-
 
 
 
 
 
 ':: ; 사자후
-SendInput, {Esc}
-CustomSleep(30)
-SendInput, {shift down}
-CustomSleep(60)
-SendInput, { z }
-CustomSleep(60)
-SendInput, {shift up}
-CustomSleep(60)
-SendInput, z ;  z -> 사자후 술사
-CustomSleep(40)
+Shout()
 return
-
-
 
 c:: ; 긴혼left.  20정도도 -> 15로 변경함
 SpreadHonmaLeft(magicCount)
@@ -597,6 +575,78 @@ return
 
 
 
+SelfTargetAndStopLoop() {    
+    SendInput, {Home}
+    CustomSleep(20)
+    SendInput, {Blind}r ;북방 파밍할 때 말 편하게 타려고
+    CustomSleep(20)
+    StopLoop := true ; 각각의 함수들이 루프시작에 StopLoop가true일 경우 break를 해주기 때문에 중간에 썼을 때 멈추려면 써준다.
+    return
+}
+
+
+
+; 줍기
+getget() { 
+    CustomSleep(30)
+    SendInput, {ShiftDown}
+    CustomSleep(30)
+    SendInput, {,}
+    CustomSleep(30)
+    SendInput, {ShiftUp}
+    CustomSleep(30)
+    return
+}
+
+
+;사자후
+Shout() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {shift down}
+    CustomSleep(60)
+    SendInput, { z }
+    CustomSleep(60)
+    SendInput, {shift up}
+    CustomSleep(60)
+    SendInput, z ;  z -> 사자후 
+    CustomSleep(40)
+    return
+}
+
+
+;지도 열고 닫기 토글
+OpenMap() {
+    if (isMapOpen) {
+        ; 지도가 열려 있다면 ESC로 닫기
+        SendInput, {ESC}
+        isMapOpen := false
+    } else {
+        ; 지도가 닫혀 있다면 Shift + M으로 열기
+        SendInput, {Shift Down}
+        CustomSleep(30)
+        SendInput, {M}
+        CustomSleep(30)
+        SendInput, {Shift Up}
+        isMapOpen := true
+    }
+    return
+}
+
+;탱커모드 하면 밀대힐이랑 스탠딩혼힐 때 뭘 바꿔주려고 하는데 아직은 딱히 바꿔줄 게 없다.
+ToggleRidingHunt() {
+    if (isTankerMode) {
+        ; 말타기 사냥 끄기                
+        isTankerMode := false
+        MsgBox, 탱커모드 OFF
+    } else {
+        ; 말타고 사냥 켜기
+        isTankerMode := true
+        MsgBox, 탱커모드 ON
+    }
+    return
+}
+
 
 DrinkDongDongJu() { ;동동주 마시기용, a에 동동주
     Loop, 1
@@ -610,6 +660,7 @@ DrinkDongDongJu() { ;동동주 마시기용, a에 동동주
         }
     return
  }
+
 
  
  SelfHeal() {
