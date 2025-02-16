@@ -259,14 +259,7 @@ f4:: ; 부활스킬 등 타겟팅 스킬 시전용
 SendInput, {Enter}
 return
 
-1::
-TabTabHealRefresh()
-return
 
-
-c:: ; 긴혼left.  20정도도 -> 15로 변경함
-SpreadHonmaLeft(magicCount)
-return
 
 ;혼힐을 수정혼 + 적당한 개체수일 때 사용용
 
@@ -417,6 +410,11 @@ CustomSleep(40)
 return
 
 
+
+c:: ; 긴혼left.  20정도도 -> 15로 변경함
+SpreadHonmaLeft(magicCount)
+return
+
 ^1:: ;추적 밀대
 CustomSleep(150)
 ChaseMildae()
@@ -436,22 +434,11 @@ F1:: ; 추적혼힐
 ChaseHonHeal()
 return
 
- F2:: ; 동동주 마시기용, a에 동동주
- DrinkDongDongJu()
- return
+F2:: ; 동동주 마시기용, a에 동동주
+DrinkDongDongJu()
+return
 
- DrinkDongDongJu() { ;동동주 마시기용, a에 동동주
-    Loop, 1
-        {
-           SendInput, {Ctrl Down}
-           CustomSleep(30)
-           SendInput,a
-           CustomSleep(20)
-           SendInput,{Ctrl Up}
-           CustomSleep(30)
-        }
-    return
- }
+ 
 
 
 F3:: ;자신 선택 & StopLoop
@@ -467,71 +454,12 @@ SelfHeal()
 ;StopLoop := true ;중단 안 하는쪽으로 가기 위해 주석처리
 return
 
- SelfHeal() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    StopLoop := false
-    Loop, 4
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, {Blind}1
-        CustomSleep(30)
-        SendInput, {Home}
-        CustomSleep(30)
-        SendInput, {Enter}
-        CustomSleep(90)
-    }
-    SendInput, {Esc}
-    CustomSleep(20)
-    SendInput, {Tab} ;격수 힐 중이었을 때를 대비해 마지막에 탭탭
-    CustomSleep(50)
-    SendInput, {Tab}
-    CustomSleep(40)
-    return
-}
 
 
+1::
+TabTabHealRefresh()
+return
 
-;도사는 자힐보다 격수 탭탭힐을 많이 써서 `를 자힐 3틱, 1은 격수 탭탭힐 반복으로
-
-
-
- TabTabHeal() {
-    SendInput, {Esc}
-    CustomSleep(30)
-    SendInput, {Tab}
-    CustomSleep(40)
-    SendInput, {Tab}
-    CustomSleep(40)
-    StopLoop := false
-    CustomSleep(20)
-
-    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
-    {
-        if (StopLoop)
-            {                
-                Break
-                CustomSleep(20)
-            }
-        Send, {1}
-        CustomSleep(50)
-        ;Send, {5}
-        ;CustomSleep(50)
-        Send, {1}
-        CustomSleep(50)
-        ;Send, {0}
-        ;CustomSleep(50)
-        Send, {1}
-        CustomSleep(50)
-    }
-    SendInput, {Esc}
-    CustomSleep(40)
-    return
-}
 
 
 ;도사는 StopLoop를 빠르게 사용할 일이 많아서 2번에도 넣어뒀다.
@@ -539,6 +467,15 @@ return
 StopLoop := true
 return
 
+
+3::
+ChaseHonHeal()
+return
+
+
+4::
+StandingHonHeal()
+return
 
 +1::
 CustomSleep(120)
@@ -548,6 +485,16 @@ return
 +2::
 CustomSleep(120)
 SendInput, {Blind}2
+return
+
++3::
+CustomSleep(120)
+SendInput, {Blind}3
+return
+
++4::
+CustomSleep(120)
+SendInput, {Blind}4
 return
 
 
@@ -593,6 +540,148 @@ StopLoop := true
 return
 
 
+
+
+
+r:: ; 선택혼
+SelectionHon()
+return
+
+
+
+ +r:: ;말타기
+ CustomSleep(100)
+ SendInput, {Blind}r
+ return
+
+
+
+
+
+
+ +q:: ;시력회복
+ CustomSleep(120)
+ VisionRecovery()
+ return
+
+ b:: ;원래 셀프 무력화가 b였는데 편의를 위해 잠시 b에 유령부활.
+GhostCheck()
+return
+
++b:: ;셀프 무력화
+CustomSleep(170)
+SelfNeutralize()
+return
+
+^s:: ; 상태창
+CustomSleep(190)
+SendInput, {Blind}s
+return
+
+
+g:: ; 둘다 부활 후 탭탭
+Rev()
+Return
+
+
+v:: ;  탭탭 대상 보무
+TabTabBoMu()
+return
+
+
+NumpadEnd:: ;  셀프보무 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
+SelfBoMu()
+StopLoop := true
+return
+
+
+
+
+
+DrinkDongDongJu() { ;동동주 마시기용, a에 동동주
+    Loop, 1
+        {
+           SendInput, {Ctrl Down}
+           CustomSleep(30)
+           SendInput,a
+           CustomSleep(20)
+           SendInput,{Ctrl Up}
+           CustomSleep(30)
+        }
+    return
+ }
+
+ 
+ SelfHeal() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+    Loop, 4
+    {
+        if (StopLoop)
+            {            
+                Break
+                CustomSleep(20)
+            }
+        SendInput, {Blind}1
+        CustomSleep(30)
+        SendInput, {Home}
+        CustomSleep(30)
+        SendInput, {Enter}
+        CustomSleep(90)
+    }
+    SendInput, {Esc}
+    CustomSleep(20)
+    SendInput, {Tab} ;격수 힐 중이었을 때를 대비해 마지막에 탭탭
+    CustomSleep(50)
+    SendInput, {Tab}
+    CustomSleep(40)
+    return
+}
+
+
+
+
+;도사는 자힐보다 격수 탭탭힐을 많이 써서 `를 자힐 3틱, 1은 격수 탭탭힐 반복으로
+
+
+
+ TabTabHeal() {
+    SendInput, {Esc}
+    CustomSleep(30)
+    SendInput, {Tab}
+    CustomSleep(40)
+    SendInput, {Tab}
+    CustomSleep(40)
+    StopLoop := false
+    CustomSleep(20)
+
+    Loop  ;, 30  ;원래 30이었다. 일단 횟수없이 반복으로.
+    {
+        if (StopLoop)
+            {                
+                Break
+                CustomSleep(20)
+            }
+        Send, {1}
+        CustomSleep(50)
+        ;Send, {5}
+        ;CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)
+        ;Send, {0}
+        ;CustomSleep(50)
+        Send, {1}
+        CustomSleep(50)
+    }
+    SendInput, {Esc}
+    CustomSleep(40)
+    return
+}
+
+
+
+
 ;공력주입
 ManaInjection() {
     CustomSleep(20)
@@ -624,6 +713,8 @@ ManaInjection() {
 }
 
 
+
+
 SpreadVitality() { ;활력 돌리기
 SendInput, {Esc}
 CustomSleep(30)
@@ -648,9 +739,7 @@ return
 }
 
 
-r:: ; 선택혼
-SelectionHon()
-return
+
 
 SelectionHon() {
     SendInput, {Esc}
@@ -673,20 +762,6 @@ return
 }
 
 
- +r:: ;말타기
- CustomSleep(100)
- SendInput, {Blind}r
- return
-
-
-
-
-
-
- +q:: ;시력회복
- CustomSleep(120)
- VisionRecovery()
- return
 
 VisionRecovery() {  ;시력회복
     SendInput, {Esc}
@@ -705,13 +780,6 @@ VisionRecovery() {  ;시력회복
 
 
 
-b:: ;원래 셀프 무력화가 b였는데 편의를 위해 잠시 b에 유령부활.
-GhostCheck()
-return
-
-+b::
-SelfNeutralize()
-return
 
 
 
@@ -739,10 +807,7 @@ SelfNeutralize() {
 return
 
 
-^s:: ; 상태창
-CustomSleep(190)
-SendInput, {Blind}s
-return
+
 
 
 ;이동방향 입력키 겹치지 않으면서 타겟박스 이동이 순방향이면 돌리면서 이동가능함(구멍은 좀 생김)
@@ -936,9 +1001,6 @@ ListenMouseEvent() {
 
 
 
-g:: ; 둘다 부활 후 탭탭
-Rev()
-Return
 
 
 Rev() { ;rev에 탭탭 대상 부활과 본인부활후 다시 탭탭
@@ -966,10 +1028,6 @@ Rev() { ;rev에 탭탭 대상 부활과 본인부활후 다시 탭탭
 }
 
 
-
-v:: ;  탭탭 대상 보무
-TabTabBoMu()
-return
 
 TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무장)
     SendInput, {Esc}
@@ -1002,10 +1060,7 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
 }
 
 
-NumpadEnd:: ;  셀프보무 ;pc는 end, 노트북은 넘패드end 인데 pc지만 일단 만들어가는 중이므로 임시로 노트북용
-SelfBoMu()
-StopLoop := true
-return
+
 
 
 SelfBoMu() { ; 셀프 보무 (대문자 X = 보호,  소문자 x = 무장)
