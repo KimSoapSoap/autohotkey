@@ -2138,8 +2138,9 @@ GhostCheck() {
     }
     if(isChasing) { ;만약 추적중이었으면 움직이면서 좌표 검색 후 잘못된 위치를 클릭 가능하므로 이동 정지
         TabTabChase()
-        CustomSleep(30)
-        Click, Right down ;좌클릭으로 인해 추적이 풀렸으므로 다시 우클 이동 
+        ;CustomSleep(30)
+        ;Click, Right down ;좌클릭으로 인해 추적이 풀렸으므로 다시 우클 이동(탭탭 추적에서 우클릭 다운 하므로 주석처리)
+        CustomSleep(20)
 
     }
     return
