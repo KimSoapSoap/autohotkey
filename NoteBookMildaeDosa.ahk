@@ -2064,6 +2064,16 @@ return
 
 ;유령확인. 유령시 머리 위에 하얀 링 검색. -> 유령 머리에 링은 위가 두꺼운 것 아래가 두꺼운 것 2가지 종류가 있다.
 GhostCheck() {
+
+    CheckTabTabOn() ; 탭탭 상태인지 확인(탭탭힐 중이면 끝나고 탭탭 복구 해주기 위함)
+    CustomSleep(20)
+
+    if(isChasing) { ;만약 추적중이었으면 움직이면서 좌표 검색 후 잘못된 위치를 클릭 가능하므로 이동 정지. 아래에서 추적중이었으면 다시 탭탭이동동
+        Click, Right up
+        CustomSleep(20)
+    }
+    
+
     Ghost1 := imgFolder . "ghost6.png"  ; 유령 머리위에 링 배경제거 한 것
     Ghost2 := imgFolder . "ghost7.png"  ; 유령 머리위에 링 배경제거 한 것
     Ghost3 := imgFolder . "ghost8.png"  ; 유령 머리위에 링 배경제거 한 것
@@ -2081,7 +2091,6 @@ GhostCheck() {
     ImgResult3 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
     
 
-    CheckTabTabOn() ; 탭탭 상태인지 확인(탭탭힐 중이면 끝나고 탭탭 복구 해주기 위함)
 
     if(ImgResult1 = 0) {        
         SendInput, {Esc}
@@ -2121,17 +2130,16 @@ GhostCheck() {
     }
 
     if(isTabTabOn) { ;도사라 탭탭힐 중이었으면 다시 탭탭탭
-        CustomSleep(120)
+        CustomSleep(20)
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
         CustomSleep(50)
     }
-    if(isChasing) { ;만약 추적중이었으면 좌클릭으로 인해 추적이 풀렸으므로 우클 up 시키고 다시 down 해줌
-        Click, Right up
+    if(isChasing) { ;만약 추적중이었으면 움직이면서 좌표 검색 후 잘못된 위치를 클릭 가능하므로 이동 정지
         TabTabChase()
         CustomSleep(30)
-        Click, Right down
+        Click, Right down ;좌클릭으로 인해 추적이 풀렸으므로 다시 우클 이동 
 
     }
     return
