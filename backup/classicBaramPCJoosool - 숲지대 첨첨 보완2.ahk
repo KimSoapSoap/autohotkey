@@ -3,10 +3,9 @@
 global magicCount := 12
 ;참고로 북방, 신극지방 갈 때 말 죽이면 안 되니까 자힐첨첨,자힐 주석처리도 바꿔줘야 한다.(#IfWinActive 아래에 있음)
 
-;토글
-; -> 승마사냥 : alt + r
-; -> 숲지대 : alt + f
-; isRidingHunt,  isAtForest 을 바꿔준다.
+;숲지대 갈 때 true로 바꿔주면 g:: 핫키에 ForestPoisonChumHunt() 실행. false면 그냥 흉가용 자동사냥 PoisonChumHunt()
+global isForest := true
+;global isForest := false 
 
 
 ;산적굴 갈 때는 중독 안 쓰니까 중독과 절망 자리 바꿔서 절망 활용.
@@ -159,17 +158,8 @@ global isManaZero := false
 ;죽었는지 확인
 global isDead := false
 
-
 ;승마사냥 토글용 변수
-;true면 입력대기 스킬 중 삼매진화, 헬파이어 사용시 스킬 사용 전 r키를 눌러서 말에서 내리게 해준다.
 global isRidingHunt := false
-
-
-
-;숲지대 사냥 토글용 변수.  원래 true false로 수동으로 바꿔줬지만 토글 함수 추가
-;true로 바꿔주면 g:: 핫키에 ForestPoisonChumHunt() 실행. false면 그냥 흉가용 자동사냥 PoisonChumHunt()
-global isAtForest := false 
-
 
 
 
@@ -256,10 +246,6 @@ return
 ;승마사냥 토글 -> 입력지연시 스킬 시전할 때 말타기+후딜 사용on/off 이다. (후딜 150이므로 말 안 타고 다닐 땐 끄자)
 !r::
 ToggleRidingHunt()
-return
-
-!f::
-ToggleForestHunt()
 return
 
 
@@ -397,7 +383,7 @@ return
 g:: ;중독첨첨 사냥 종합합
 ; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (공증, 중독첨2+자힐첨1)x4
 ;여기 중독 저주 등 x1 회수는 20이다.
-if(isAtForest) {
+if(isForest) {
     ForestPoisonChumHunt()
 } else {
     PoisonChumHunt()
@@ -618,22 +604,6 @@ ToggleRidingHunt() {
         ; 말타고 사냥 켜기
         isRidingHunt := true
         MsgBox, 승마사냥 ON
-    }
-    return
-}
-
-
-; 숲지대 사냥인지 아닌지 설정.
-; 현재 g:: 핫키(자동 첨첨 사냥)에서 true면 ForestPoisonChumHunt(), false면 그냥 PoisonChumHunt() 함수 실행
-ToggleForestHunt() {
-    if (isAtForest) {
-        ; 숲지대 사냥 끄기
-        isAtForest := false
-        MsgBox, 숲지대 사냥 OFF
-    } else {
-        ; 숲지대 사냥 켜기
-        isAtForest := true
-        MsgBox, 숲지대 사냥 ON
     }
     return
 }
