@@ -2048,8 +2048,15 @@ TabTabChase() {
         ;CustomSleep(10) ; 원래 50 했었고 힐틱 밀리는 원인일까 싶어 빼놨다
 
 
+    ;탭탭 발견 안 되면 격수가 다른 방 갔다고 보고 Exit와 우클해제 해봄. 다른 방 안 갔는데도 Exit 되면 다시 아무 코드도 없는 걸로 롤백
+    ;-> 다른 방 가는 순간 타이밍에 의해 될 때도 있고 안 될 때도 있어서 그냥 지움
     } else if(ImgResult1 = 1) {
         ;SendInput, {2} ;확인용 코드
+        ;발견 안 되면 격수가 순간 다른 방 간 것이고 이때 exit를 하든 뭐를 하든 한 번 해보자.
+        ;Click, Right up ;우클 이동
+        ;SendInput, {Esc}
+        ;CustomSleep(20)
+        ;Exit
     } else {
         ;SendInput, 3 ;확인용 코드
     }
