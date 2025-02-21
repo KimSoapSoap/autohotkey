@@ -2,6 +2,7 @@
 ;기본 카운트 20, 신극지방 갈 때는 깔끔하게 6정도
 global magicCount := 12
 ;참고로 북방, 신극지방 갈 때 말 죽이면 안 되니까 자힐첨첨,자힐 주석처리도 바꿔줘야 한다.(#IfWinActive 아래에 있음)
+;-> 입력대기 헬파쏘고 자힐하므로 굳이 자힐첨첨 자힐 바꿀 필요 없다.
 
 ;토글
 ; -> 승마사냥 : alt + r
@@ -9,9 +10,12 @@ global magicCount := 12
 ; isRidingHunt,  isAtForest 을 바꿔준다.
 
 
-;산적굴 갈 때는 중독 안 쓰니까 중독과 절망 자리 바꿔서 절망 활용.
 ;삼매 진형 만들어놨는데 마비가 25초 지속이므로 삼매쿨보다 짧게 남았다면 그 자리에 굳히기로 절망을 걸어두면 된다.
+;지금 산적 가기 전 d가 중독 돌리기인데 산적 이후 삼매각 잡을 때 q로 마비 걸거나 w로 절망 걸어놓는데
+;d키를 일단 산적 기준으로 마비시킨 몹에 절망, 저주 거는 용도로 저주 + 절망 거는 걸로 하자. 중독 돌리는 건 g키로 하든가(자동사냥은 b로)
 
+; 자동사냥중에 입력대기 s 누르면 첨첨 버튼 5번 0번 누르게 해놨는데 첨첨 단축키 뺄 때 이거 수정해주자
+; -> 추가해야되는데 안 되네? 일단 보류
 
 
 ;PC 혹은 Notebook 에 따른 좌표 설정. -> 보통 pc에서 만들면 이미지는 물론 새로 캡쳐해야되고 notebook은 복붙해서 핫키를 바꿔줬는데 이미지 서칭할 때는 좌표와 이미지 경로도 바꿔줘야 한다.
@@ -2087,9 +2091,9 @@ InputWaiting() {
     ; 적어도 첫 루프에서 공증만 하고 자힐하는 것은 방지할 수 있다. 자힐 후 break 조건에 이 변수도 넣으면 풀마나로 시전
     ; 현재 마나로 헬파 시전은 앞에 로직 추가해줌
 
-    if(isHunting) { ;첨첨사냥 혹은 중독사냥 중이면 탭탭이 열려 있는지 확인 해두기
+    if(isHunting) { ;첨첨사냥 혹은 중독사냥 중이면 탭탭이 열려 있는지 확인 해두기 + 첨첨 사용 -> 헬파 쏘고 나서 첨첨해제
         CheckTabTabOn()
-        CustomSleep(30)
+        CustomSleep(30)        
     }
 
     ;입력대기시 미리 내려서 타겟 지정후 마법시전보다 말탄 상태에서 타겟 선택하고(저주로 대상 정하는 것)
@@ -2103,7 +2107,8 @@ InputWaiting() {
 
     ; Enter와 d 키 입력 대기 (10초 타임아웃)
     Input, UserInput, V L1 T10, {d}{a}{ESC}
-    CustomSleep(20)    
+    CustomSleep(20)
+
 
     ;---------------------입력대기중 헬파이어------------------------------------------------------
 
@@ -2112,9 +2117,9 @@ InputWaiting() {
         ; Enter를 눌렀을 때 실행할 로직 추가
 
 
-        if(isHunting) { ;첨첨 사냥중에는 단순 저주 + 헬파이어 시전만(탭탭창 열려 있는 상태면 탭탭창 복구)
+        if(isHunting) { ;첨첨 사냥중에는 단순 저주 + 헬파이어 시전만(탭탭창 열려 있는 상태면 탭탭창 복구) + 첨첨까지
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(30)    
             SendInput, {4} ;저주
             CustomSleep(50)
             SendInput, {Enter} 
@@ -2131,7 +2136,7 @@ InputWaiting() {
                 SendInput, {Tab}
                 CustomSleep(50)
                 IsWaiting := false
-            }
+            }   
             Exit
 
         }
@@ -2206,7 +2211,7 @@ InputWaiting() {
                     if(waitingHellFireCount >0) { ;첫 헬파쐈는데 공증 없이 다시 풀마나로 왔다는 것은 쿨타임이라는 것이다. 쿨일시 마비(혹은 절망) 쏘고 헬파
                         ;어차피 마비나 절망 돌려놓고 할 가능성이 높은데 일단 써보고 별로면 이 if문은 빼자.
                         loop, 2{
-                            if(isForest) {
+                            if(isAtForest) {
                                 SendInput, {7} ;숲지대일시 절망
                             } else {
                                 SendInput, {6} ;마비                                
@@ -2240,12 +2245,11 @@ InputWaiting() {
                 ;풀마나 아니라서 공증하고 헬파 날릴 때 공증 하기 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
                 if(waitingHellFireCount==0) {
                     loop, 2{
-                        if(isForest) {
+                        if(isAtForest) {
                             SendInput, {7} ;숲지대일시 절망
                         } else {
                             SendInput, {6} ;마비                                
                         }
-                        SendInput, {6}
                         CustomSleep(30)
                         SendInput, {Enter}
                         CustomSleep(90)
@@ -2294,14 +2298,23 @@ InputWaiting() {
         CheckCastOnHorse() ; 말에 탄 상태에서 시전했는지 확인
         CustomSleep(20)
 
-        ;말에 탄 상태가 아니고 잘못된 대상도 아니면 공증
-        if(!isRiding && !isWrongTarget) {
-            RestoreMana()
-            CustomSleep(30)
-            SelfTapTapHeal(3)
-            CustomSleep(50)
+        ;말에 탄 상태면 그냥 끝. 잘못된 대상이면 다시 말에 탐 -> 둘 다 공증 안 함
+        if(isRiding) {
+            ;말에 탄 상태면 그냥 아무것도 안 하고 끝.
+        }   
+        if(isWrongTarget) {
+            ;잘못된 대상이면 승마사냥이었을 경우 다시 말에 타게 하려고 r 넣음.
             SendInput, {Blind}r ; 승마사냥 중이면 다시 말에 타기 위함
-        }    
+        }
+
+        ;말에 탄 상태도 아니고 잘못된 대상도 아니면 시전했으므로 마나 0이다. -> 공증
+        ;일단 이렇게 써보고 시전 안 됐을 때 공증되는 경우가 생기면 마나체크 후 0이나 low면(사용 직후 마나젠 됐다면) 공증
+        RestoreMana()
+        CustomSleep(30)
+        SelfTapTapHeal(3)
+        CustomSleep(50)
+        SendInput, {Blind}r ; 승마사냥 중이면 다시 말에 타기 위함
+
     } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
         ;MsgBox, esc was pressed!
         ;Esc를 눌렀을 때 실행할 로직 추가 (대기상태에서 c키 눌러도 esc임)
