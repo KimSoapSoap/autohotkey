@@ -245,6 +245,10 @@ return
 ToggleNoRandomPos() 
 return
 
+!s:: ;탱커모드 -> 공증을 1틱마다 하지 않고 여러틱마다 시도한다. -> TabTabHealRefresh(), StandingHonHeal() 에 해당
+ToggleTankerMode()
+return
+
 
 ;----------------------------밀대용 키 세팅--------------------------------------------
 ;pc에서는 wasd 안 쓰려고 했다. 만약 무빙으로 뭘 해보려면 우클릭 이동인데 이때는 wasd이동하고 오른손은 마우스 괜찮겠다
@@ -372,11 +376,19 @@ HonHeal(HonCount, LoopCount) {
             SendInput, {Blind}2 ;백호
             CustomSleep(50)
             SendInput, {Blind}1 ;백호 쿨일 때 생명 3틱 쓰려고. 틱당 3회 회복은 50후딜로는 4번 해야되더라
-            CustomSleep(50)
+            ;CustomSleep(50)
             ;SendInput, {Blind}1 ;백호 쿨일 때 생명2번만 나가더라. 혼마랑 같이 써져서 제한때문인지 테스트 후 힐틱 밀리면 빼던가 하자
             ;CustomSleep(50)
         }
-        SendInput, {3} ;
+
+        if(isTankerMode) { ; 혼힐도 탱커모드일 때는 ManaRefresh 수치에 따라 공증 시도 -> TabTabHealRefresh()나 StandingHonHeal() 의 ManaRefresh 값 사용(테스트 필요)
+            if (Mod(ManaRefresh, 8) == 0) { ; 4의 배수. 즉 힐4틱에 한 번만 공증 시도 -> 실제로 1초에 한 싸이클이 아니므로 8로 해보자. 마나부족하면 줄인다.
+                SendInput, {Blind}3
+            }   
+            ManaRefresh++
+        } else {
+            SendInput, {Blind}3
+        }
         CustomSleep(10) ; 뒤에 아무것도 없으므로 후딜 10으로 바꿈꿈
         ;SendInput, {Blind}2 공증 뒤 백호는 잠시 뺐음. 여기선 마법 1회를 아껴야 돼서 힐 뒤에 백호 한 번만
         ;CustomSleep(20)
@@ -646,13 +658,13 @@ OpenMap() {
 }
 
 ;탱커모드 하면 밀대힐이랑 스탠딩혼힐 때 뭘 바꿔주려고 하는데 아직은 딱히 바꿔줄 게 없다.
-ToggleRidingHunt() {
+ToggleTankerMode() {
     if (isTankerMode) {
-        ; 말타기 사냥 끄기                
+        ; 탱커모드 끄기기
         isTankerMode := false
         MsgBox, 탱커모드 OFF
     } else {
-        ; 말타고 사냥 켜기
+        ; 탱커모드 켜기기
         isTankerMode := true
         MsgBox, 탱커모드 ON
     }
@@ -1016,6 +1028,8 @@ ListenMouseEvent() {
     WheelUpDetected := false
     WheelDownDetected := false
 
+    ManaRefresh := 1 ;몸빵할 때 힐 몇틱에 한 번씩 공증 시도할 거냐를 위한 변수
+
     StopLoop := false
 
     SendInput, {Esc}
@@ -1064,13 +1078,22 @@ ListenMouseEvent() {
 
         ListenMouseEvent()
         CustomSleep(20)
-        Send, {3}
+        if(isTankerMode) {
+            if (Mod(ManaRefresh, 8) == 0) { ; 4의 배수. 즉 힐4틱에 한 번만 공증 시도 -> 실제로 1초에 한 싸이클이 아니므로 8로 해보자. 마나부족하면 줄인다.
+                SendInput, {Blind}3
+            }   
+            ManaRefresh++
+        } else {
+            SendInput, {Blind}3
+        }
+
         CustomSleep(20) ; 공증 후 후딜 50이었는데 금강하고 나누고 후딜 30, 20 (뭔가 밀리면 30 20을 20 10으로)
         SendInput, {Blind}6  ;금강불체
         CustomSleep(20)
         
     }
     MildaeHeal := false
+    ManaRefresh := 1
     SendInput, {Esc}
     CustomSleep(30)
     return
@@ -1345,6 +1368,7 @@ StandingHonHeal() { ;제자리 혼힐
     LButtonClicked := false  ; 상태 초기화
     WheelUpDetected := false
     WheelDownDetected := false
+    ManaRefresh := 1 ;몸빵할 때 힐 몇틱에 한 번씩 공증 시도할 거냐를 위한 변수
 
     StopLoop := false
     StopHonHeal := false
@@ -1405,11 +1429,22 @@ StandingHonHeal() { ;제자리 혼힐
             SendInput, {Blind}1 ; 백호 쿨일 때 생명 3번 쓰라고 넣음. 후딜50으로는 생명4번 넣어야 기원 힐틱 3번 가능. 백호 쿨 있으면 생명2백호1, 없으면 생명3
             CustomSleep(50) ; 
         }
-        SendInput, {3} ;
+        
+        if(isTankerMode) {
+            if (Mod(ManaRefresh, 8) == 0) { ; 4의 배수. 즉 힐4틱에 한 번만 공증 시도 -> 실제로 1초에 한 싸이클이 아니므로 8로 해보자. 마나부족하면 줄인다.
+                SendInput, {Blind}3
+            }   
+
+            ManaRefresh++
+        } else {
+            SendInput, {Blind}3
+        }
+
         CustomSleep(20)
 
     }
     MildaeHeal := false
+    ManaRefresh := 1
     CustomSleep(20)
     Click, Right up  ;추적 우클릭 해제 방지2
     return
@@ -2084,7 +2119,7 @@ TabTabChase() {
     } else if(ImgResult1 = 1) {
         ;SendInput, {2} ;확인용 코드
         ;발견 안 되면 격수가 순간 다른 방 간 것이고 이때 exit를 하든 뭐를 하든 한 번 해보자.
-        ;Click, Right up ;우클 이동
+        ;Click, Right up ;우클 이동 해제
         ;SendInput, {Esc}
         ;CustomSleep(20)
         ;Exit
