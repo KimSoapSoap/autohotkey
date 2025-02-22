@@ -55,9 +55,11 @@ global imgFolder := A_ScriptDir . "\img\dosa\notebook\"
 ;2번 백호의 희원(노트북 밀대는 2번이 정지, 백호의 희원은 밀대힐에서 자동 사용) 3공증 4혼마 5차폐
 ;q금강 wasd 이동(밀대는 편하게 한손으로 하려고, pc는 마우스 우클로 이동하면서 이동혼힐 가능)
 ;e매우짧혼, f중간혼 (e왕 f는 힐 돌리면서 혼마 3개씩 돌리기를 짧게, 길게) c 혼마만 돌리기
-;r 선택혼 ,t공주 , g 탭탭부활 본인부활 후 다시 탭탭  v보무 b 셀프 무력화 3틱
+;r 선택혼 ,t공주 , g 수동부활  shift + g 탭탭부활 본인부활 후 다시 탭탭  v보무 
+;b 유령부활, shift + b 유령부활2(기존 유령부활이 안 될시 추가 이미지로 테스트겸 유령부활2) alt + b 셀프 무력화 3틱
 ;선택혼은 r키로 마우스 오버하면 클릭해서 혼마 건다. 밀대힐중(탭탭힐리프레쉬) 좌클릭, 휠업, 휠다운해도 선택혼 가능하다.
 
+;5번 차폐는 거의 안 쓰니 다른 걸로 바꾸든지 하자. 예를들면 파혼, 시력회복 등
 
 
 ;최근 노트북밀대 키설정. 나머지는 기존 그대로다.
@@ -65,6 +67,7 @@ global imgFolder := A_ScriptDir . "\img\dosa\notebook\"
 ; 3 이동혼힐 (내가 이동 불가능)  4 제자리 혼힐힐
 
 ;토글은 alt + c 추적시 상하 랜덤좌표on/off (기본 on)
+;alt + s  탱커모드 -> 공증을 힐 4틱에 한 번씩 (실제 1초에 1싸이클이 아니므로 모듈러 수치는 x2 해서 8이다 -> 4틱당 1회 공증이 됨)
 
 
 global StopLoop := false
@@ -528,17 +531,6 @@ CustomSleep(220) ;쉬프트 눌렀다 뗄 때 딜레이. 쉬프트 떼기 전에
 SendInput, {9}
 return
 
- ;부활 
-+g:: ;;쉬프트 눌렀다 뗄 때 딜레이. 쉬프트 떼기 전에 동작하므로 딜레이가 낮으면 쉬프트 누른채로 sendInput이 동작해서 먹통됨(숫자 입력일 경우 더 여유를 줘야함)
-;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음
-CustomSleep(220)
-SendInput, {esc}
-CustomSleep(30)
-SendInput, {0}
-StopLoop := true
-return
-
-
 
 +e::  ;활력 돌리기 (shift + e -> 큐센 한 손 키보드 계산기모드)
 SpreadVitality()
@@ -588,8 +580,17 @@ CustomSleep(190)
 SendInput, {Blind}s
 return
 
+ ;수동 부활 
+g:: ;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음
+SendInput, {esc}
+CustomSleep(30)
+SendInput, {0}
+StopLoop := true
+return
 
-g:: ; 둘다 부활 후 탭탭
+
++g:: ; 나와 탭탭대상 둘다 부활 후 탭탭(모든 자동힐에 나와 격수 자동 부활 넣어놨으므로 쉬프트 조합으로 했다.)
+CustomSleep(200)
 Rev()
 Return
 
