@@ -531,12 +531,8 @@ return
 
  ;부활 
 +g:: ;;쉬프트 눌렀다 뗄 때 딜레이. 쉬프트 떼기 전에 동작하므로 딜레이가 낮으면 쉬프트 누른채로 sendInput이 동작해서 먹통됨(숫자 입력일 경우 더 여유를 줘야함)
-;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음
 CustomSleep(220)
-SendInput, {esc}
-CustomSleep(30)
 SendInput, {0}
-StopLoop := true
 return
 
 
@@ -575,11 +571,7 @@ return
 GhostCheck()
 return
 
-+b:: ; b키가 호스트 체크라서 테스트는 편하게 +b로 했다. 어느 이미지가 잘 찾아내는지 테스트
-GhostCheckTest()
-return
-
-!b:: ;셀프 무력화  ; 원래  +b인데 임시로 !b (유령 체크때문)
++b:: ;셀프 무력화
 CustomSleep(170)
 SelfNeutralize()
 return
@@ -1672,7 +1664,6 @@ return
 GhostCheck()
 return
 
-
 ^F8:: 
 TabTabChase()
 return
@@ -2164,120 +2155,9 @@ GhostCheck() {
     }
     
 
-    Ghost1 := imgFolder . "ghost1.png"  ; 유령 머리위에 링 배경제거 한 것
-    Ghost2 := imgFolder . "ghost2.png"  ; 유령 머리위에 링 배경제거 한 것
-    Ghost3 := imgFolder . "ghost3.png"  ; 유령 머리위에 링 배경제거 한 것
-    Ghost4 := imgFolder . "ghost4.png"  ; 유령 머리위에 링 배경제거 한 것
-
-    ;일단 창 크기 계산은 세로는 280쯤 빼주자(해상도에 따라 더 조절 필요할 수도). 
-    ;배경색 애매한 건 그냥 그림판에서 특정색깔로 다 칠해주고 배경무시 해줬다.(아래 ED1C24는 그림판 빨강색이다)
-    ;130하면 가끔 다른 곳으로 튀더라. 100~110 해줬는데 안 먹힐 때도 제법 됨. 다음에 보완하자.
-
-    ;110이 마지노선인 것 같다. 120으로 하면 벽이고 바닥이고 막 튄다 -> 115 하니까 중간지점인 것
-    ImageSearch, FoundX1, FoundY1, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *115 %Ghost1% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
-    ImgResult1 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
-    ImageSearch, FoundX2, FoundY2, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *115 %Ghost2% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
-    ImgResult2 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
-    ImageSearch, FoundX3, FoundY3, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *115 %Ghost3% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
-    ImgResult3 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
-    ImageSearch, FoundX4, FoundY4, winStartX, winStartY, 1430, 850, *Trans0xED1C24 *115 %Ghost4% ;가로는 아이템창 이전쯤, 세로는 채팅창 이전쯤 까지만.
-    ImgResult4 := ErrorLevel ; 본인과 탭탭대상 제외한 타인 부활을 위함함
-    
-
-
-    ;이미지3이 제일 흔한 것 같아서 3부터 -> 확실히 3부터 하니까 정말 잘 인식한다. 다음에 좀 더 보완해보자
-    if(ImgResult1 = 0) {        
-        SendInput, {Esc}
-        CustomSleep(20)
-        SendInput, {0} ;부활
-        CustomSleep(30)
-        MouseClick, Left, FoundX1 +10, FoundY1 + 10, 1  ;y + 10해서 링 살짝 아래로 마우스 포인트 이동동
-        CustomSleep(50)        
-        SendInput, {Enter}
-        CustomSleep(70)
-        SendInput, {Esc}
-        CustomSleep(20)
-        MsgBox, 고스트1 검색
-    } else if(ImgResult2 = 0) {
-        SendInput, {Esc}
-        CustomSleep(20)
-        SendInput, {0} ;부활
-        CustomSleep(30)
-        MouseClick, Left, FoundX2 +10, FoundY2 + 10, 1  ;y + 10해서 링 살짝 아래로 마우스 포인트 이동동
-        CustomSleep(50)        
-        SendInput, {Enter}
-        CustomSleep(70)
-        SendInput, {Esc}
-        CustomSleep(20)
-        MsgBox, 고스트2 검색
-    } else if(ImgResult3 = 0) {
-        SendInput, {Esc}
-        CustomSleep(20)
-        SendInput, {0} ;부활
-        CustomSleep(30)
-        MouseClick, Left, FoundX3 +10, FoundY3 + 10, 1  ;y + 10해서 링 살짝 아래로 마우스 포인트 이동동
-        CustomSleep(50)        
-        SendInput, {Enter}
-        CustomSleep(70)
-        SendInput, {Esc}
-        CustomSleep(20)
-        MsgBox, 고스트3 검색
-    } else if(ImgResult4 = 0) {
-        SendInput, {Esc}
-        CustomSleep(20)
-        SendInput, {0} ;부활
-        CustomSleep(30)
-        MouseClick, Left, FoundX4 +10, FoundY4 + 10, 1  ;y + 10해서 링 살짝 아래로 마우스 포인트 이동동
-        CustomSleep(50)        
-        SendInput, {Enter}
-        CustomSleep(70)
-        SendInput, {Esc}
-        CustomSleep(20)
-        MsgBox, 고스트4 검색
-    } else {
-        ;MsgBox, 못찾음
-    }
-
-    if(isTabTabOn) { ;도사라 탭탭힐 중이었으면 다시 탭탭탭
-        CustomSleep(20)
-        SendInput, {Tab}
-        CustomSleep(50)
-        SendInput, {Tab}
-        CustomSleep(50)
-    }
-    if(isChasing) { ;만약 추적중이었으면 움직이면서 좌표 검색 후 잘못된 위치를 클릭 가능하므로 이동 정지
-        TabTabChase()
-        ;CustomSleep(30)
-        ;Click, Right down ;좌클릭으로 인해 추적이 풀렸으므로 다시 우클 이동(탭탭 추적에서 우클릭 다운 하므로 주석처리)
-        CustomSleep(20)
-
-    }
-    return
-}
-
-
-
-
-
-
-
-
-
-;유령확인 테스트. 유령시 머리 위에 하얀 링 검색. -> pc와 노트북 링 이미지가 좀 다르다
-GhostCheckTest() {
-
-    CheckTabTabOn() ; 탭탭 상태인지 확인(탭탭힐 중이면 끝나고 탭탭 복구 해주기 위함)
-    CustomSleep(20)
-
-    if(isChasing) { ;만약 추적중이었으면 움직이면서 좌표 검색 후 잘못된 위치를 클릭 가능하므로 이동 정지. 아래에서 추적중이었으면 다시 탭탭이동동
-        Click, Right up
-        CustomSleep(20)
-    }
-    
-
-    Ghost1 := imgFolder . "ghost5.png"  ; 유령 머리위에 링 배경제거 한 것
-    Ghost2 := imgFolder . "ghost6.png"  ; 유령 머리위에 링 배경제거 한 것
-    Ghost3 := imgFolder . "ghost7.png"  ; 유령 머리위에 링 배경제거 한 것
+    Ghost1 := imgFolder . "ghost6.png"  ; 유령 머리위에 링 배경제거 한 것
+    Ghost2 := imgFolder . "ghost7.png"  ; 유령 머리위에 링 배경제거 한 것
+    Ghost3 := imgFolder . "ghost8.png"  ; 유령 머리위에 링 배경제거 한 것
 
     ;일단 창 크기 계산은 세로는 280쯤 빼주자(해상도에 따라 더 조절 필요할 수도). 
     ;배경색 애매한 건 그냥 그림판에서 특정색깔로 다 칠해주고 배경무시 해줬다.(아래 ED1C24는 그림판 빨강색이다)
@@ -2294,7 +2174,7 @@ GhostCheckTest() {
 
 
     ;이미지3이 제일 흔한 것 같아서 3부터 -> 확실히 3부터 하니까 정말 잘 인식한다. 다음에 좀 더 보완해보자
-    if(ImgResult1 = 0) {        
+    if(ImgResult3 = 0) {        
         SendInput, {Esc}
         CustomSleep(20)
         SendInput, {0} ;부활
@@ -2302,10 +2182,9 @@ GhostCheckTest() {
         MouseClick, Left, FoundX1 +10, FoundY1 + 10, 1  ;y + 10해서 링 살짝 아래로 마우스 포인트 이동동
         CustomSleep(50)        
         SendInput, {Enter}
-        CustomSleep(70)
+        CustomSleep(50)
         SendInput, {Esc}
         CustomSleep(20)
-        MsgBox, 고스트4 검색
     } else if(ImgResult2 = 0) {
         SendInput, {Esc}
         CustomSleep(20)
@@ -2314,11 +2193,10 @@ GhostCheckTest() {
         MouseClick, Left, FoundX2 +10, FoundY2 + 10, 1  ;y + 10해서 링 살짝 아래로 마우스 포인트 이동동
         CustomSleep(50)        
         SendInput, {Enter}
-        CustomSleep(70)
+        CustomSleep(50)
         SendInput, {Esc}
         CustomSleep(20)
-        MsgBox, 고스트5 검색
-    } else if(ImgResult3 = 0) {
+    } else if(ImgResult1 = 0) {
         SendInput, {Esc}
         CustomSleep(20)
         SendInput, {0} ;부활
@@ -2326,10 +2204,9 @@ GhostCheckTest() {
         MouseClick, Left, FoundX3 +10, FoundY3 + 10, 1  ;y + 10해서 링 살짝 아래로 마우스 포인트 이동동
         CustomSleep(50)        
         SendInput, {Enter}
-        CustomSleep(70)
+        CustomSleep(50)
         SendInput, {Esc}
         CustomSleep(20)
-        MsgBox, 고스트6 검색
     } else {
         ;MsgBox, 못찾음
     }
@@ -2350,7 +2227,6 @@ GhostCheckTest() {
     }
     return
 }
-
 
 
 
