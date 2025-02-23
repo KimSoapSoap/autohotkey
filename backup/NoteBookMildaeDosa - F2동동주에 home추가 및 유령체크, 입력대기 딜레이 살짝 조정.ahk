@@ -299,22 +299,15 @@ return
 
 ;그래도 격수 피통이 높아지면 혼힐이 나을까 싶기도 하고 hps때문에 혼힐로
 
-;수정혼 + 적은 몹수
-e:: ;혼힐 -> 수정혼 느낌으로
-HonHeal(3,2)
-return
-
-
 ;수정혼 + 적당한 몹수
-;탱커 모드에서는  2배로 해주자. 주로 1번 TabTabHealRefresh() 쓰면서 이동하므로 따로 4번 StandingHonHeal() 쓰고 다시 1번쓰고 하면서 안 하려고고
 f:: ; 
-if(isTankerMode) {
-    HonHeal(3,8)
-    return
-}
 HonHeal(3,4)
 return
 
+;수정혼 + 적은 수수
+e:: ;혼힐 -> 수정혼 느낌으로
+HonHeal(3,2)
+return
 
 ;e로 정말 짧은 혼은 비슷한 코드로 감지되지 않게 혼 격수힐 번갈아가면서하는 거 혹은 꾹 누르는 걸로로
 
@@ -324,7 +317,9 @@ return
 
 
 
+; 밀대힐은 일단 기본적으로 밀대 힐+공증 반복이다 (1차하면 백호 추가가)
 
+;-------------------------------------------------------------------------
 
 ;이렇게 하고 ahk파일 자체를 관리자 실행하니까 된다. 컴파일 하면 될지 안 될지 모르겠지만
 ;맨 앞에 딜레이 120 붙이니까(주술도 몇개는 이렇게 붙였었네) 감지 안 된 것일 수도 있겠다
@@ -1614,7 +1609,7 @@ InputWaiting() {
         
         ;부활을 타겟박스로 했으므로 다시 g키 누르는 것은 부활 시전이므로 바로 시전
         SendInput, {Enter}
-        CustomSleep(90)
+        CustomSleep(60)
 
         ReturnTabTabOn()
 
@@ -1641,7 +1636,7 @@ InputWaiting() {
 ReturnTabTabOn() {
     if(isTabTabOn) { ; 탭탭 상태였다면 탭탭으로 원상복구
         SendInput, {Esc}
-        CustomSleep(40)
+        CustomSleep(30)
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
@@ -2369,8 +2364,7 @@ GhostCheck() {
     }
 
     if(isTabTabOn) { ;도사라 탭탭힐 중이었으면 다시 탭탭탭
-        SendInput, {Esc}
-        CustomSleep(30)
+        CustomSleep(20)
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
@@ -2436,7 +2430,7 @@ GhostCheckTest() {
         CustomSleep(70)
         SendInput, {Esc}
         CustomSleep(20)
-        MsgBox, 고스트5 검색
+        MsgBox, 고스트4 검색
     } else if(ImgResult2 = 0) {
         SendInput, {Esc}
         CustomSleep(20)
@@ -2448,7 +2442,7 @@ GhostCheckTest() {
         CustomSleep(70)
         SendInput, {Esc}
         CustomSleep(20)
-        MsgBox, 고스트6 검색
+        MsgBox, 고스트5 검색
     } else if(ImgResult3 = 0) {
         SendInput, {Esc}
         CustomSleep(20)
@@ -2460,14 +2454,13 @@ GhostCheckTest() {
         CustomSleep(70)
         SendInput, {Esc}
         CustomSleep(20)
-        MsgBox, 고스트7 검색
+        MsgBox, 고스트6 검색
     } else {
         ;MsgBox, 못찾음
     }
 
     if(isTabTabOn) { ;도사라 탭탭힐 중이었으면 다시 탭탭탭
-        SendInput, {Esc}
-        CustomSleep(30)
+        CustomSleep(20)
         SendInput, {Tab}
         CustomSleep(50)
         SendInput, {Tab}
