@@ -59,15 +59,21 @@ global imgFolder := A_ScriptDir . "\img\dosa\notebook\"
 ;b 유령부활, shift + b 유령부활2(기존 유령부활이 안 될시 추가 이미지로 테스트겸 유령부활2) alt + b 셀프 무력화 3틱
 ;선택혼은 r키로 마우스 오버하면 클릭해서 혼마 건다. 밀대힐중(탭탭힐리프레쉬) 좌클릭, 휠업, 휠다운해도 선택혼 가능하다.
 
-;5번 차폐는 거의 안 쓰니 다른 걸로 바꾸든지 하자. 예를들면 파혼, 시력회복 등
-
-
 ;최근 노트북밀대 키설정. 나머지는 기존 그대로다.
 ; 1 제자리 밀대힐(내가 이동 가능),  2 종료(StopLoop)
 ; 3 이동혼힐 (내가 이동 불가능)  4 제자리 혼힐힐
 
+;5번 차폐는 거의 안 쓰니 다른 걸로 바꾸든지 하자. 예를들면 파혼, 시력회복 등
+
 ;토글은 alt + c 추적시 상하 랜덤좌표on/off (기본 on)
 ;alt + s  탱커모드 -> 공증을 힐 4틱에 한 번씩 (실제 1초에 1싸이클이 아니므로 모듈러 수치는 x2 해서 8이다 -> 4틱당 1회 공증이 됨)
+
+
+
+
+;나와 탭탭 대상 부활 말고 다른 사람을 부활 시킬 때 선택을 해야되므로 힐을 멈추고 해야된다.
+;밀대도사에도 입력대기를 도입해서 부활(대상 선택후 특정키 입력 혹은 대상 클릭하면 시전), 취소(c키 혹은 esc키)
+;이렇게 입력대기에 부활을 도입하고(힐 중에도 잠시 멈췄다가 가능. 그냥하면 부활 대상 선택하기 전에 코드 다 실행하고 다시 힐로 돌아가버림)
 
 
 global StopLoop := false
@@ -580,12 +586,23 @@ CustomSleep(190)
 SendInput, {Blind}s
 return
 
+<<<<<<< HEAD
  ;수동 부활 
 g:: ;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음z
 SendInput, {esc}
 CustomSleep(30)
 SendInput, {0}
 StopLoop := true
+=======
+ ;입력대기 
+ ;다시 g키 누르면 수동 부활 
+g:: ;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음
+if(isWaiting) { ;입력대기 상태일 땐 g키 입력
+    Send, {g}
+} else { ; 입력대기상태가 아닐 땐 입력대기 시작
+    InputWaiting()
+}
+>>>>>>> 100fc517b0d8619f5527f11c08a5452608fa6f60
 return
 
 
@@ -987,8 +1004,15 @@ SpreadHonmaRight(magicCount) { ;혼마 돌리기(오른쪽)
 ;힐 공증 반복시 클릭 or 휠업 or 휠다운시 선택혼 사용하기 위함
 ;밀대힐 중 좌클, 휠업, 휠다운 감지해서 동작을 하면 선택혼 날린다.
 ;이때 휠업다운은 드르륵 하면 연타로 들어가서 꼬일 수 있으므로 쿨다운 0.5초
+
+;입력대기 부활을 추가하기 위해 isWaiting에 따라 동작 방식 변경
 ~LButton::
+if(isWaiting) {
+    ; 대기 상태일 때 동작. 이때 g를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용
+    Send,{g}
+} else {
     LButtonClicked := true  ; 좌클릭 감지 변수 설정
+}
 return
 
 ; 휠 업 감지 핫키
@@ -1007,6 +1031,7 @@ ResetListenMouseEventCooldown:
 return
 
 
+;마우스 이벤트 감지를 해서 클릭,휠업다운이 눌러졌으면 선택혼 시전. 휠업다운은 내부쿨을 두고 드르륵 돌릴 때 연속실행 방지
 ListenMouseEvent() {
     if (LButtonClicked || WheelUpDetected || WheelDownDetected) {
         LButtonClicked := false  ; 상태 초기화
@@ -1116,9 +1141,9 @@ Rev() { ;rev에 탭탭 대상 부활과 본인부활후 다시 탭탭
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
-    CustomSleep(40)
+    CustomSleep(50)
     SendInput, {Tab}
-    CustomSleep(30)
+    CustomSleep(40)
     SendInput, {0}
     CustomSleep(200)
     SendInput, {Esc}
@@ -1142,9 +1167,9 @@ TabTabBoMu() { ; 탭탭 대상 보무 (대문자 X = 보호,  소문자 x = 무�
     SendInput, {Esc}
     CustomSleep(30)
     SendInput, {Tab}
-    CustomSleep(40)
+    CustomSleep(50)
     SendInput, {Tab}
-    CustomSleep(30)
+    CustomSleep(40)
 
     SendInput, {shift down}
     CustomSleep(40)
@@ -1535,6 +1560,97 @@ ConditionalChase() {
 
 
 
+;s : 입력대기 // c, esc: 취소 // d, 좌클릭 : 저주 헬파 공증 자힐
+InputWaiting() {    
+    IsWaiting := true    ;대기 상태 true
+
+    StopLoop := false ;초기화
+    isWrongTarget := false
+    isRiding := false
+    notEnoughMana := False
+    isTabTabOn := false
+
+
+    ;밀대힐 중이면 탭탭on인지 확인한다. -> 사실 도사는 격수를 탭탭하고 있는 경우가 많아서 딱히 MildaeHeal 조건이 아니어도
+    ;탭탭on인지 확인해주자
+
+    ;if(MildaeHeal) { ;밀대힐 중이면 탭탭온 확인
+    ;   CheckTabTabOn()
+    ;   CustomSleep(30)        
+    ;}
+    
+    CheckTabTabOn() ;탭탭on 상태 확인
+    CustomSleep(30)      
+
+    ;주술은 저주 헬파를 입력대기로 사용해서 저주로 타겟박스 잡았는데 도사는.. 부활로 하는 게 낫겠지?
+    ;일단 해보고 필요하면 변경
+
+    SendInput, {esc} 
+    CustomSleep(30)   
+    SendInput, {0} ;부활 타겟박스 띄워서 타겟 선택하는 용도.
+    CustomSleep(30)
+
+    ; Enter와 d 키 입력 대기 (10초 타임아웃)
+    Input, UserInput, V L1 T10, {g}{ESC}
+    CustomSleep(20)
+
+
+    ;---------------------입력대기중 수동부활------------------------------------------------------
+
+    ;도사는 tabtabOn 복구가 많아서 이걸 따로 함수로 만들어서 사용하든가 하자
+
+    if (ErrorLevel = "EndKey:g") { ; 입력대기중 g키 눌렀을 때(좌클릭 시에도 g입력되게 해서 마우스 좌클 선택 시전 가능하게)
+        ;MsgBox, Enter was pressed!
+        ; Enter를 눌렀을 때 실행할 로직 추가
+        
+        ;부활을 타겟박스로 했으므로 다시 g키 누르는 것은 부활 시전이므로 바로 시전
+        SendInput, {Enter}
+        CustomSleep(60)
+
+        ReturnTabTabOn()
+
+    } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
+        ;MsgBox, esc was pressed!
+        ;Esc를 눌렀을 때 실행할 로직 추가 (대기상태에서 c키 눌러도 esc임)
+        ReturnTabTabOn()
+
+    } else if (ErrorLevel = "Timeout") {
+        ;MsgBox, Time out! No key was pressed.
+        ; 타임아웃 시 실행할 로직 추가
+        ReturnTabTabOn()
+    } else {
+        ;MsgBox, Unexpected input: %ErrorLevel%  ;혹시 모를 디버깅을 위해 일단 놔뒀다가 다시 주석처리  
+    }    
+    IsWaiting := false ;초기화
+    SendInput, {Esc}
+    CustomSleep(30)
+    return
+}
+
+
+
+;도사는 isTabTabOn 상황에 따라 탭탭 복구가 많으므로 입력대기에 사용할 탭탭 복구 함수를 따로 만들었다.
+ReturnTabTabOn() {
+    if(isTabTabOn) { ; 탭탭 상태였다면 탭탭으로 원상복구
+        SendInput, {Esc}
+        CustomSleep(30)
+        SendInput, {Tab}
+        CustomSleep(50)
+        SendInput, {Tab}
+        CustomSleep(50)
+        IsWaiting := false
+    }   
+    ;만약 tabtabOn상태라면 함수 종료에 esc로 마무리 하므로 여기서 다시 탭탭해주고 isWaiting을 false로 바꿔주면서 Exit
+    Exit
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -1567,6 +1683,8 @@ CalPos() {
     winHeight := windowHeight
     return
 }
+
+
 
 
 
