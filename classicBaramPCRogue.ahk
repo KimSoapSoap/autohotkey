@@ -260,9 +260,12 @@ CustomSleep(30)
 return
 
 
- F2:: ; 동동주 마시기용, a에 동동주
- DrinkDongDongJu()
- return
+F2:: ; 자신선택 & 동동주 마시기용, a에 동동주  (타겟박스 있을 때는 자신선택이고 동동주 안 마셔지고, 타겟박스 없을 땐 동동주 마시기)
+SendInput, {Home}
+CustomSleep(30)
+DrinkDongDongJu()
+return
+
 
  DrinkDongDongJu() { ;동동주 마시기용, a에 동동주
     Loop, 1
