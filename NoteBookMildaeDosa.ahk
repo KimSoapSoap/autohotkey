@@ -586,14 +586,6 @@ CustomSleep(190)
 SendInput, {Blind}s
 return
 
-<<<<<<< HEAD
- ;수동 부활 
-g:: ;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음z
-SendInput, {esc}
-CustomSleep(30)
-SendInput, {0}
-StopLoop := true
-=======
  ;입력대기 
  ;다시 g키 누르면 수동 부활 
 g:: ;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음
@@ -602,7 +594,6 @@ if(isWaiting) { ;입력대기 상태일 땐 g키 입력
 } else { ; 입력대기상태가 아닐 땐 입력대기 시작
     InputWaiting()
 }
->>>>>>> 100fc517b0d8619f5527f11c08a5452608fa6f60
 return
 
 
