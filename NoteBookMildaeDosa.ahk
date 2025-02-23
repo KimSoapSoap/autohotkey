@@ -581,7 +581,7 @@ SendInput, {Blind}s
 return
 
  ;수동 부활 
-g:: ;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음
+g:: ;탭탭 중일 때 탭탭대상이 아닌 대상 수동부활을 위해 esc 넣음z
 SendInput, {esc}
 CustomSleep(30)
 SendInput, {0}
