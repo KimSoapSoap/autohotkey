@@ -1617,29 +1617,34 @@ InputWaiting() {
         ;부활을 타겟박스로 했으므로 다시 g키 누르는 것은 부활 시전이므로 바로 시전
         SendInput, {Enter}
         CustomSleep(120)
-
-        ReturnTabTabOn()
-
     } else if (ErrorLevel = "EndKey:ESCAPE") { ; 취소
         ;MsgBox, esc was pressed!
         ;Esc를 눌렀을 때 실행할 로직 추가 (대기상태에서 c키 눌러도 esc임)
-        ReturnTabTabOn()
     } else if (ErrorLevel = "Timeout") {
         ;MsgBox, Time out! No key was pressed.
         ; 타임아웃 시 실행할 로직 추가
-        ReturnTabTabOn()
     } else {
         ;MsgBox, Unexpected input: %ErrorLevel%  ;혹시 모를 디버깅을 위해 일단 놔뒀다가 다시 주석처리  
     }    
-    IsWaiting := false ;초기화
-    SendInput, {Esc}
     CustomSleep(30)
+    if(isTabTabOn) { ; 탭탭 상태였다면 탭탭으로 원상복구
+        SendInput, {Esc}
+        CustomSleep(30)
+        SendInput, {Tab}
+        CustomSleep(50)
+        SendInput, {Tab}
+        CustomSleep(50)
+    } else {
+        SendInput, {Esc}
+        CustomSleep(30)
+    }    
+    IsWaiting := false ;초기화
     return
 }
 
 
 
-;도사는 isTabTabOn 상황에 따라 탭탭 복구가 많으므로 입력대기에 사용할 탭탭 복구 함수를 따로 만들었다.
+;도사는 isTabTabOn 상황에 따라 탭탭 복구가 많으므로 입력대기에 사용할 탭탭 복구 함수를 따로 만들었긴 한데 아직 안 쓰는 중
 ReturnTabTabOn() {
     if(isTabTabOn) { ; 탭탭 상태였다면 탭탭으로 원상복구
         SendInput, {Esc}
@@ -1648,10 +1653,6 @@ ReturnTabTabOn() {
         CustomSleep(50)
         SendInput, {Tab}
         CustomSleep(50)
-        IsWaiting := false
-        CustomSleep(100) ; 후딜로 좀 안정을 주자자
-        ;만약 tabtabOn상태라면 함수 종료에 esc로 마무리 하므로 여기서 다시 탭탭해주고 isWaiting을 false로 바꿔주면서 Exit
-        Exit
     }   
     Return
 }
