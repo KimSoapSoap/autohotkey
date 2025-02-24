@@ -2091,6 +2091,12 @@ PoisonJJul() {
 ;HellFireForAuto() 마지막에 마무리 할 때 마비 돌리는 걸 넣어줬는데 조건에 따라 마비 안 돌리게 처리(잘못된 대상, 본인 사망, 한 방 헬파시)
 
 
+;자동헬파 보완 아이디어 -> 한 방 아닌 녀석은 어그로 튀어서 죽어버린다. 몹을 잡으면 타겟이 나한테 오는데
+;이때 시전하면 걸리지 않습니다 라고 isWrongTarget으로 판별 가능하기 때문에
+;변수 하나 만들어서 처음부터 Left 하지 말고 isWrongTarget조건문 안에 Left 넣어줘도 괜찮겠다.
+
+; -> 마비 돌리면 말짱 도루묵이다. 대상 고정시키려면 마비 돌리기를 빼자.
+
 ;자동 헬파이어 사냥
 HellFireHunt() {
     StopLoop := false
@@ -2098,18 +2104,23 @@ HellFireHunt() {
         if(StopLoop) {
             break
         }
-        if(isDead) {
-            break
-        }
+       
         SendInput, {ESC}
         CustomSleep(20)
         SendInput, {4}
         CustomSleep(30)
-        SendInput, {Left}
-        CustomSleep(50)  
+        if(isWrongTarget) { ; 원래 조건 없이 Left였다.
+            SendInput, {Left}           
+            CustomSleep(50)  
+        }
         SendInput, {Enter}
         HellFireForAuto()
-        CustomSleep(100)    
+        CustomSleep(50)  
+        ;isDead 조건이 아래에 있는 것은 isDead의 true false를 결정하는 DeathCheck()가 HellFireForAuto() 내부에 있기 때문이다.
+        ;isDead 조건이 HellFireForAuto()보다 위에 있다면 한 번 isDead가 true가 되면 부활을 해도 isDead가 true 상태라서 먹통됨
+        if(isDead) {
+            break
+        }  
     }
     return
 }
@@ -2122,13 +2133,7 @@ OneShotHellFire() {
     loop, 5 { ;몇번 반복 후 한 번이라도 헬파 쏘면(HellFireForAuto에서 헬파 시전시 OneShotHellFireCount 증가) 카운팅 조건으로 바로 정지. 
         if(StopLoop) {
             break
-        }
-        if(isDead) { ;죽으면 당연히 멈춤. 잘못된 대상 이런 건 hellFireForAuto() 에서 판별
-            break
-        }
-        if(OneShotHellFireCount > 0) {
-            break
-        }
+        }      
         SendInput, {ESC}
         CustomSleep(20)
         SendInput, {4}
@@ -2137,7 +2142,16 @@ OneShotHellFire() {
         CustomSleep(50)  
         SendInput, {Enter}
         HellFireForAuto()
-        CustomSleep(50)    
+        CustomSleep(50) 
+
+        ;isDead 조건이 아래에 있는 것은 isDead의 true false를 결정하는 DeathCheck()가 HellFireForAuto() 내부에 있기 때문이다.
+        ;isDead 조건이 HellFireForAuto()보다 위에 있다면 한 번 isDead가 true가 되면 부활을 해도 isDead가 true 상태라서 먹통됨
+        if(isDead) { ;죽으면 당연히 멈춤. 잘못된 대상 이런 건 hellFireForAuto() 에서 판별
+            break
+        }
+        if(OneShotHellFireCount > 0) {
+            break
+        }       
     }
     isOneShotHellFire := false
     OneShotHellFireCount := 0
@@ -2554,7 +2568,8 @@ HellFireForAuto() {
         ;break를 해주되 함수 종료 전 마비 돌리는 것을 isWrongTarget 혹은 isDead일 경우 마비 안 돌리는 걸로
         if(isWrongTarget) {
             break
-        } else if(isDead) { ; 사망했으면 탈출
+        } 
+        if(isDead) { ; 사망했으면 탈출
             break
         }
 
