@@ -768,7 +768,6 @@ SelfTapTapHeal(count) {
         CustomSleep(50)        
         Send, {1}
         CustomSleep(50)
-        
     }
     SendInput, {Esc}
     CustomSleep(30)
@@ -1094,6 +1093,8 @@ SpreadCurseAndChum(count) {
 
 
 
+;4방향 마비같은 경우 원래 마비2번 혹은 3번 걸어서 마비 안 걸리는 거 방지했는데 요즘 100퍼 걸리는 것 같아서 그냥 한 번씩만.
+
 
 ;캐릭 4방위 저주 후 마비
 FourWayCurseAndParalysis() { 
@@ -1109,7 +1110,7 @@ FourWayCurseAndParalysis() {
     SendInput, {Enter}
     CustomSleep(90)
     StopLoop := false
-    loop, 3
+    loop, 1
         {
             if (StopLoop)
                 {            
@@ -1136,7 +1137,7 @@ FourWayCurseAndParalysis() {
     CustomSleep(90)
 
 
-    loop, 3
+    loop, 1
         {
             if (StopLoop)
                 {            
@@ -1162,7 +1163,7 @@ FourWayCurseAndParalysis() {
     SendInput, {Enter}
     CustomSleep(90)
 
-    loop, 3
+    loop, 1
         {
             if (StopLoop)
                 {            
@@ -1188,7 +1189,7 @@ FourWayCurseAndParalysis() {
     SendInput, {Enter}
     CustomSleep(90)
 
-    loop, 3
+    loop, 1
         {
             if (StopLoop)
                 {            
@@ -1215,7 +1216,7 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-        loop, 2
+        loop, 1
             {
                 if (StopLoop)
                     {            
@@ -1236,7 +1237,7 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
         
         StopLoopCheck()
 
-        loop, 2
+        loop, 1
             {
                 if (StopLoop)
                     {            
@@ -1257,7 +1258,7 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
 
         StopLoopCheck()
         
-        loop, 2
+        loop, 1
             {
                 if (StopLoop)
                     {            
@@ -1278,7 +1279,7 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
 
         StopLoopCheck()
         
-        loop, 2
+        loop, 1
             {
                 if (StopLoop)
                     {            
@@ -1316,7 +1317,7 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
     SendInput, {Enter}
     CustomSleep(90)
     StopLoop := false
-    loop, 2
+    loop, 1
         {
             if (StopLoop)
                 {            
@@ -1342,7 +1343,7 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
     CustomSleep(90)
 
 
-    loop, 2
+    loop, 1
         {
             if (StopLoop)
                 {            
@@ -1368,7 +1369,7 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
     SendInput, {Enter}
     CustomSleep(90)
 
-    loop, 2
+    loop, 1
         {
             if (StopLoop)
                 {            
@@ -1394,7 +1395,7 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
     SendInput, {Enter}
     CustomSleep(90)
 
-    loop, 2
+    loop, 1
         {
             if (StopLoop)
                 {            
