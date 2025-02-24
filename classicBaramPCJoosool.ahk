@@ -344,6 +344,17 @@ if (IsWaiting) {
 return
 
 
+;입력대기시 엔터키도 헬파시전으로.
+Enter::
+if (IsWaiting) {
+    ; 대기 상태일 때 동작. 이때 d를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용해야됨
+    Send, {d}
+    return
+} 
+SendInput, {Enter}
+return
+
+
 g::  ;중독만 돌리기.
 SpreadPoison(magicCount)
 StopLoop := true
