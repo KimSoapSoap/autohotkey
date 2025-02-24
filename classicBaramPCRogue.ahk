@@ -151,6 +151,7 @@ AtBaekGum() {
 
 ;우측 컨트롤 키(키 히스토리로)
 SC11D:: ;도적 한 손 드리블할 때. 우측 ctrl로 비영승보 사용. 투컴시 필요할까봐 말타기도 넣음
+;자동 백검 날릴 때 한손컨시 비영승보를 위한 것이므로 StopLoop 넣지 않는다.(주수리는 넣음)
 SendInput, {Blind}r 
 CustomSleep(20)
 SendInput, {Blind}1
