@@ -5,9 +5,10 @@ global magicCount := 12
 ;-> 입력대기 헬파쏘고 자힐하므로 굳이 자힐첨첨 자힐 바꿀 필요 없다.
 
 ;토글
-; -> 승마사냥 : alt + r
-; -> 숲지대 : alt + f
-; isRidingHunt,  isAtForest 을 바꿔준다.
+; -> 승마사냥 : alt + r    기본 false (isRidingHunt를 변경)   
+; -> 숲지대 : alt + f    기본 false (isAtForest 를 변경)
+; -> 입력대기 헬파,삼매후 자힐 : alt + s  기본 사용 (inputWaitingSelfHeal 을 변경)
+  
 
 
 ;삼매 진형 만들어놨는데 마비가 25초 지속이므로 삼매쿨보다 짧게 남았다면 그 자리에 굳히기로 절망을 걸어두면 된다.
@@ -185,6 +186,8 @@ global isRidingHunt := false
 global isAtForest := false 
 
 
+;입력대기 헬파이어, 삼매진화 사용 후 셀프힐 사용여부. 기본 사용이다.
+global inputWaitingSelfHeal := true
 
 
 
@@ -273,6 +276,10 @@ return
 ToggleForestHunt()
 return
 
+!s::
+ToggleInputWaitingSelfHeal()
+return
+
 
 ;저주 마비 중독 등 얼마나 돌릴지 신극지방 등 사냥터마다 단독 사용시 카운트를 다르게 해줘야 되므로 최상단에 배치
 ;몬스터들 제법 몰린 곳에서도 사용할 수 있게끔 기본 카운트 20, 신극지방 갈 때는 깔끔하게 6정도
@@ -341,6 +348,17 @@ if (IsWaiting) {
     Send, {d}
     return
 }
+return
+
+
+;입력대기시 엔터키도 헬파시전으로.
+Enter::
+if (IsWaiting) {
+    ; 대기 상태일 때 동작. 이때 d를 누르면 Enter 입력이 되게 했다. SendInput 말고 Send를 사용해야됨
+    Send, {d}
+    return
+} 
+SendInput, {Enter}
 return
 
 
@@ -417,9 +435,30 @@ StopLoop := true
 return
 
 
+b:: ; 자동 헬파 사냥 -> 입력대기에서 헬파 가져와서 사용
+StopLoop := false
+loop, 50 {
+    if(StopLoop) {
+        break
+    }
+    if(isDead) {
+        break
+    }
+    SendInput, {ESC}
+    CustomSleep(20)
+    SendInput, {4}
+    CustomSleep(30)
+    SendInput, {Left}
+    CustomSleep(50)  
+    SendInput, {Enter}
+    HellFireForAuto()
+    CustomSleep(50)    
+}
+return
 
 
-b:: ;중독첨첨 사냥 종합합
+
++b:: ;중독첨첨 사냥 종합합
 ; 보무 걸고 (4방향 마비저주, 중독첨2, 저주첨2)x1   (공증, 중독첨2+자힐첨1)x4
 ;여기 중독 저주 등 x1 회수는 20이다.
 if(isAtForest) {
@@ -433,22 +472,22 @@ return
 
 
 
-; 중독사냥 종합(마지막에 첨첨 마무리). 원래 v였는데 자주 안 쓰므로 첨첨사냥인 g에서 shift 붙여서 shift + g로 변경
+!b:: ;쩔용 중독 저주 마비 돌리기
+PoisonJJul()
+StopLoop := true
+return
+
+
+
+; 중독사냥 종합(마지막에 첨첨 마무리). 
 ;보무, (4방향 마비저주주 + 중독 돌리기 4번) x4 이후 중독첨2 저주첨2 자힐첨2
 ;이것도 맨 처음 한 번은 중독2에 저주2 어떨까 싶음
-+b::
++^b::
 CustomSleep(190) ; 쉬프트 + g 누르고 키 떼는 딜레이
 PoisonHunt()
 StopLoop := true
 return
 
-
-
-
-!b:: ;쩔용 중독 저주 마비 돌리기
-PoisonJJul()
-StopLoop := true
-return
 
 
 
@@ -663,6 +702,21 @@ ToggleForestHunt() {
     }
     return
 }
+
+ToggleInputWaitingSelfHeal() {
+    if (inputWaitingSelfHeal) {
+        ; 입력대기 헬파, 삼매 사용후 자힐 끄기
+        inputWaitingSelfHeal := false
+        MsgBox, 입력대기 헬파, 삼매 사용후 자힐OFF
+    } else {
+         ; 입력대기 헬파, 삼매 사용후 자힐 켜기
+         inputWaitingSelfHeal := true
+         MsgBox, 입력대기 헬파, 삼매 사용후 자힐ON
+    }
+    return
+}
+
+
 
 
 DrinkDongDongJu() { ;동동주 마시기용, a에 동동주
@@ -1229,8 +1283,8 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
                 CustomSleep(30)
                 SendInput, {Left}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1250,8 +1304,8 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
                 CustomSleep(30)
                 SendInput, {Right}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1271,8 +1325,8 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
                 CustomSleep(30)
                 SendInput, {Up}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1292,8 +1346,8 @@ FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으�
                 CustomSleep(30)
                 SendInput, {Down}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1314,8 +1368,10 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
     CustomSleep(30)
     SendInput, {Left}
     CustomSleep(30)
-    SendInput, {Enter}
-    CustomSleep(90)
+    SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+    CustomSleep(30)
+    SendInput, {esc}
+    CustomSleep(30)
     StopLoop := false
     loop, 1
         {
@@ -1326,8 +1382,8 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-            CustomSleep(60)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+            CustomSleep(30)
             SendInput, {esc}
             CustomSleep(30)
         }
@@ -1339,8 +1395,10 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
     CustomSleep(30)
     SendInput,  {Right}
     CustomSleep(30)
-    SendInput, {Enter}
-    CustomSleep(90)
+    SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+    CustomSleep(30)
+    SendInput, {esc}
+    CustomSleep(30)
 
 
     loop, 1
@@ -1352,8 +1410,8 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-            CustomSleep(60)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+            CustomSleep(30)
             SendInput, {esc}
             CustomSleep(30)
         }
@@ -1366,8 +1424,10 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
     CustomSleep(30)
     SendInput, {Up}
     CustomSleep(30)
-    SendInput, {Enter}
-    CustomSleep(90)
+    SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+    CustomSleep(30)
+    SendInput, {esc}
+    CustomSleep(30)
 
     loop, 1
         {
@@ -1378,8 +1438,8 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-            CustomSleep(60)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+            CustomSleep(30)
             SendInput, {esc}
             CustomSleep(30)
         }
@@ -1392,8 +1452,10 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
     CustomSleep(30)
     SendInput, {Down}
     CustomSleep(30)
-    SendInput, {Enter}
-    CustomSleep(90)
+    SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+    CustomSleep(30)
+    SendInput, {esc}
+    CustomSleep(30)
 
     loop, 1
         {
@@ -1404,8 +1466,8 @@ FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
                 }
             SendInput, 6
             CustomSleep(30)
-            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-            CustomSleep(60)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+            CustomSleep(30)
             SendInput, {esc}
             CustomSleep(30)
         }
@@ -1435,8 +1497,8 @@ FourWayVitality() {
                 CustomSleep(30)
                 SendInput, {Left}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1456,8 +1518,8 @@ FourWayVitality() {
                 CustomSleep(30)
                 SendInput, {Right}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1477,8 +1539,8 @@ FourWayVitality() {
                 CustomSleep(30)
                 SendInput, {Up}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1498,8 +1560,8 @@ FourWayVitality() {
                 CustomSleep(30)
                 SendInput, {Down}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1527,8 +1589,8 @@ FourWayCurse() {
                 CustomSleep(30)
                 SendInput, {Left}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1548,8 +1610,8 @@ FourWayCurse() {
                 CustomSleep(30)
                 SendInput, {Right}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1569,8 +1631,8 @@ FourWayCurse() {
                 CustomSleep(30)
                 SendInput, {Up}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -1590,8 +1652,8 @@ FourWayCurse() {
                 CustomSleep(30)
                 SendInput, {Down}
                 CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-                CustomSleep(60)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
                 SendInput, {esc}
                 CustomSleep(30)
             }
@@ -2144,13 +2206,13 @@ InputWaiting() {
             SendInput, {Esc}
             CustomSleep(30)    
             SendInput, {4} ;저주
-            CustomSleep(50)
+            CustomSleep(30)
             SendInput, {Enter} 
-            CustomSleep(100)
+            CustomSleep(30) ; 100 -> 30
             SendInput, {Blind}2 ; 헬파 
             CustomSleep(30)
             SendInput, {Enter}
-            CustomSleep(90) 
+            CustomSleep(30)  ; 90 - >30
             if(isTabTabOn) { ; 탭탭 상태였다면 탭탭으로 원상복구
                 SendInput, {Esc}
                 CustomSleep(30)
@@ -2184,7 +2246,7 @@ InputWaiting() {
         SendInput, {4} ;저주
         CustomSleep(30) ; 후딜 50에서 30으로 바꿔줌.
         SendInput, {Enter} ; 
-        CustomSleep(60) ;원래 100에서 60으로 줄임        
+        CustomSleep(30) ;원래 100에서 60으로 줄임  -> 다시 30으로 줄임
 
         ;헬파가 씹히는 경우가 생겨서 후딜을 늘리고 후딜 늘리는 걸로는 고장나는 경우가 생겨서 반복 재시전을 만들었다.
         
@@ -2196,6 +2258,8 @@ InputWaiting() {
 
             ;헬파 시전 이후 공증 후 빠른 힐을 위해 각종 함수 사이에 후딜을 빼봤다. 오작동하면 다시 후딜 넣을 것
             StopLoopCheck()
+            ;CustomSleep(20)
+            DeathCheck() ; 본인 사망 확인
             ;CustomSleep(20)
             CheckFullMana() ; 풀마나 확인             
             ;CustomSleep(20)
@@ -2213,6 +2277,9 @@ InputWaiting() {
             } else if(isRiding) { ;헬파 쓸 때 말에 타버려서 말 탄 상태 시전하면 루프 탈출
                 break
                 CustomSleep(20)
+            } else if(isDead) { ; 사망했으면 탈출
+                break
+                CustomSleep(20)
             }
 
             ;풀마나 -> 공증하고 온 거면 힐 쓰고 마무리. 공증 안 하고 온 것 -> 헬파 안 썼음 -> 헬파 시전
@@ -2226,7 +2293,9 @@ InputWaiting() {
                 ;0부터 시작해서 헬파이어 시도할 때 +1씩 해준다. 공증 후 풀마나로 와서 헬파이어 시도 안 했으면 조건에 따라 헬파이어 시전
                 ;만약 현재 마나로 헬파이어 바로 시전하고 싶다면 if(isFullMana)조건 위에 if(waitingHellFireCount==0) 조건으로 헬파 시전
                 if(isRefreshed && waitingHellFireCount > 0) { 
-                    SelfTapTapHeal(3)
+                    if(inputWaitingSelfHeal) {
+                        SelfTapTapHeal(3)
+                    }
                     CustomSleep(20)
                     ;이때 말 타고 있었으면 말에 다시 타게 r키 탑승
                     SendInput, {Blind}r
@@ -2235,7 +2304,7 @@ InputWaiting() {
 
                     if(waitingHellFireCount >0) { ;첫 헬파쐈는데 공증 없이 다시 풀마나로 왔다는 것은 쿨타임이라는 것이다. 쿨일시 마비(혹은 절망) 쏘고 헬파
                         ;어차피 마비나 절망 돌려놓고 할 가능성이 높은데 일단 써보고 별로면 이 if문은 빼자.
-                        loop, 2{
+                        loop, 1 { ;마비 100퍼 같아서 2에서 1로 변경
                             if(isAtForest) {
                                 SendInput, {7} ;숲지대일시 절망
                             } else {
@@ -2243,7 +2312,7 @@ InputWaiting() {
                             }
                             CustomSleep(30)
                             SendInput, {Enter}
-                            CustomSleep(90)                          
+                            CustomSleep(30)   ;90 -> 30         
                         }
                     }
                     ;헬파를 말에다가 쏠 경우 급하게 중단 눌렀을 때 헬파 직전에 멈추기 위함
@@ -2269,7 +2338,7 @@ InputWaiting() {
                 
                 ;풀마나 아니라서 공증하고 헬파 날릴 때 공증 하기 전 마비(혹은 혼돈으로 바꾸든가)x3 걸고 공증 시도
                 if(waitingHellFireCount==0) {
-                    loop, 2{
+                    loop, 1{ ;마비 100퍼 같아서 2에서 1로 변경
                         if(isAtForest) {
                             SendInput, {7} ;숲지대일시 절망
                         } else {
@@ -2277,7 +2346,7 @@ InputWaiting() {
                         }
                         CustomSleep(30)
                         SendInput, {Enter}
-                        CustomSleep(90)
+                        CustomSleep(30) ;90 -> 30
                     }
                 }
                SendInput, {3} ;공증
@@ -2336,7 +2405,9 @@ InputWaiting() {
         ;일단 이렇게 써보고 시전 안 됐을 때 공증되는 경우가 생기면 마나체크 후 0이나 low면(사용 직후 마나젠 됐다면) 공증
         RestoreMana()
         CustomSleep(30)
-        SelfTapTapHeal(3)
+        if(inputWaitingSelfHeal) {
+            SelfTapTapHeal(3)
+        }
         CustomSleep(50)
         SendInput, {Blind}r ; 승마사냥 중이면 다시 말에 타기 위함
 
@@ -2363,6 +2434,135 @@ InputWaiting() {
     CustomSleep(30)
     return
 }
+
+
+
+
+
+
+
+
+
+;잠깐 오토 헬파 날리기 위해 입력대기 헬파이어 따옴
+;말에서 내리는 액션은 다 뻇고 마무리 자힐도 뺐다.  저주걸고 헬파 쏘고 공증 후 종료되는 것
+;코드 설명 주석은 입력대기 헬파이어꺼 코드 그대로 복사해서 몇 개만 상황에 맞게 바꾼 것이므로 긴 설명은 지웠음.
+;필요하면 입력대기 헬파 참고
+HellFireForAuto() {
+
+    StopLoop := false ;초기화
+    isRefreshed := false
+    waitingHellFireCount := 0
+    isWrongTarget := false
+    notEnoughMana := False
+    isTabTabOn := false
+
+    SendInput, {Esc}
+    CustomSleep(20) 
+
+
+    SendInput, {4} ;저주
+    CustomSleep(30) 
+    SendInput, {Enter} ; 
+    CustomSleep(30) ;원래 100에서 60으로 줄임  -> 30으로 줄여봄
+
+
+    Loop ,20 { ;적당한 반복수
+
+        StopLoopCheck()
+        DeathCheck() ; 본인 사망 확인
+        CheckFullMana() ; 풀마나 확인             
+        CheckWrongTarget() ; 걸리지 않는 잘못된 대상이면 중단
+
+        
+        ;잘못된 대상이거나 사망했을 때 break로 Loop 탈출하면 종료 전에 마비 돌리는 걸 넣어뒀는데
+        ;잘못된 대상이거나 사망시에도 마비를 돌리기 때문에 잘못된 대상일 경우 꼬일 수 있다.
+        ;그렇다고 Exit를 넣으면 안 되는 이유는 아예 실행중인 함수가 모두 종료된다. 자동헬파를 포함한 루프가 도는 함수도 종료된다.
+        ;break를 해주되 함수 종료 전 마비 돌리는 것을 isWrongTarget 혹은 isDead일 경우 마비 안 돌리는 걸로
+        if(isWrongTarget) {
+            break
+        } else if(isDead) { ; 사망했으면 탈출
+            break
+        }
+
+
+        if(isFullMana) { ; 풀마나 상태일 때 (공력증강 or 헬파 씹힘)
+            if(isRefreshed && waitingHellFireCount > 0) { 
+                ;SelfTapTapHeal(3)   ;오토용이라 자힐 뺌
+                CustomSleep(20)
+                Break
+            } else { ;풀마나인데 공증 거친 것이 아니면 헬파 시전 안 된 것이므로 다시 루프 반복되면서 자힐로 안 가고 헬파로 다시 온다.            
+
+                if(waitingHellFireCount >0) { ;첫 헬파쐈는데 공증 없이 다시 풀마나로 왔다는 것은 쿨타임이라는 것이다. 쿨일시 마비(혹은 절망) 쏘고 헬파
+                    ;어차피 마비나 절망 돌려놓고 할 가능성이 높은데 일단 써보고 별로면 이 if문은 빼자.
+                    loop, 1 { ;마비 100퍼 같아서 2에서 1로 변경
+                        if(isAtForest) {
+                            SendInput, {7} ;숲지대일시 절망
+                        } else {
+                            SendInput, {6} ;마비                                
+                        }
+                        CustomSleep(30)
+                        SendInput, {Enter}
+                        CustomSleep(90)                          
+                    }
+                }
+                ;헬파를 말에다가 쏠 경우 급하게 중단 눌렀을 때 헬파 직전에 멈추기 위함
+                if(StopLoop) {
+                    break
+                }
+                SendInput, {Blind}2 ; 헬파 
+                CustomSleep(30)
+                SendInput, {Enter}                                        
+                CustomSleep(150)  ; 원래 후딜 90 -> 150으로 늘림. 헬파를 사용하고 마나를 소모했어도 루프 돌아가서 위에 CheckFullMana()에서 아직 풀마나로 인지해서 다시 헬파로 들어와서 후딜 150(아래 CheckManaZero()도 마찬가지)
+                CheckManaZero() ; 마나 0 확인(페이백x인지 확인) 원래 헬파 뒤에 두는 게 맞는데 한 번 페이백 없이 isManaZero가 true가 되면 공증 성공 이후에도 true로 남아서 아래 동동주 공증 더하게 됨.                    
+                CustomSleep(20)
+                
+                waitingHellFireCount++
+                isRefreshed := false
+            }                 
+        } else {  ;풀마나 아닐 때(현재 로직으로는 헬파 썼는지 알 수 없음). 공증 -> 마나부족하면 -> 동동주 마시고 다시 공증
+            ;풀마나 아니라서 공증하고 헬파 날릴 때 공증 하기 전 마비혹은절망 걸고 공증 시도
+            if(waitingHellFireCount==0) {
+                loop, 1{ ;마비 100퍼 같아서 2에서 1로 변경
+                    if(isAtForest) {
+                        SendInput, {7} ;숲지대일시 절망
+                    } else {
+                        SendInput, {6} ;마비                                
+                    }
+                    CustomSleep(30)
+                    SendInput, {Enter}
+                    CustomSleep(90)
+                }
+            }
+            SendInput, {3} ;공증
+            CustomSleep(150) ; 공증 이후에 그냥 30 이정도 후딜만 줬었는데 마나량 확인할 때는 공증 성공시 마나 회복한 것을 인지할 후딜을 150은 줘야한다(헬파 사용시에도 마찬가지)
+            CheckEnoughMana()
+            CustomSleep(20)               
+            if(notEnoughMana || isManaZero) { ; 마나가 부족하다면 혹은 마나가 0이라면(헬파 페이백x)동동주 마시고 다시 공력증강 시전
+                DrinkDongDongJu()
+                CustomSleep(70)
+                SendInput, {3}
+                CustomSleep(150) ; 공증 이후 루프 반복될 때 풀마나인지 확인하는 함수가 있는데 공증 성공시 회복된 마나 인지할 정도의 후딜을 줬다. 기존 50 -> 100에서 다시 150으로
+            }           
+            ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용                
+            isRefreshed := true
+            
+        }        
+        
+    }
+isRefreshed := false
+SendInput, {Esc}
+CustomSleep(20)
+
+;위에서 잘못된 대상. 즉 유저를 대상으로 했을 시 또는 본인사망일 경우 마비 안 돌리고 종료
+if(isWrongTarget || isDead) {
+    return
+}
+
+SpreadParalysis(16) ; 헬파 한 번 쐈으면 다시 쏘기 전에 마비 한 번 돌린다.(위에서 잘못된 대상이거나 사망시 break가 아니라 Exit로 마비 돌리기 안 하고 종료)
+return
+}
+
+
 
 
 
@@ -2940,11 +3140,11 @@ return
 
 
 
-DeathCheck() {
+DeathCheck() { ;본인 사망 확인
     isDead := false
     CalPos() ;현재 활성창 우측하단 좌표 계산
 
-    ;SendInput, {Blind}0 ; 도사 본인 유령 체크하는 것이라서 격수는 알 수 없기에 일단 부활 시전 한 번 하고(탭탭상황) 도사 유령확인. 꼬이면 뺸다
+    ;SendInput, {Blind}0 ; 주술이라서 격수 부활 뺌 (도사는 본인 부활은 본인 사망 확인 후 사용이지만 격수는 그냥 일단 쓰고 봄)
     death := imgFolder . "healthzero.png"
 
     ImageSearch, FoundX1, FoundY1, startStatusBarX, startStatusBarY, winEndX, winEndY, %death% ;유령상태
