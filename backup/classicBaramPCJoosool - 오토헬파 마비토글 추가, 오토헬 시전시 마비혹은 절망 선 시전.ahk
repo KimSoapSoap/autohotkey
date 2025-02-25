@@ -413,12 +413,6 @@ SpreadParalysis(magicCount)
 StopLoop := true
 return
 
-+c:: ;활력 후 마비 돌리기
-CustomSleep(160) ; 쉬프트 조합 방지 후딜 (쉬프트 떼는 시간)
-SpreadVitalityAndParalysis(magicCount)
-StopLoop := true
-return
-
 
 
 
@@ -949,46 +943,6 @@ Despair() {  ;절망
 
 
 
-; 4방향 스킬은 전후좌우 4방향 시전이기 때문에 몇개 시전을 안 해서 후딜을 30 30 으로 해도 되지만
-;Spread처럼 뿌리는 것은 엔터, esc의 후딜을 60, 30 으로 해서 틱당 시전횟수를 너무 벗어나지 않게 해준다.(씹힘 방지)
-;테스트 해보니까 Spread처럼 뿌리는 것도 스킬버튼과 방향키 누를 때 후딜이 있어서 엔터 esc를 30 30 해도 되는 것 같다.(안전빵 40 30)
-;일단 활력 마비같은 거 말고 저주 돌리기 마비돌리기 이런 건 40, 30 해보고 씹히면 60, 30으로 복구
-
-
-;근데 확실히 활력 후 마비같이 스킬 쓰고 뒤에 방향키 없이 단순 스킬 엔터로 이어서 쓰는 건 
-;30 30 하면 활력 마비 활력 마비가 아니라 중간에 활력 활력 이런식으로 마비가 씹히는 것이 확인됐다. 50 30해도 마찬가지. 60 30이 안전빵
-;그럼 활력 마비에서 활력은 60 30하고 뒤에 마비는 30 30 해도 되려나? -> 마비마비가 생기더라. 60 30 ㄱㄱ
-
-
-
-
-;마비 돌리기
-SpreadParalysis(count) {
-    SendInput, {Esc}
-    CustomSleep(30)
-    StopLoop := false
-    loop, %count%
-    {
-        if (StopLoop)
-            {            
-                Break
-                CustomSleep(20)
-            }
-        SendInput, 6
-        CustomSleep(30)
-        SendInput, { left }
-        CustomSleep(30)
-        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-        CustomSleep(40)
-        SendInput, {esc}
-        CustomSleep(30)
-    }
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
 SpreadVitality(count) { ;활력 돌리기
     SendInput, {Esc}
     CustomSleep(30)
@@ -1005,17 +959,19 @@ SpreadVitality(count) { ;활력 돌리기
         SendInput, { left }
         CustomSleep(30)
         SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-        CustomSleep(40)
+        CustomSleep(60)
         SendInput, {esc}
         CustomSleep(30)
     }
     SendInput, {Esc}
     CustomSleep(20)
     return
-}
+    }
 
 
-SpreadVitalityAndParalysis(count) {
+
+
+SpreadParalysis(count) {
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
@@ -1026,16 +982,9 @@ SpreadVitalityAndParalysis(count) {
                 Break
                 CustomSleep(20)
             }
-        SendInput, 8 ;활력
+        SendInput, 6
         CustomSleep(30)
         SendInput, { left }
-        CustomSleep(30)
-        SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-        CustomSleep(60)
-        SendInput, {esc}
-        CustomSleep(30)
-
-        SendInput, 6 ;마비
         CustomSleep(30)
         SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
         CustomSleep(60)
@@ -1046,8 +995,6 @@ SpreadVitalityAndParalysis(count) {
     CustomSleep(20)
     return
 }
-
-
 
 
 
@@ -1072,7 +1019,7 @@ SpreadParalysisAndChum(count) { ;마비 돌리기 + 첨
         SendInput, { left }
         CustomSleep(30)
         SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-        CustomSleep(40)
+        CustomSleep(60)
         SendInput, {esc}
         CustomSleep(30)
     }
@@ -1103,7 +1050,7 @@ SpreadPoison(count) ;중독만 돌리기
         SendInput, { left }
         CustomSleep(30)
         SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-        CustomSleep(40)
+        CustomSleep(60)
         SendInput, {esc}
         CustomSleep(30)
     }
@@ -1138,7 +1085,7 @@ SpreadPoisonAndChum(count) ;중독 돌리기 + 첨
         SendInput, { left }
         CustomSleep(30)
         SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-        CustomSleep(40)
+        CustomSleep(60)
         SendInput, {esc}
         CustomSleep(30)
     }
@@ -1171,6 +1118,7 @@ SpreadPoisonAndChum(count) ;중독 돌리기 + 첨
 
 
 
+
 ;저주만 돌리기
 SpreadCurse(count) { 
     SendInput, {Esc}
@@ -1188,7 +1136,7 @@ SpreadCurse(count) {
         SendInput, { left }
         CustomSleep(30)
         SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-        CustomSleep(40)
+        CustomSleep(60)
         SendInput, {esc}
         CustomSleep(30)
     }
@@ -1219,7 +1167,7 @@ SpreadCurseAndChum(count) {
         SendInput, { left }
         CustomSleep(30)
         SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
-        CustomSleep(40)
+        CustomSleep(60)
         SendInput, {esc}
         CustomSleep(30)
     }
@@ -1237,146 +1185,237 @@ SpreadCurseAndChum(count) {
 ;4방향 마비같은 경우 원래 마비2번 혹은 3번 걸어서 마비 안 걸리는 거 방지했는데 요즘 100퍼 걸리는 것 같아서 그냥 한 번씩만.
 
 
-; 4방향 저주
-FourWayCurse() { 
-    FourWayMagic(4, "Left", 1)
-    FourWayMagic(4, "Right", 1)
-    FourWayMagic(4, "Up", 1)
-    FourWayMagic(4, "Down", 1)   
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
-
 ;캐릭 4방위 저주 후 마비
 FourWayCurseAndParalysis() { 
-       ;4저주,  6마비
-       FourWayMagic(4, "Left", 1)
-       InPlaceMagic(6, 1)
-   
-       FourWayMagic(4, "Right", 1)
-       InPlaceMagic(6, 1)
-   
-       FourWayMagic(4, "Up", 1)
-       InPlaceMagic(6, 1)
-   
-       FourWayMagic(4, "Down", 1)
-       InPlaceMagic(6, 1)
     SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
+    CustomSleep(30)
 
-
-
-; 4방향 마비
-FourWayParalysis() {  ;마비 100% 된 것 같아서 횟수 2->1로 함
-    ;6마비
-    FourWayMagic(6, "Left", 1)
-    FourWayMagic(6, "Right", 1)
-    FourWayMagic(6, "Up", 1)
-    FourWayMagic(6, "Down", 1)   
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
-; 4방향 활력
-FourWayVitality() { 
-    FourWayMagic(8, "Left", 1)
-    FourWayMagic(8, "Right", 1)
-    FourWayMagic(8, "Up", 1)
-    FourWayMagic(8, "Down", 1)   
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
-;캐릭 4방위 활력 후 마비. 
-FourWayVitalityAndParalysis() {  ;마비 100% 된 것 같아서 횟수 2->1로 함
-
-    ;8활력,  6마비
-    FourWayMagic(8, "Left", 1)
-    InPlaceMagic(6, 1)
-
-    FourWayMagic(8, "Right", 1)
-    InPlaceMagic(6, 1)
-
-    FourWayMagic(8, "Up", 1)
-    InPlaceMagic(6, 1)
-
-    FourWayMagic(8, "Down", 1)
-    InPlaceMagic(6, 1)
-    
-    SendInput, {Esc}
-    CustomSleep(20)
-    return
-}
-
-
-
-
-
-
-
-; 4방향 스킬은 전후좌우 4방향 시전이기 때문에 몇개 시전을 안 해서 후딜을 30 30 으로 해도 되지만
-;Spread처럼 뿌리는 것은 엔터, esc의 후딜을 60, 30 으로 해서 틱당 시전횟수를 너무 벗어나지 않게 해준다.(씹힘 방지)
-;테스트 해보니까 Spread처럼 뿌리는 것도 스킬버튼과 방향키 누를 때 후딜이 있어서 엔터 esc를 30 30 해도 되는 것 같다.(안전빵 40 30)
-;일단 활력 마비같은 거 말고 저주 돌리기 마비돌리기 이런 건 40, 30 해보고 씹히면 60, 30으로 복구
-
-
-;근데 확실히 활력 후 마비같이 스킬 쓰고 뒤에 방향키 없이 단순 스킬 엔터로 이어서 쓰는 건 
-;30 30 하면 활력 마비 활력 마비가 아니라 중간에 활력 활력 이런식으로 마비가 씹히는 것이 확인됐다. 50 30해도 마찬가지. 60 30이 안전빵
-;그럼 활력 마비에서 활력은 60 30하고 뒤에 마비는 30 30 해도 되려나? -> 마비마비가 생기더라. 60 30 ㄱㄱ
-
-
-; 4방향 스킬. 키와 방향 적어줘야 됨 (6, "Left" 이런식으로)
-;AutoHotkey에서 함수 호출 시 리터럴 문자열은 반드시 따옴표로 감싸야 한다.
-FourWayMagic(key, Arrow, Count) {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으로
-    SendInput, {Esc}
-    CustomSleep(10)
+    SendInput, 4
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput, {Left}
+    CustomSleep(30)
+    SendInput, {Enter}
+    CustomSleep(90)
     StopLoop := false
-        loop, %Count% ;마비 100퍼 인 것 같아서 마비는 1회만 해주면 된다.
-            {
-                if (StopLoop)
-                    {            
-                        Break
-                        CustomSleep(20)
-                    }
-                SendInput, %key%
-                CustomSleep(30)
-                SendInput, {Home}
-                CustomSleep(30)
-                SendInput, {%Arrow%}
-                CustomSleep(30)
-                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
-                CustomSleep(30)
-                SendInput, {esc}
-                CustomSleep(30)
-            }        
-        StopLoopCheck()   ; StopLoop true면 Exit
-    return
-}
-
-
-;현재 타겟 위치에 마법 시전 (6, "Left" 이런식으로)
-;AutoHotkey에서 함수 호출 시 리터럴 문자열은 반드시 따옴표로 감싸야 한다.
-InPlaceMagic(key, Count) {
-    SendInput, {Esc}
-    CustomSleep(10) ;20~30인데 후딜 때문에 좀 느려져서 10으로 해봤다. 안 되면 20으로
-    StopLoop := false
-    loop, %Count%
+    loop, 1
         {
             if (StopLoop)
                 {            
                     Break
                     CustomSleep(20)
                 }
-            SendInput, %key%
+            SendInput, 6
+            CustomSleep(30)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
+        }
+
+    StopLoopCheck()
+
+    SendInput, 4
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput,  {Right}
+    CustomSleep(30)
+    SendInput, {Enter}
+    CustomSleep(90)
+
+
+    loop, 1
+        {
+            if (StopLoop)
+                {            
+                    Break
+                    CustomSleep(20)
+                }
+            SendInput, 6
+            CustomSleep(30)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
+        }
+
+    StopLoopCheck()
+
+    SendInput, 4
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput, {Up}
+    CustomSleep(30)
+    SendInput, {Enter}
+    CustomSleep(90)
+
+    loop, 1
+        {
+            if (StopLoop)
+                {            
+                    Break
+                    CustomSleep(20)
+                }
+            SendInput, 6
+            CustomSleep(30)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
+        }
+
+    StopLoopCheck()
+
+    SendInput, 4
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput, {Down}
+    CustomSleep(30)
+    SendInput, {Enter}
+    CustomSleep(90)
+
+    loop, 1
+        {
+            if (StopLoop)
+                {            
+                    Break
+                    CustomSleep(20)
+                }
+            SendInput, 6
+            CustomSleep(30)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌
+            CustomSleep(60)
+            SendInput, {esc}
+            CustomSleep(30)
+        }
+        SendInput, {Esc}
+    CustomSleep(20)
+    return
+}
+
+
+
+
+; 4방향 마비
+FourWayParalysis() {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으로
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 6
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Left}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+        
+        StopLoopCheck()
+
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 6
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Right}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+
+        StopLoopCheck()
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 6
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Up}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+
+        StopLoopCheck()
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 6
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Down}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+            SendInput, {Esc}
+    CustomSleep(20)
+    return
+}
+
+
+;캐릭 4방위 활력 후 마비. 
+FourWayVitalityAndParalysis() {  ;마비 2회로 했다. 삑나면 3으로
+    SendInput, {Esc}
+    CustomSleep(30)
+
+    SendInput, 8 ; 활력
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput, {Left}
+    CustomSleep(30)
+    SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+    CustomSleep(30)
+    SendInput, {esc}
+    CustomSleep(30)
+    StopLoop := false
+    loop, 1
+        {
+            if (StopLoop)
+                {            
+                    Break
+                    CustomSleep(20)
+                }
+            SendInput, 6
             CustomSleep(30)
             SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
             CustomSleep(30)
@@ -1384,11 +1423,279 @@ InPlaceMagic(key, Count) {
             CustomSleep(30)
         }
     StopLoopCheck()
+
+    SendInput, 8 
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput,  {Right}
+    CustomSleep(30)
+    SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+    CustomSleep(30)
+    SendInput, {esc}
+    CustomSleep(30)
+
+
+    loop, 1
+        {
+            if (StopLoop)
+                {            
+                    Break
+                    CustomSleep(20)
+                }
+            SendInput, 6
+            CustomSleep(30)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+            CustomSleep(30)
+            SendInput, {esc}
+            CustomSleep(30)
+        }
+
+    StopLoopCheck()
+    
+    SendInput, 8
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput, {Up}
+    CustomSleep(30)
+    SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+    CustomSleep(30)
+    SendInput, {esc}
+    CustomSleep(30)
+
+    loop, 1
+        {
+            if (StopLoop)
+                {            
+                    Break
+                    CustomSleep(20)
+                }
+            SendInput, 6
+            CustomSleep(30)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+            CustomSleep(30)
+            SendInput, {esc}
+            CustomSleep(30)
+        }
+
+    StopLoopCheck()
+
+    SendInput, 8
+    CustomSleep(30)
+    SendInput, {Home}
+    CustomSleep(30)
+    SendInput, {Down}
+    CustomSleep(30)
+    SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+    CustomSleep(30)
+    SendInput, {esc}
+    CustomSleep(30)
+
+    loop, 1
+        {
+            if (StopLoop)
+                {            
+                    Break
+                    CustomSleep(20)
+                }
+            SendInput, 6
+            CustomSleep(30)
+            SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+            CustomSleep(30)
+            SendInput, {esc}
+            CustomSleep(30)
+        }
+        SendInput, {Esc}
+    CustomSleep(20)
+    return
 }
 
 
 
 
+; 4방향 활력
+FourWayVitality() { 
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 8
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Left}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+
+        StopLoopCheck()
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 8
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Right}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+        
+        StopLoopCheck()
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 8
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Up}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+
+        StopLoopCheck()
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 8
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Down}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+            SendInput, {Esc}
+    CustomSleep(20)
+    return
+}
+
+
+; 4방향 저주
+FourWayCurse() { 
+    SendInput, {Esc}
+    CustomSleep(30)
+    StopLoop := false
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 4
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Left}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+
+        StopLoopCheck()
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 4
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Right}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+
+        StopLoopCheck()
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 4
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Up}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+
+        StopLoopCheck()
+        
+        loop, 1
+            {
+                if (StopLoop)
+                    {            
+                        Break
+                        CustomSleep(20)
+                    }
+                SendInput, 4
+                CustomSleep(30)
+                SendInput, {Home}
+                CustomSleep(30)
+                SendInput, {Down}
+                CustomSleep(30)
+                SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
+                CustomSleep(30)
+                SendInput, {esc}
+                CustomSleep(30)
+            }
+            SendInput, {Esc}
+    CustomSleep(20)
+    return
+}
 
 
 
@@ -1834,11 +2141,9 @@ HellFireHunt() {
         CustomSleep(30)
         if(isWrongTarget) { ; 원래 조건 없이 Left였다. 두 방컷인 놈 떄리고 다른 놈 떄리면 어그로 풀리고 맞기 때문에 대상유지하기 위함
             SendInput, {Left}           
-            CustomSleep(30)  
+            CustomSleep(50)  
         }
         SendInput, {Enter}
-        CustomSleep(30)
-        StopLoopCheck()  ; HellFireForAuto() 가면 StopLoop가 true여도 false로 초기화 하기 때문
         HellFireForAuto()
         CustomSleep(50)  
         ;isDead 조건이 아래에 있는 것은 isDead의 true false를 결정하는 DeathCheck()가 HellFireForAuto() 내부에 있기 때문이다.
@@ -1846,7 +2151,6 @@ HellFireHunt() {
         if(isDead) {
             break
         }  
-        
     }
     return
 }
@@ -1865,10 +2169,8 @@ OneShotHellFire() {
         SendInput, {4}
         CustomSleep(30)
         SendInput, {Left}
-        CustomSleep(30)  
+        CustomSleep(50)  
         SendInput, {Enter}
-        CustomSleep(60)
-        StopLoopCheck()  ; HellFireForAuto() 가면 StopLoop가 true여도 false로 초기화 하기 때문
         HellFireForAuto()
         CustomSleep(50) 
 
@@ -2380,12 +2682,13 @@ isRefreshed := false
 SendInput, {Esc}
 CustomSleep(20)
 
-;잘못된 대상. 즉 유저를 대상으로 했을 시 또는 본인사망일 경우 마비 안 돌리고 종료
+;위에서 잘못된 대상. 즉 유저를 대상으로 했을 시 또는 본인사망일 경우 마비 안 돌리고 종료
+;헬파 한 방만 날리는 거 만들 때 한 방 날렸으면
+
 if(isWrongTarget || isDead ) {
     return
 }
 
-;헬파원샷으로 한 방만 날리는 거 사용할 때 한 방 날렸으면 마비 안 돌리고 종료(이 변수는 헬파원샷 함수에서 초기화)
 if(isOneShotHellFire && OneShotHellFireCount > 0) {
     return
 }
@@ -2393,14 +2696,7 @@ if(isOneShotHellFire && OneShotHellFireCount > 0) {
 ;산적 막굴같은 경우 한 방컷 아닌 애들이 있다. 이런애들은 마비 안 돌리고 타겟 유지하려면 마비를 뺴야한다.
 ;기본 true로 하고 토글로 막굴에서는 false 로 만들어서 마비 안 돌리게 하자
 if(ParalysisAfterAutoHellFire) {
-    ;마비 넣으면 몸빵한테 삼매각이 안 만들어 지려나? 일단 추후 기본 off로 하든지 한다.
-
-    SpreadParalysis(20) ; 헬파 한 번 쐈으면 다시 쏘기 전에 마비 한 번 돌린다. -> 어그로 한 마리라도 있으면 사망위험
-    
-    ;SelfTapTapHeal(3)  ;어차피 어그로 한 마리라도 살아 있으면 사망 위험 있겠지만 마비 활력으로 돌리면 뒷방만 아니면 마비 유지로 생존율 높아짐
-    ;SpreadVitalityAndParalysis(12) ; 활력 후 마비로 언제 마비 풀릴지 모르는 것에 대비. 앞에 자힐도 살짝 넣어주고 앞,옆방은 한 방 버틸만함
-    
-    ;활력은 너무 매크로 같긴 하다. 어쨌든 일단 마비 돌리는 걸로 사용
+    SpreadParalysis(16) ; 헬파 한 번 쐈으면 다시 쏘기 전에 마비 한 번 돌린다.(잘못된 대상이거나 사망시 마비 돌리기 안 하고 종료)
 }
 return
 }
