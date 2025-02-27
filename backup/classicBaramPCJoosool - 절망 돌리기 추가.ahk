@@ -47,7 +47,7 @@ global imgFolder := A_ScriptDir . "\img\joosool\"
 ;A_ScriptDir은 현재 스크립트의 폴더경로이고 점(.)은 오토핫키에서 문자열을 더하는(+) 부호이다. 시작부분을 그냥 가져왔으므로 A_ScriptDir는 맨 앞에 붙여놓고 . 으로 이어 놓으면 된다.
 
 
-;StopLoopCheck로 break면 끝날 때 초기화 해주면 되는데 StopLoopExit()라는 함수는 Exit 이므로 중간에 Exit시킨다면 끝에 반드시 초기화 시킬 건 해줘야됨(isHuntingOn같은)
+;StopLoopCheck로 break면 끝날 때 초기화 해주면 되는데 StopLoopExit()라는 함수는 Exit 이므로 중간에 Exit시킨다면 끝에 반드시 초기화 시킬 건 해줘야됨(isHunting같은)
 
 ;PC와 NoteBook의 차이는 보무가 End(PC) vs NumpadEnd(Notebook) 정도의 차이이다.
 ;PC에서 복붙해서 보무만 바꾸면 노트북이 된다, Reload도 다르다.
@@ -168,7 +168,7 @@ global isRiding := false
 global isTabTabOn := false
 
 ;중독첨첨 혹은 중독사냥 중인지 확인
-global isHuntingOn := false
+global isHunting := false
 
 ;마나 0인지 확인
 ;원래 이미지 검색 한 번에 하나의 변수만 바꾸줬는데 마나 관련해서는 마나가 조금이라도 존재하는(풀마나 혹은 마나존재) 것이 확인되면 isManaZero는 false로 초기화를 해주도록 하자
@@ -221,12 +221,6 @@ global isHellFireHuntON := false
 
 
 
-;입력대기에 타이머 추가 후 이 변수를 확인 후 true면 {Esc}를 입력해서 취소하게 만들기 위한 변수
-global CancelInput := false
-
-
-
-
 ;따라가기에 사용하는 변수
 global TabTabX := 0
 global TabTabY := 0
@@ -274,7 +268,7 @@ StopLoopCheck() {
         {            
             SendInput, {Esc}
             CustomSleep(20)   
-            isHuntingOn := false ;Exit라서 초기화 못 시켜주는 건 여기서 초기화
+            isHunting := false ;Exit라서 초기화 못 시켜주는 건 여기서 초기화
             Exit  
         }
     return
@@ -454,8 +448,8 @@ return
 
 ;현사 되고는 삼매각 만들기 위해 빠른 마비를 쓰려고 저주후 마비와 자리 교체해서 f가 그냥 마비, +f가 저주후 마비
 f:: ;캐릭 4방위 마비만 돌리기.
-CancelInput :=true
 FourWayParalysis()
+SendInput, {ESC}
 StopLoop := true
 return
 
@@ -1462,7 +1456,7 @@ PoisonHunt() {
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    isHuntingOn := true
+    isHunting := true
     Loop,1 ;일단 한 번
         
         {
@@ -1558,7 +1552,7 @@ PoisonHunt() {
                 }
         }
     CustomSleep(30)
-    isHuntingOn := false
+    isHunting := false
     return
     }
 
@@ -1572,7 +1566,7 @@ PoisonChumHunt() {
     SendInput, {Esc}
     CustomSleep(30)
     StopLoop := false
-    isHuntingOn := true
+    isHunting := true
     ManaRefresh := 0
     FourWayMabi := 0
 
@@ -1726,7 +1720,7 @@ PoisonChumHunt() {
                 
        
     CustomSleep(30)
-    isHuntingOn := false
+    isHunting := false
     ManaRefresh := 0
     FourWayMabi := 0
     return
@@ -1737,7 +1731,7 @@ PoisonChumHunt() {
 ForestPoisonChumHunt() {
     SendInput, {Esc}
     CustomSleep(30)
-    isHuntingOn := true
+    isHunting := true
     StopLoop := false
     ManaRefresh := 0
     FourWayMabi := 0
@@ -1789,7 +1783,7 @@ ForestPoisonChumHunt() {
     
     SendInput, {Esc}
     CustomSleep(30)
-    isHuntingOn := false
+    isHunting := false
 
     ManaRefresh := 0
     FourWayMabi := 0
@@ -2041,19 +2035,12 @@ return
 ;일단은 s(말내리고)대기 d 저주헬파 공증 자힐,   c는 취소 이렇게 하자
 ;a로 삼매한다면 해당 타겟박스 위치 좌표저장하고 해당 좌표에 저주 -> 해당위치, 상하좌우 저주 돌리고 해당 좌표에 다시 삼매 던지면될듯
 
-;입력대기시 타이머 추가해서 입력대기함수 아래에 만들어 둔 CheckCancelInput:  을 통해
-;CancelInput 변수를 확인해서 true면 Esc 입력해서 취소하게 해준다. -> Esc 누르니까 다른 핫키 누를 때 끼어들어서 꼬이는 경우 생김
-; 그래서 c나 o키 등 상관없는 키를 눌러서 조건문에 ErrorLevel이 Escape 조건이 아니라 마지막에 else 조건에 가서 취소되도록 한다.
-;이 장치가 없을 경우 입력대기 상태에서 급하게 4방위 마비를 쓰면 여전히 입력대기 중이기 때문에 따로 c나 esc를 눌러서 취소해야된다.
-;그렇기 때문에 입력대기시 급하게 쓸만한 4방위 마비 핫키에 CancelInput을 true로 만들어 주는 구문을 넣어줬다.
 
-;우선 4방위 마비 돌리기인 f:: 에만 넣어줬는데 이는 입력대기중 키 연계시 f키는 포기한 것. 그럴만한 것이 4방위 마비라서 급할 때 유용
+
 
 ;s : 입력대기 // c, esc: 취소 // d, 좌클릭 : 저주 헬파 공증 자힐
 InputWaiting() {    
     IsWaiting := true    ;대기 상태 true
-
-    CancelInput := false ; 취소 플래그. 유저 입력대기중 특정 시간마다 이 변수를 확인해서 true시 입력대기 취소하게 만듦
 
     StopLoop := false ;초기화
     isRefreshed := false
@@ -2068,7 +2055,7 @@ InputWaiting() {
     ; 적어도 첫 루프에서 공증만 하고 자힐하는 것은 방지할 수 있다. 자힐 후 break 조건에 이 변수도 넣으면 풀마나로 시전
     ; 현재 마나로 헬파 시전은 앞에 로직 추가해줌
 
-    if(isHuntingOn) { ;첨첨사냥 혹은 중독사냥 중이면 탭탭이 열려 있는지 확인 해두기 + 첨첨 사용 -> 헬파 쏘고 나서 첨첨해제
+    if(isHunting) { ;첨첨사냥 혹은 중독사냥 중이면 탭탭이 열려 있는지 확인 해두기 + 첨첨 사용 -> 헬파 쏘고 나서 첨첨해제
         CheckTabTabOn()
         CustomSleep(30)        
     }
@@ -2082,16 +2069,9 @@ InputWaiting() {
     SendInput, {4} ;저주 타겟박스 띄워서 타겟 선택하는 용도.
     CustomSleep(30)
 
-    ; 100ms마다 CancelInput 플래그를 확인하는 타이머 설정
-    SetTimer, CheckCancelInput, 100
-
     ; Enter와 d 키 입력 대기 (10초 타임아웃)
     Input, UserInput, V L1 T10, {d}{a}{ESC}
     CustomSleep(20)
-
-
-     ; Input 종료 후 타이머 끄기
-     SetTimer, CheckCancelInput, Off
 
 
     ;---------------------입력대기중 헬파이어------------------------------------------------------
@@ -2101,7 +2081,7 @@ InputWaiting() {
         ; Enter를 눌렀을 때 실행할 로직 추가
 
 
-        if(isHuntingOn) { ;첨첨 사냥중에는 단순 저주 + 헬파이어 시전만(탭탭창 열려 있는 상태면 탭탭창 복구) + 첨첨까지
+        if(isHunting) { ;첨첨 사냥중에는 단순 저주 + 헬파이어 시전만(탭탭창 열려 있는 상태면 탭탭창 복구) + 첨첨까지
             SendInput, {Esc}
             CustomSleep(30)    
             SendInput, {4} ;저주
@@ -2321,7 +2301,7 @@ InputWaiting() {
     } else if (ErrorLevel = "Timeout") {
         ;MsgBox, Time out! No key was pressed.
         ; 타임아웃 시 실행할 로직 추가
-    } else { ;a, d,esc 등 정해진 키 이외의 다른 키를 입력했을 때
+    } else {
         ;MsgBox, Unexpected input: %ErrorLevel%  ;혹시 모를 디버깅을 위해 일단 놔뒀다가 다시 주석처리하고 탈것 다시 타도록
         CustomSleep(30)
         SendInput, {Blind}r
@@ -2333,21 +2313,6 @@ InputWaiting() {
     CustomSleep(30)
     return
 }
-
-
-;입력대기시 CanceelInput 변수를 확인해서 취소할 때 사용하기 위한 구문.
-;입력대기에서 사용자의 input입력대기시 타이머를 통해 변수를 확인해서 입력대기를 취소하게 만듦 (Send 사용)
-;입력대기중 급하게 사용할 4방위 마비같은 핫키에 CancelInput을 true로 만드는 구문을 넣어주자.
-
-;우선 4방위 마비 돌리기인 f:: 에만 넣어줬는데 이는 입력대기중 키 연계시 f키는 포기한 것. 그럴만한 것이 4방위 마비라서 급할 때 유용
-CheckCancelInput:
-    if (CancelInput) {
-        Send, {o}  ; 플래그가 세팅되면 o키를 전송하여 Input에서 정해진 키 이외의 else 조건이 되게 해서 취소하게 만듦
-        ;esc로 해서 입력키가 escape일 때 취소되게 하려고 했는데 다른 핫키 사용시 ESC 입력이 끼어들어 꼬이게 돼서 상관없는 키로.
-        ;참고로 o 말고 c로 해도 괜찮더라. 단 이때는 c:: 핫키가 동작하는 게 아닌 것 같다 (else 조건 작동) 그래서 걍 o키로 함
-        CancelInput := false ; 타이머마다 Esc입력이 끼어드므로 한 번 입력되면 플래그(flag)인 CancelInput을 false로 만들어 준다
-    }
-return
 
 
 
