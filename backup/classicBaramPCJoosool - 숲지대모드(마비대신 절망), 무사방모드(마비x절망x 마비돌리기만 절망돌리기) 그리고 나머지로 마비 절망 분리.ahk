@@ -450,27 +450,26 @@ return
 
 
 c::  ;마비만 돌리기. 입력대기 상태에서는 취소. 숲지대 모드(마비 안 통하는 곳 통칭.)에서는 절망 돌리기
-;입력대기시 동작
+;입력대기시 동작 -> 취소 동작
 if (IsWaiting) {
     ; esc는 안 되므로 안 쓰는 키 p를 써서 이걸 취소로 사용하자.
     Send, {ESC}
     return
 }
-if(isAtForest) {
+;입력대기가 아닐 때 숲지대 혹은 무사방이면 마비 대신 절망 돌린다.
+if(isAtForest || isAtMoosa) {
     SpreadDespair(magicCount)
     return
 }
-; 일반적인 d 핫키 동작
+; 일반적으로 숲지대 혹은 무사방이 아닐 때는 마비 돌리기
 SpreadParalysis(magicCount)
-StopLoop := true
 return
+
 
 +c:: ;활력 후 마비 돌리기
 CustomSleep(160) ; 쉬프트 조합 방지 후딜 (쉬프트 떼는 시간)
 SpreadVitalityAndParalysis(magicCount)
-StopLoop := true
 return
-
 
 
 
@@ -483,17 +482,17 @@ return
 
 
 ;현사 되고는 삼매각 만들기 위해 빠른 마비를 쓰려고 저주후 마비와 자리 교체해서 f가 그냥 마비, +f가 저주후 마비
+;f는 4방향 긴급하게 마비 돌리는 것이기 때문에 입력대기 중일 때도 무시하고 사용 가능
+;아니면 입력대기 중에 f 조합을 4방위 마비로 만들어도 괜찮긴 하겠다.
 f:: ;캐릭 4방위 마비만 돌리기.
 CancelInput :=true
 FourWayParalysis()
-StopLoop := true
 return
 
 
 +f:: ;캐릭 4방위 저주 후 마비
 CustomSleep(170) ; shift 떼는 딜레이
 FourWayCurseAndParalysis()
-StopLoop := true
 return
 
 
@@ -503,14 +502,12 @@ return
 ^f:: ;캐릭 4방위 활력 돌리기
 CustomSleep(170) ; ctrl + 키조합 떼는 딜레이
 FourWayVitality()
-StopLoop := true
 return
 
 
 
 v::  ;캐릭 4방위 활력후 마비 돌리기. 마비시간 애매할 때 생존보장을 위함
 FourWayVitalityAndParalysis()
-StopLoop := true
 return
 
 
@@ -1941,7 +1938,12 @@ HellFireHunt() {
         CustomSleep(20)
         SendInput, {4}
         CustomSleep(30)
-        if(isWrongTarget) { ; 원래 조건 없이 Left였다. 두 방컷인 놈 떄리고 다른 놈 떄리면 어그로 풀리고 맞기 때문에 대상유지하기 위함
+
+        ; 원래 조건 없이 Left였다. 두 방컷인 놈 떄리고 다른 놈 떄리면 어그로 풀리고 맞기 때문에 대상유지하기 위함
+        ; 무사방에서는 도사가 몸빵을 버틸 수가 없어서 주술로 힐 받으면서 몹 몰면서 삼매각 만든다.
+        ; 이때 걸리지 않습니다를 이미지서칭해서 다음 타겟으로 이동했는데 힐을 계속 받아서 인식이 힘들다.
+        ; 그래서 무사방이나 힐을 계속 받는 곳에서는 헬파오토 사냥시 left 해주자
+        if(isWrongTarget || isAtMoosa) { 
             SendInput, {Left}           
             CustomSleep(30)  
         }
