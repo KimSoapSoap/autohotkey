@@ -7,14 +7,10 @@ global magicCount := 12
 ;토글
 ; -> 승마사냥 : alt + r    기본 false (isRidingHunt를 변경)   
 ; -> 숲지대 : alt + f    기본 false (isAtForest 를 변경) -> 참고로 입력대기 헬파시 마비가 절망으로 변함
-; -> 무사방 : alt + w 기본 false(isAtMoosa를 변경) -> 마비가 안 걸리지만 직접 삼매각을 만들어야 돼서 마비x 절망x인 곳에서 사용
 ; -> 입력대기 헬파,삼매후 자힐(원샷헬파에도 적용) : alt + s  기본 사용 (inputWaitingSelfHeal 을 변경)
 ; -> 헬파 자동사냥인 HellFireHunt() 사용시 헬파쏘고 마비 돌리기  alt + c : 기본 사용 (ParalysisAfterAutoHellFire 을 변경). 원샷헬파는 x
 
-;참고로 숲지대는 마비가 안 걸려서 마비대신 절망을 써야되는 곳을 통칭함
-;무사방은 마비가 안 걸리지만 절망을 개별적으로 넣지 않고 수동으로 넣는 곳을 통칭(유인하면서 무빙 헬파는 쓰지만 절망은 수동으로)
-;그리고 숲지대도 무사방도 아니면 마비를 돌리는 것으로 한다.(입력대기 헬파, HellFireForAutO() 에서 )
-
+  
 
 
 ;삼매 진형 만들어놨는데 마비가 25초 지속이므로 삼매쿨보다 짧게 남았다면 그 자리에 굳히기로 절망을 걸어두면 된다.
@@ -194,16 +190,6 @@ global isRidingHunt := false
 global isAtForest := false 
 
 
-;무사방에서 마비는 안 걸리지만 몹 드리블 하면서 헬파 쏘는 경우가 있다.
-;이때 마비 안 걸린다고 절망을 걸어버리면 삼매각이 안 나온다. 부활 때문에 삼매각을 직접 만들어야 되기 때문에
-;오토헬파나 헬파원샷, 입력대기 헬파에 절망을 걸면 안되기 때문에 따로 무사방인지 여부 변수를 만들어서
-;숲지대(마비 안 걸리는 곳 통칭 -> 마비대신 절망)
-;무사방(마비는 안 걸리지만 절망을 날리면 안 되는 곳 통칭 -> 마비, 절망 모두 안 씀)
-;그리고 나머지(마비)
-;이렇게경우에 따라서 마비, 절망, 혹은 둘다x 경우를 나누기 위함이다.
-global isAtMoosa := false
-
-
 ;입력대기 헬파이어, 삼매진화 사용 후 셀프힐 사용여부. 기본 사용이다.
 global inputWaitingSelfHeal := true
 
@@ -237,8 +223,6 @@ global isHellFireHuntON := false
 
 ;입력대기에 타이머 추가 후 이 변수를 확인 후 true면 {Esc}를 입력해서 취소하게 만들기 위한 변수
 global CancelInput := false
-
-
 
 
 
@@ -347,12 +331,6 @@ ToggleParalysisAfterAutoHellFire()
 return
 
 
-;무사방 사냥. 마비가 안 걸리지만 절망을 쓰지 않는 곳 -> 수동으로 절망 사용
-!w::
-ToggleMoosaHunt()
-return
-
-
 ;저주 마비 중독 등 얼마나 돌릴지 신극지방 등 사냥터마다 단독 사용시 카운트를 다르게 해줘야 되므로 최상단에 배치
 ;몬스터들 제법 몰린 곳에서도 사용할 수 있게끔 기본 카운트 20, 신극지방 갈 때는 깔끔하게 6정도
 ;보통 통일 시키므로 magicCount라는 변수를 만들어서 사용. 필요하면 개별로
@@ -450,26 +428,27 @@ return
 
 
 c::  ;마비만 돌리기. 입력대기 상태에서는 취소. 숲지대 모드(마비 안 통하는 곳 통칭.)에서는 절망 돌리기
-;입력대기시 동작 -> 취소 동작
+;입력대기시 동작
 if (IsWaiting) {
     ; esc는 안 되므로 안 쓰는 키 p를 써서 이걸 취소로 사용하자.
     Send, {ESC}
     return
 }
-;입력대기가 아닐 때 숲지대 혹은 무사방이면 마비 대신 절망 돌린다.
-if(isAtForest || isAtMoosa) {
+if(isAtForest) {
     SpreadDespair(magicCount)
     return
 }
-; 일반적으로 숲지대 혹은 무사방이 아닐 때는 마비 돌리기
+; 일반적인 d 핫키 동작
 SpreadParalysis(magicCount)
+StopLoop := true
 return
-
 
 +c:: ;활력 후 마비 돌리기
 CustomSleep(160) ; 쉬프트 조합 방지 후딜 (쉬프트 떼는 시간)
 SpreadVitalityAndParalysis(magicCount)
+StopLoop := true
 return
+
 
 
 
@@ -482,17 +461,17 @@ return
 
 
 ;현사 되고는 삼매각 만들기 위해 빠른 마비를 쓰려고 저주후 마비와 자리 교체해서 f가 그냥 마비, +f가 저주후 마비
-;f는 4방향 긴급하게 마비 돌리는 것이기 때문에 입력대기 중일 때도 무시하고 사용 가능
-;아니면 입력대기 중에 f 조합을 4방위 마비로 만들어도 괜찮긴 하겠다.
 f:: ;캐릭 4방위 마비만 돌리기.
 CancelInput :=true
 FourWayParalysis()
+StopLoop := true
 return
 
 
 +f:: ;캐릭 4방위 저주 후 마비
 CustomSleep(170) ; shift 떼는 딜레이
 FourWayCurseAndParalysis()
+StopLoop := true
 return
 
 
@@ -502,12 +481,14 @@ return
 ^f:: ;캐릭 4방위 활력 돌리기
 CustomSleep(170) ; ctrl + 키조합 떼는 딜레이
 FourWayVitality()
+StopLoop := true
 return
 
 
 
 v::  ;캐릭 4방위 활력후 마비 돌리기. 마비시간 애매할 때 생존보장을 위함
 FourWayVitalityAndParalysis()
+StopLoop := true
 return
 
 
@@ -778,7 +759,7 @@ ToggleRidingHunt() {
 }
 
 
-; 숲지대 사냥인지 아닌지 설정(마비가 안 걸리는 곳이므로 마비대신 절망을 사용하는 곳)
+; 숲지대 사냥인지 아닌지 설정.
 ; 현재 g:: 핫키(자동 첨첨 사냥)에서 true면 ForestPoisonChumHunt(), false면 그냥 PoisonChumHunt() 함수 실행
 ToggleForestHunt() {
     if (isAtForest) {
@@ -789,20 +770,6 @@ ToggleForestHunt() {
         ; 숲지대 사냥 켜기
         isAtForest := true
         MsgBox, 숲지대 사냥 ON
-    }
-    return
-}
-
-; 무사방 사냥인지 아닌지 설정.(마비가 안 걸리지만 절망도 사용하지 않을 곳 -> 수동으로 절망 사용할 곳)
-ToggleMoosaHunt() {
-    if (isAtMoosa) {
-        ; 숲지대 사냥 끄기
-        isAtMoosa := false
-        MsgBox, 무사방 사냥 OFF
-    } else {
-        ; 숲지대 사냥 켜기
-        isAtMoosa := true
-        MsgBox, 무사방 사냥 ON
     }
     return
 }
@@ -1938,12 +1905,7 @@ HellFireHunt() {
         CustomSleep(20)
         SendInput, {4}
         CustomSleep(30)
-
-        ; 원래 조건 없이 Left였다. 두 방컷인 놈 떄리고 다른 놈 떄리면 어그로 풀리고 맞기 때문에 대상유지하기 위함
-        ; 무사방에서는 도사가 몸빵을 버틸 수가 없어서 주술로 힐 받으면서 몹 몰면서 삼매각 만든다.
-        ; 이때 걸리지 않습니다를 이미지서칭해서 다음 타겟으로 이동했는데 힐을 계속 받아서 인식이 힘들다.
-        ; 그래서 무사방이나 힐을 계속 받는 곳에서는 헬파오토 사냥시 left 해주자
-        if(isWrongTarget || isAtMoosa) { 
+        if(isWrongTarget) { ; 원래 조건 없이 Left였다. 두 방컷인 놈 떄리고 다른 놈 떄리면 어그로 풀리고 맞기 때문에 대상유지하기 위함
             SendInput, {Left}           
             CustomSleep(30)  
         }
@@ -2252,18 +2214,12 @@ InputWaiting() {
                         loop, 1 { ;마비 100퍼 같아서 2에서 1로 변경
                             if(isAtForest) {
                                 SendInput, {7} ;숲지대일시 절망
-                                CustomSleep(30)
-                                SendInput, {Enter} 
-                                CustomSleep(30)
-                            } else if(isAtMoosa) {
-                                ;아무것도 안 씀
                             } else {
-                                SendInput, {6} ;마비
-                                CustomSleep(30)
-                                SendInput, {Enter} 
-                                CustomSleep(30)
+                                SendInput, {6} ;마비                                
                             }
-                            CustomSleep(30) 
+                            CustomSleep(30)
+                            SendInput, {Enter}
+                            CustomSleep(30)   ;90 -> 30         
                         }
                     }
                     ;헬파를 말에다가 쏠 경우 급하게 중단 눌렀을 때 헬파 직전에 멈추기 위함
@@ -2292,19 +2248,12 @@ InputWaiting() {
                     loop, 1{ ;마비 100퍼 같아서 2에서 1로 변경
                         if(isAtForest) {
                             SendInput, {7} ;숲지대일시 절망
-                            CustomSleep(30)
-                            SendInput, {Enter} 
-                            CustomSleep(30)
-                        } else if(isAtMoosa) {
-                            ;아무것도 안 씀
+                        } else {
+                            SendInput, {6} ;마비                                
                         }
-                        else {
-                            SendInput, {6} ;마비
-                            CustomSleep(30)
-                            SendInput, {Enter} 
-                            CustomSleep(30)
-                        }
-                        CustomSleep(30) ;
+                        CustomSleep(30)
+                        SendInput, {Enter}
+                        CustomSleep(30) ;90 -> 30
                     }
                 }
                SendInput, {3} ;공증
@@ -2492,18 +2441,12 @@ HellFireForAuto() {
                     loop, 1 { ;마비 100퍼 같아서 2에서 1로 변경
                         if(isAtForest) {
                             SendInput, {7} ;숲지대일시 절망
-                            CustomSleep(30)
-                            SendInput, {Enter} 
-                            CustomSleep(30)
-                        } else if(isAtMoosa) {
-                            ;아무것도 안 씀
                         } else {
-                            SendInput, {6} ;마비
-                            CustomSleep(30)
-                            SendInput, {Enter} 
-                            CustomSleep(30)
+                            SendInput, {6} ;마비                                
                         }
-                        CustomSleep(30)                        
+                        CustomSleep(30)
+                        SendInput, {Enter}
+                        CustomSleep(90)                          
                     }
                 }
                 ;헬파를 말에다가 쏠 경우 급하게 중단 눌렀을 때 헬파 직전에 멈추기 위함
@@ -2513,18 +2456,12 @@ HellFireForAuto() {
                 ; 오토 헬파시에는 한 방컷 아닌 녀석들을 대비해서 헬파 쏘기 전 절망 혹은 마비
                 if(isAtForest) {
                     SendInput, {7} ;숲지대일시 절망
-                    CustomSleep(30)
-                    SendInput, {Enter} 
-                    CustomSleep(30)
-                } else if(isAtMoosa) {
-                    ;아무것도 안 씀
                 } else {
-                    SendInput, {6} ;마비
-                    CustomSleep(30)
-                    SendInput, {Enter} 
-                    CustomSleep(30)
+                    SendInput, {6} ;마비                                
                 }
-               
+                CustomSleep(30)
+                SendInput, {Enter} 
+                CustomSleep(30)
                 SendInput, {Blind}2 ; 헬파 
                 CustomSleep(30)
                 SendInput, {Enter}                                        
@@ -2541,18 +2478,12 @@ HellFireForAuto() {
                 loop, 1{ ;마비 100퍼 같아서 2에서 1로 변경
                     if(isAtForest) {
                         SendInput, {7} ;숲지대일시 절망
-                        CustomSleep(30)
-                        SendInput, {Enter} 
-                        CustomSleep(30)
-                    } else if(isAtMoosa) {
-                        ;아무것도 안 씀
                     } else {
-                        SendInput, {6} ;마비
-                        CustomSleep(30)
-                        SendInput, {Enter} 
-                        CustomSleep(30)
+                        SendInput, {6} ;마비                                
                     }
-                    CustomSleep(30)                    
+                    CustomSleep(30)
+                    SendInput, {Enter}
+                    CustomSleep(90)
                 }
             }
             SendInput, {3} ;공증
@@ -2597,8 +2528,6 @@ if(ParalysisAfterAutoHellFire) {
     ;활력은 너무 매크로 같긴 하다. 어쨌든 일단 마비 돌리는 걸로 사용
     if(isAtForest) {
         SpreadDespair(20) ; 숲지대 모드 on이면 마비대신 절망
-    } else if(isAtMoosa) {
-        SpreadDespair(20) ; 무사방 모드on이면 마비 안 통하므로 숲지대처럼 절망
     } else {
         SpreadParalysis(20) ; 헬파 한 번 쐈으면 다시 쏘기 전에 마비 한 번 돌린다. -> 어그로 한 마리라도 있으면 사망위험
     }
