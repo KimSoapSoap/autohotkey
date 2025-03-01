@@ -644,7 +644,7 @@ CustomSleep(170)
 return
 
 
-+f:: ;해독
+^f:: ;해독
 CustomSleep(160)
 Detox()
 return
