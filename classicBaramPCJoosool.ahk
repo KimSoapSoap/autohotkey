@@ -201,7 +201,7 @@ global isAtForest := false
 ;무사방(마비는 안 걸리지만 절망을 날리면 안 되는 곳 통칭 -> 마비, 절망 모두 안 씀)
 ;그리고 나머지(마비)
 ;이렇게경우에 따라서 마비, 절망, 혹은 둘다x 경우를 나누기 위함이다.
-global isAtoMoosa := false
+global isAtMoosa := false
 
 
 ;입력대기 헬파이어, 삼매진화 사용 후 셀프힐 사용여부. 기본 사용이다.
