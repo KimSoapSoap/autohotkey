@@ -1847,6 +1847,8 @@ ConditionalManaRefresh(count) {
 InputWaiting() {    
     IsWaiting := true    ;대기 상태 true
 
+    CancelInput := false ; 취소 플래그. 유저 입력대기중 특정 시간마다 이 변수를 확인해서 true시 입력대기 취소하게 만듦
+    
     StopLoop := false ;초기화
     isWrongTarget := false
     isRiding := false
@@ -1984,7 +1986,7 @@ InputWaiting() {
         CustomSleep(20)
         SendInput, {shift up}
         CustomSleep(20)
-        SendInput, g ;  g -> 해독
+        SendInput, r ;  r -> 해독
         CustomSleep(20)
         
         SendInput, {Enter}
@@ -2003,7 +2005,7 @@ InputWaiting() {
         CustomSleep(20)
         SendInput, {shift up}
         CustomSleep(20)
-        SendInput, s ;  s -> 퇴마주주
+        SendInput, s ;  s -> 퇴마주
         CustomSleep(20)
         
         SendInput, {Enter}
