@@ -617,15 +617,16 @@ CustomSleep(180)
 SendInput, {8}
 return
 
-^r:: ;해독
-CustomSleep(160)
-Detox()
-return
 
 
-^t:: ;시력회복
+^r:: ;시력회복
 CustomSleep(180)
 SendInput, {7}
+return
+
+^t:: ;해독
+CustomSleep(160)
+Detox()
 return
 
 
