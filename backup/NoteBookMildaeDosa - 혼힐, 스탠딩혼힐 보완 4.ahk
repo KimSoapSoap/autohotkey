@@ -100,6 +100,16 @@ global imgFolder := A_ScriptDir . "\img\dosa\notebook\"
 ;이렇게 입력대기에 부활을 도입하고(힐 중에도 잠시 멈췄다가 가능. 그냥하면 부활 대상 선택하기 전에 코드 다 실행하고 다시 힐로 돌아가버림)
 
 
+; 보통 저주계열 돌릴 때 후딜 70 ~ 90 으로 하고 중간에 다른 거 쓸 때 꼬임 방지용으로 후딜을 나눠서
+;enter 이후 esc 입력으로  후딜을 예를들면 90을   엔터 후딜 60,  esc 후딜 30 이렇게 꼬임방지용으로 나눠놨다
+;그런데 honheal과 StandingHonHeal에서 혼마가 씹히는 경우가 생겨서 70 20 으로 해줬다.
+;60, 30일 때는 뭔가 enter로 시전되기 전에esc가 입력돼서 씹힌 게 아닌가 싶은 느낌
+
+
+
+
+
+
 global StopLoop := false
 ;루프 중단을 위한 변수. 기본 false
 ;동작 중(예를 들면 루프) 다른 핫키를 쓰면 다른 핫키 동작 후 다시 기존 핫키로 돌아가는 Stack구조이므로
@@ -114,6 +124,7 @@ global StopLoop := false
 ; 핫키 시작할 땐 StopLoop := false(루프있다면 -> 루프 내부에 if (StopLoop) 조건이 있을 때 )
 ; 핫키 끝날 땐 StopLoop := true (동작 후 이전 핫키 루프를 중단하려면)
 ; 예를들면 동동주 마시는 건 4방향 마비걸 때 마력 없으면 동동주 먹어주면서 마력 보충할 수 있기 때문에 굳이 loopStop을 끝에 넣지 않는다.
+
 
 
 ;클릭, 휠업, 휠다운은 밀대힐 도중 좌클, 휠업다운시 선택 혼마 사용하게끔.
@@ -427,9 +438,9 @@ HonHeal(HonCount, LoopCount) {
             SendInput, { left }
             CustomSleep(30)
             SendInput, { enter }
-            CustomSleep(60)  ;후딜 90. 꼬임 방지로 ESC 넣고 후딜 나눴음. 60 30으로 나눔.  40 30까지도 괜찮은 것 같긴 한다다
+            CustomSleep(70)  ;후딜 90. 꼬임 방지로 ESC 넣고 후딜 나눴음. 60 30으로 나눔.  왜그런지 혼마 씹히는 경우가 생겨서 70 20으로하니 ㅇㅋ
             SendInput, {Esc}
-            CustomSleep(30) ;원래 후딜 30이었는데 금강불체 넣고 20, 10으로 나눴다가 걍 금강은 루프 밖으로 뺌뺌
+            CustomSleep(20) 
         }
         SendInput, {Blind}6  ;금강불체. 탭탭힐 리프레쉬에서 공격이 나가서 blind 6으로 했다.
         CustomSleep(20) 
@@ -495,6 +506,12 @@ if(IsWaiting) { ;입력대기시 취소입력을 위함
 }
 SpreadHonmaLeft(magicCount)
 return
+
++c:: ;파혼 left
+CustomSleep(180) ; 쉬프트키 떼는 후딜
+SpreadPaHon(magicCount)
+return
+
 
 ^1:: ;추적 밀대
 CustomSleep(150)
@@ -1693,9 +1710,9 @@ StandingHonHeal() { ;제자리 혼힐
             SendInput, { left }
             CustomSleep(30)
             SendInput, { enter }
-            CustomSleep(60)  ;후딜 90. 꼬임 방지로 ESC 넣고 후딜 나눴음. 60 30으로 나눔.  40 30까지도 괜찮은 것 같긴 한다다
+            CustomSleep(70)  ;후딜 90. 꼬임 방지로 ESC 넣고 후딜 나눴음. 60 30으로 나눔.   왜그런지 혼마 씹히는 경우가 생겨서 70 20으로하니 ㅇㅋ
             SendInput, {Esc}
-            CustomSleep(30) ;원래 후딜 30이었는데 금강불체 넣고 20, 10으로 나눴다가 걍 금강은 루프 밖으로 뺌뺌
+            CustomSleep(20) ;원래 후딜 30이었는데 금강불체 넣고 20, 10으로 나눴다가 걍 금강은 루프 밖으로 뺌뺌
         }
         SendInput, {Blind}6  ;금강불체. 탭탭힐 리프레쉬에서 공격이 나가서 blind 6으로 했다.
         CustomSleep(20) 
@@ -1738,7 +1755,7 @@ StandingHonHeal() { ;제자리 혼힐
             SendInput, {Blind}3
         }
 
-        CustomSleep(20)
+        CustomSleep(30)
 
     }
     isMildaeHealOn := false
