@@ -267,8 +267,9 @@ StopLoopCheck() {
             SendInput, {Esc}
             CustomSleep(20)  
             CancelInput := true ; 입력대기 취소
-            isMildaeHealOn := false ;밀대힐 취소소
+            isMildaeHealOn := false ;밀대힐 취소
             isHuntingOn := false ;Exit라서 초기화 못 시켜주는 건 여기서 초기화
+            Click, Right up ;추적 우클릭이동 해제
             Exit  
         }
 }
@@ -432,13 +433,14 @@ HonHeal(HonCount, LoopCount) {
                 CustomSleep(20)
             }
 
-        Loop, %HonCount% { ; 후딜 20~30짜리들 조금 깎아봤다.
+        Loop, %HonCount% { ; 후딜 20~30짜리들 조금 깎아봤다. 후딜 10으로 하니 그 다음키가 씹히는 경우가 생겼다. (혼마 없이 왼쪽 눌러져서 이동됨)
+            ;그리고 엔터가 씹혀서 시전 안 되는 경우도 생긴듯? 후딜 깎기 전으로 복구구
             SendInput, {Esc}
-            CustomSleep(10) ;원래 20
-            SendInput, 4
             CustomSleep(20) ;원래 20
+            SendInput, 4
+            CustomSleep(30) ;원래 20
             SendInput, { left }
-            CustomSleep(20) ;원래 30
+            CustomSleep(30) ;원래 30
             SendInput, { enter }
             CustomSleep(40)  ;후딜 90. 꼬임 방지로 ESC 넣고 후딜 나눴음. 60도 괜찮아서 60을 40, 20으로 나눔
             SendInput, {Esc}
@@ -1594,11 +1596,11 @@ ChaseHonHeal() {  ;추적 혼힐
         ;TabTabChase() ;공증 이후 혼 돌리기 전 한 번 추가. 이거 넣으니까 힐틱 살짝 밀려서 뺌. 대신 이동은 훨씬 낫긴 하다(방 통과 등)
         Loop, 3 { ; 원래 후딜에서 조금 딜을 깎아봤다.
             SendInput, {Esc}
-            CustomSleep(10) ; 원래 20
+            CustomSleep(20) ; 원래 20
             SendInput, 4
-            CustomSleep(20) ;원래 30
+            CustomSleep(30) ;원래 30
             SendInput, { left }
-            CustomSleep(20) ; 원래 30
+            CustomSleep(30) ; 원래 30
             SendInput, { enter }
             CustomSleep(40)  ;후딜 80~90이었는데 탭탭이랑 왔다갔다 할 거기 때문에 혹시모를 꼬임 방지로 ESC 넣고 후딜 나눴음. 60 -> 40, 20으로로
             SendInput, {Esc} ;혹시모를 꼬임 방지
@@ -1709,11 +1711,11 @@ StandingHonHeal() { ;제자리 혼힐
         ;DeathCheck() ;혼마 뒤로 옮긴다.
         Loop, 3 { ; 후딜 20~30을 더 깎으려고 10~20으로 바꿔봤다.
             SendInput, {Esc}
-            CustomSleep(10) ;원래 20
+            CustomSleep(20) ;원래 20
             SendInput, 4
-            CustomSleep(20) ;원래 30
+            CustomSleep(30) ;원래 30
             SendInput, { left }
-            CustomSleep(20)  ;원래 30
+            CustomSleep(30)  ;원래 30
             SendInput, { enter }
             CustomSleep(40)  ;후딜 90. 꼬임 방지로 ESC 넣고 후딜 나눴음. 60으로 바꾸고 40, 20으로 나눴음음
             SendInput, {Esc}
@@ -1867,7 +1869,7 @@ ConditionalManaRefresh(count) {
 ;AutoHotkey에서 함수 호출 시 리터럴 문자열은 반드시 따옴표로 감싸야 한다.
 FourWayMagic(key, Arrow, Count) {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으로
     SendInput, {Esc}
-    CustomSleep(10)
+    CustomSleep(20) ;후딜 10은 뒤에 다른 입력키가 있으면 뒤에 키가 가끔 씹히는 것 같다.
     StopLoop := false
         loop, %Count% ;마비 100퍼 인 것 같아서 마비는 1회만 해주면 된다.
             {
@@ -1883,9 +1885,9 @@ FourWayMagic(key, Arrow, Count) {  ;횟수 3에서 2로 내림. 삑 자주나면
                 SendInput, {%Arrow%}
                 CustomSleep(30)
                 SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
-                CustomSleep(30)
+                CustomSleep(40)
                 SendInput, {esc}
-                CustomSleep(30)
+                CustomSleep(20)
             }        
         StopLoopCheck()   ; StopLoop true면 Exit
     return
@@ -1896,7 +1898,7 @@ FourWayMagic(key, Arrow, Count) {  ;횟수 3에서 2로 내림. 삑 자주나면
 ;AutoHotkey에서 함수 호출 시 리터럴 문자열은 반드시 따옴표로 감싸야 한다.
 InPlaceMagic(key, Count) {
     SendInput, {Esc}
-    CustomSleep(10) ;20~30인데 후딜 때문에 좀 느려져서 10으로 해봤다. 안 되면 20으로
+    CustomSleep(20) ;20~30인데 후딜 때문에 좀 느려져서 10으로 해봤다. 안 되면 20으로
     StopLoop := false
     loop, %Count%
         {
@@ -1908,9 +1910,9 @@ InPlaceMagic(key, Count) {
             SendInput, %key%
             CustomSleep(30)
             SendInput, { enter } ;원래 엔터후 후딜90인데 꼬임 방지를 위해 esc 넣고 후딜 60, 30으로 나눠줌. 30 30로 해봄
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {esc}
-            CustomSleep(30)
+            CustomSleep(20)
         }
     StopLoopCheck()
 }
