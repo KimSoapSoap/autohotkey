@@ -370,7 +370,7 @@ return
 e:: ;혼힐 -> 수정혼 느낌으로
 ;입력대기시 해당키 입력 할당
 if(isWaiting) {
-    send,{e} ;파혼술
+    send,{e} ;지진
     return
 }
 HonHeal(3,2)
@@ -2128,8 +2128,8 @@ InputWaiting() {
         
     } else if(ErrorLevel = "EndKey:e") {
         SendInput, {Enter} ;일단 부활로 타겟잡은 거 엔터하고
-        CustomSleep(60)   
-        SendInput, {9}    ; 지진진
+        CustomSleep(200)
+        SendInput, {9}    ; 지진.  선딜 150까지 올려도 가끔 씹히네. 일단 선딜 200까지 올려봤다. 일단 안 씹힘.
         CustomSleep(30)
         SendInput, {Enter}
         CustomSleep(30)
