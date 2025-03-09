@@ -971,14 +971,15 @@ return
 ;무력화
 Neutralize() {  ;무력화
     SendInput, {Esc}
-    CustomSleep(20)
+    CustomSleep(30)
     SendInput, {shift down}
-    CustomSleep(20)
+    CustomSleep(30)
     SendInput, { z }
-    CustomSleep(20)
+    CustomSleep(30)
     SendInput, {shift up}
-    CustomSleep(20)
+    CustomSleep(30)
     SendInput, q ;  q -> 무력화
+    CustomSleep(30)
     return
  }
 
@@ -993,7 +994,7 @@ Exorcism() {  ;퇴마주
     SendInput, {shift up}
     CustomSleep(20)
     SendInput, s ;  s -> 퇴마주
-    CustomSleep(20)
+    CustomSleep(30)
     return
  }
 
@@ -1008,13 +1009,27 @@ Detox() {  ;해독
     SendInput, {shift up}
     CustomSleep(20)
     SendInput, r ;  r -> 해독
+    CustomSleep(30)
+    return
+ }
+
+ManaInjection() {  ;공력주입
+    ;SendInput, {Esc} ;탭탭힐 중에도 쓸 수 있어야 하므로 esc 뻈다.
+    ;CustomSleep(20)
+    SendInput, {shift down}
+    CustomSleep(20)
+    SendInput, { z }
+    CustomSleep(20)
+    SendInput, {s} ;  대문자 S -> 공력주입
+    CustomSleep(20)
+    SendInput, {shift up}
+    CustomSleep(30)
     return
  }
 
 
-
- ;공력주입
-ManaInjectionAndManaRefresh() {
+ 
+ManaInjectionAndManaRefresh() { ;공력주입&공력증강강
     CustomSleep(20)
     ;탭탭상태인지 확인 후 탭탭이면 바로 공력주입, 아니면 esc 눌러서(꼬임방지지) 탭탭 후 공력주입하고 다시 esc
     CheckTabTabOn()
@@ -1045,19 +1060,6 @@ ManaInjectionAndManaRefresh() {
 
 
  
-ManaInjection() {  ;공력주입 시전.
-    ;SendInput, {Esc} ;탭탭힐 중에도 쓸 수 있어야 하므로 esc 뻈다.
-    ;CustomSleep(20)
-    SendInput, {shift down}
-    CustomSleep(20)
-    SendInput, { z }
-    CustomSleep(20)
-    SendInput, {s} ;  대문자 S -> 공력주입
-    CustomSleep(20)
-    SendInput, {shift up}
-    CustomSleep(20)
-    return
- }
 
 
 
@@ -2150,10 +2152,10 @@ InputWaiting() {
 
     } else if(ErrorLevel = "EndKey:t") {
         SendInput, {Enter} ;일단 부활로 타겟잡은 거 엔터하고
-        CustomSleep(60)   
+        CustomSleep(160)   
 
         Detox() ;해독
-        
+
         SendInput, {Enter}
         CustomSleep(30)
         SendInput, {Esc}
