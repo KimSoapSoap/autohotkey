@@ -281,7 +281,7 @@ StopLoopCheck() {
             CustomSleep(20)  
             CancelInput := true ; 입력대기 취소
             isMildaeHealOn := false ;밀대힐 취소
-            isHuntingOn := false 
+            isHuntingOn := false ;사용시 true가 되는 건 Exit
             isChasing := false ; 추적에서 isChasing을 리셋 안 해주면 GhostCheck()부분에서 추적중 아닌데도 우클 눌러짐 추적이 동작된다
             Click, Right up ;추적 우클릭이동 해제
             Exit  
@@ -3002,7 +3002,6 @@ GhostCheck() {
     ;}
 
     if(isChasing) { ;만약 추적중이었으면 움직이면서 놓치지 않게 추적적
-        MsgBox, Test
         TabTabChase()
         CustomSleep(20)
 
