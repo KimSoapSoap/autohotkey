@@ -1513,6 +1513,7 @@ FourWayMagicAtTargetBox(key) {
     ;첫 스킬이 한 번 씹혔다.
 
     ; 이후에 4번만 시전된다면 시전 후 enter와 esc 후딜이 30 30 으로 총 60인데 이를 40 30 하는 식으로 늘려본다.
+    ; 키 사이에 후딜 30으로 하는데 여기서는 가끔 삑나서 40으로 했다.
     CustomSleep(90)  
     SendInput, {Esc}
     CustomSleep(20)
@@ -1524,63 +1525,63 @@ FourWayMagicAtTargetBox(key) {
                     CustomSleep(20)
                 }
             SendInput, %key% ; 가운데 시전
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)  
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
 
             StopLoopCheck()          
 
             SendInput, %key% ; 왼쪽 시전 후 가운데로 타겟박스 복귀
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Left}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}  ;시전후 후딜을 30에서 좀 늘리려다가 StopLoopCheck() 다음에 방향키 꼬임방지로 후딜 하나 더 넣어서 걍 60으로
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key%
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Right}
-            CustomSleep(30)   ;StopLoopCheck() 다음에 방향키 씹힘방지로 후딜 하나 더 넣음. 그래서 이 앞에 후딜도 30에서 20으로 줄임
+            CustomSleep(40)   ;StopLoopCheck() 다음에 방향키 씹힘방지로 후딜 하나 더 넣음. 그래서 이 앞에 후딜도 30에서 20으로 줄임
             
             StopLoopCheck()                
             
             SendInput, {Right} ;마법키를 눌러서 생긴 타겟박스로 가운데 복귀 했으므로 다시 마법키를 눌러줄 필요 없이 다음 타겟으로.
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key%
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Left}
-            CustomSleep(30)  
+            CustomSleep(40)  
 
             StopLoopCheck()                
             
             SendInput, {Up}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key%
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Down}
-            CustomSleep(30)  
+            CustomSleep(40)  
 
             StopLoopCheck()                
 
             SendInput, {down}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key%
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {up}            
         }        
     CustomSleep(20)
@@ -1597,6 +1598,7 @@ FourWayMagicAtTargetBox(key) {
 ; 4방향 마법2개인데 내 기준이 아니라 선택했던 타겟박스 기준. 그렇기 때문에 가운데 자리도 시전한다.
 ; 예를들면 절망 + 저주 등
 ;일단 써보고 씹히면 후딜 좀 늘린다.
+; 키 사이에 후딜 30으로 하는데 여기서는 가끔 삑나서 40으로 했다.
 FourWayTwoMagicsAtTargetBox(key1, key2) { 
     CustomSleep(90)
     SendInput, {Esc}
@@ -1609,95 +1611,95 @@ FourWayTwoMagicsAtTargetBox(key1, key2) {
                     CustomSleep(20)
                 }
             SendInput, %key1% ; 가운데 시전
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key2% ; 가운데 시전
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
            
 
             StopLoopCheck()          
             
 
             SendInput, %key1% ; 왼쪽 시전 후 가운데로 타겟박스 복귀
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Left}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}  ;시전후 후딜을 60에서 좀 늘리려다가 
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key2% ; 가운데 시전
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key1%
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Right}
-            CustomSleep(20)   
+            CustomSleep(40)   
             
             StopLoopCheck()                
             
             SendInput, {Right} ;마법키를 눌러서 생긴 타겟박스로 가운데 복귀 했으므로 다시 마법키를 눌러줄 필요 없이 다음 타겟으로.
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key2% ; 가운데 시전
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key1%
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Left}
-            CustomSleep(20)  
+            CustomSleep(40)  
 
             StopLoopCheck()                
             
             SendInput, {Up}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key2% ; 가운데 시전
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key1%
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Down}
-            CustomSleep(20)  
+            CustomSleep(40)  
 
             StopLoopCheck()                
 
             SendInput, {down}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key2% ; 가운데 시전
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {Enter}
             CustomSleep(40)
             SendInput, {Esc}
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, %key1%
-            CustomSleep(30)
+            CustomSleep(40)
             SendInput, {up}
         }        
     CustomSleep(20)
@@ -1726,7 +1728,7 @@ FourWayTwoMagicsAtTargetBox(key1, key2) {
 ;AutoHotkey에서 함수 호출 시 리터럴 문자열은 반드시 따옴표로 감싸야 한다.
 FourWayMagic(key, Arrow, Count) {  ;횟수 3에서 2로 내림. 삑 자주나면 다시 3으로
     SendInput, {Esc}
-    CustomSleep(10)
+    CustomSleep(20)
     StopLoop := false
         loop, %Count% ;마비 100퍼 인 것 같아서 마비는 1회만 해주면 된다.
             {
@@ -1755,7 +1757,7 @@ FourWayMagic(key, Arrow, Count) {  ;횟수 3에서 2로 내림. 삑 자주나면
 ;AutoHotkey에서 함수 호출 시 리터럴 문자열은 반드시 따옴표로 감싸야 한다.
 InPlaceMagic(key, Count) {
     SendInput, {Esc}
-    CustomSleep(10) ;20~30인데 후딜 때문에 좀 느려져서 10으로 해봤다. 안 되면 20으로
+    CustomSleep(20) ;20~30인데 후딜 때문에 좀 느려져서 10으로 해봤다. 안 되면 20으로
     StopLoop := false
     loop, %Count%
         {
@@ -2615,16 +2617,17 @@ InputWaiting() {
                         CustomSleep(30) ;
                     }
                 }
-               SendInput, {3} ;공증
-               CustomSleep(150) ; 공증 이후에 그냥 30 이정도 후딜만 줬었는데 마나량 확인할 때는 공증 성공시 마나 회복한 것을 인지할 후딜을 150은 줘야한다(헬파 사용시에도 마찬가지)
-               CheckEnoughMana()
-               CustomSleep(20)               
-               if(notEnoughMana || isManaZero) { ; 마나가 부족하다면 혹은 마나가 0이라면(헬파 페이백x)동동주 마시고 다시 공력증강 시전
+                StopLoopCheck() ; 헬파 쏘고 공증 하기 전에 중단 누르면 공증 멈출 수 있게. (남은 마력으로 마비걸든 자힐을 하든 헬파 쏘고 공증 시점에 누군가 다가올 때를 위함)
+                SendInput, {3} ;공증
+                CustomSleep(150) ; 공증 이후에 그냥 30 이정도 후딜만 줬었는데 마나량 확인할 때는 공증 성공시 마나 회복한 것을 인지할 후딜을 150은 줘야한다(헬파 사용시에도 마찬가지)
+                CheckEnoughMana()
+                CustomSleep(20)               
+                if(notEnoughMana || isManaZero) { ; 마나가 부족하다면 혹은 마나가 0이라면(헬파 페이백x)동동주 마시고 다시 공력증강 시전
                    DrinkDongDongJu()
                    CustomSleep(70)
                    SendInput, {3}
                    CustomSleep(150) ; 공증 이후 루프 반복될 때 풀마나인지 확인하는 함수가 있는데 공증 성공시 회복된 마나 인지할 정도의 후딜을 줬다. 기존 50 -> 100에서 다시 150으로
-               }           
+                }           
                 ;공증 성공인지 실패인지는 모르지만 어쨌든 공력증강 사용                
                 isRefreshed := true
                 
